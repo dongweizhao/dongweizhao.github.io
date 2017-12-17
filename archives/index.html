@@ -147,7 +147,7 @@
     <div class="post-content">
         <div class="post-excerpt">
             
-                如图所示，这是单一DB的应用架构，db中主要包括三种业务类型的表，分表是用户、订单、商品。
+                在以前的单一DB的架构中，因为读操作和写操作，都在一个节点不会出现此问题，而这种架构读取的数据是通过主节点同步到从节点，而同步是需要花费时间的，而这块时间也会受到一系列的因素影响，有时会变的并没有那么快，比如网络抖动等。一般正常都是毫秒级的 ，所以如果对数据实时性要求比较高的，还是需要走主节点的。
             
             <p class="more">
                 <a href="http://dongweizhao.github.io/2017/12/17/分库分表的产生背景/">阅读剩下更多</a>
@@ -304,12 +304,12 @@
     </li>
     
     <li>
-        <a href="/categories/后端/">后端</a>
+        <a href="/categories/数据库/">数据库</a>
         <span class="badge">(1)</span>
     </li>
     
     <li>
-        <a href="/categories/数据库/">数据库</a>
+        <a href="/categories/后端/">后端</a>
         <span class="badge">(1)</span>
     </li>
     
@@ -324,9 +324,9 @@
   
     <a class="tag-item" href="/tags/琐事/" title="琐事">琐事 (1)</a>
   
-    <a class="tag-item" href="/tags/java/" title="java">java (1)</a>
-  
     <a class="tag-item" href="/tags/分布式/" title="分布式">分布式 (1)</a>
+  
+    <a class="tag-item" href="/tags/java/" title="java">java (1)</a>
   
 </div>
     </section>
