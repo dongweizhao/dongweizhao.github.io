@@ -147,11 +147,25 @@
     <div class="post-content">
         <div class="post-excerpt">
             
-                <h2 id="产生背景"><a href="#产生背景" class="headerlink" title="产生背景"></a>产生背景</h2><h3 id="单一DB"><a href="#单一DB" class="headerlink" title="单一DB"></a>单一DB</h3><p><img src="https://note.youdao.com/yws/api/personal/file/WEBbf05c1b84240082f3725083be277f68a?method=download&amp;shareKey=b20f605985aea0b632a39c0b6f403aa2" alt="image"></p>
-<p>如图所示，这是单一DB的应用架构，db中主要包括三种业务类型的表，分表是用户、订单、商品。</p>
-<p>而对应业务操作基本都是在一个应用中完成的，这种架构适合项目周期短、业务简单<br>用户相对不多需求，因为用户量少压力就不是特别大，基本一个DB完全可以支撑</p>
-<p> 而随着公司的业务规模逐渐扩大，带来的效果就是用户量和业务的复杂度日益增加，<br> 这时这种架构就会出现一系列问题，比如响应过慢，有时候甚至会出现超时。</p>
-<p> 而通过观察，首先出问题的地方，就是DB这块，以前数据量较少的时候，一个查询操作，会快速返回结果，而现在需要等好长时间，<br>而查询操作过慢也导致了后续其它的操作无法进行，因为数据库的连接数有限，而一个系统的操作基本都是读多写少的操作，<br>所以这时我们思考，能不能把数据库的读操作和其它操作分离开呢，所以就出现了我们读写分离的架构。</p>
+                <!-- more
+## 产生背景
+
+### 单一DB
+
+![image](https://note.youdao.com/yws/api/personal/file/WEBbf05c1b84240082f3725083be277f68a?method=download&shareKey=b20f605985aea0b632a39c0b6f403aa2)
+
+如图所示，这是单一DB的应用架构，db中主要包括三种业务类型的表，分表是用户、订单、商品。
+
+而对应业务操作基本都是在一个应用中完成的，这种架构适合项目周期短、业务简单
+用户相对不多需求，因为用户量少压力就不是特别大，基本一个DB完全可以支撑
+
+ 而随着公司的业务规模逐渐扩大，带来的效果就是用户量和业务的复杂度日益增加，
+ 这时这种架构就会出现一系列问题，比如响应过慢，有时候甚至会出现超时。
+
+ 而通过观察，首先出问题的地方，就是DB这块，以前数据量较少的时候，一个查询操作，会快速返回结果，而现在需要等好长时间，
+而查询操作过慢也导致了后续其它的操作无法进行，因为数据库的连接数有限，而一个系统的操作基本都是读多写少的操作，
+所以这时我们思考，能不能把数据库的读操作和其它操作分离开呢，所以就出现了我们读写分离的架构。
+ -->
 <h3 id="读写分离"><a href="#读写分离" class="headerlink" title="读写分离"></a>读写分离</h3><p><img src="https://note.youdao.com/yws/api/personal/file/WEB4516f20125afd78068b578910a7347f9?method=download&amp;shareKey=4269517613d7f21f007d3ee1dbbc9b87" alt="image"></p>
 <blockquote>
 <p>读写分离的架构就是把我们系统中读操作和写操作分离开，通常写操作的节点叫做Master节点，读操作的节点叫做slave,或者叫做主节点和从节点，</p>
@@ -351,12 +365,12 @@
 <ul class="widget-bd">
     
     <li>
-        <a href="/categories/后端/">后端</a>
+        <a href="/categories/前端/">前端</a>
         <span class="badge">(1)</span>
     </li>
     
     <li>
-        <a href="/categories/前端/">前端</a>
+        <a href="/categories/后端/">后端</a>
         <span class="badge">(1)</span>
     </li>
     
@@ -374,9 +388,9 @@
         <!-- 文章标签 -->
 <div class="widget-bd tag-wrap">
   
-    <a class="tag-item" href="/tags/java/" title="java">java (1)</a>
-  
     <a class="tag-item" href="/tags/琐事/" title="琐事">琐事 (1)</a>
+  
+    <a class="tag-item" href="/tags/java/" title="java">java (1)</a>
   
     <a class="tag-item" href="/tags/分布式/" title="分布式">分布式 (1)</a>
   
