@@ -6,7 +6,7 @@
     <meta name="baidu-site-verification" content="dIcXMeY8Ya" />
     <meta name="google-site-verification" content="095-0MGT9QO4ZF9KQ6METdnolVJDE7HdqQhsOv67JAc" />
     
-    <title>留言 | Douglat</title>
+    <title>数据库隔离级别 | Douglat</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" >
     <meta name="keywords" content="Douglat, dweizhao ,后端, Web, 董伟召 , 后端开发" >
     <meta name="description" content="董伟召的工作小站" >
@@ -57,15 +57,15 @@
         <div class="dropnav icon-paragraph-justify" id="JELON__btnDropNav"></div>
         <ul class="menu hidden" id="JELON__menu">
             
-            <li rel="/comment/index.html" class="item ">
+            <li rel="/2017/12/19/数据库隔离级别/index.html" class="item ">
                 <a href="/" title="首页" class="icon-home">&nbsp;首页</a>
             </li>
             
-            <li rel="/comment/index.html" class="item ">
+            <li rel="/2017/12/19/数据库隔离级别/index.html" class="item ">
                 <a href="/about/" title="关于" class="icon-about">&nbsp;关于</a>
             </li>
             
-            <li rel="/comment/index.html" class="item current">
+            <li rel="/2017/12/19/数据库隔离级别/index.html" class="item ">
                 <a href="/comment/" title="留言" class="icon-comment">&nbsp;留言</a>
             </li>
             
@@ -105,24 +105,124 @@
     <div class="container body clearfix">
         <section class="content">
             <div class="content-main widget">
-                <!-- 独立页面 -->
+                <!-- 文章页 -->
+<!-- 文章 -->
 <article class="post article">
     <header class="text-center">
-        <h4 class="post-title"><a href="javascript: void(0);">留言</a></h4>
+        <h3 class="post-title"><span>数据库隔离级别</span></h3>
     </header>
+    <p class="post-meta text-center">
+        Douglat 发表于
+        <time datetime="2017-12-19T15:18:56.549Z">2017-12-19</time>
+    </p>
     <div class="post-content">
-        
-            <!-- 自定义留言页 -->
+        <blockquote>
+<p>一个数据库同一条数据或者表会有多个请求并发访问，如果不做好一定隔离性，就会导致各种并发问题，从而导致破坏数据的完整性，具体一下几个问题：</p>
+</blockquote>
+<h5 id="脏读（dirty-read）"><a href="#脏读（dirty-read）" class="headerlink" title="脏读（dirty read）"></a>脏读（dirty read）</h5><blockquote>
+<p>如A事务读取B事务，新增未提交的数据，并进行了修改操作，但是这时B事务恰巧进行了撤销，那么A事务读取的B的数据是不被承认的。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>时间</th>
+<th>取款事务A</th>
+<th>存款事务B</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>t1</td>
+<td></td>
+<td>开启事务</td>
+</tr>
+<tr>
+<td>t2</td>
+<td>开始事务</td>
+<td></td>
+</tr>
+<tr>
+<td>t3</td>
+<td></td>
+<td>查询A账户余额500元</td>
+</tr>
+<tr>
+<td>t4</td>
+<td></td>
+<td>向A账户存款100元余额为600元</td>
+</tr>
+<tr>
+<td>t5</td>
+<td>读取A账户 600元</td>
+<td></td>
+</tr>
+<tr>
+<td>t6</td>
+<td></td>
+<td>撤销事务B恢复余额为500元</td>
+</tr>
+<tr>
+<td>t7</td>
+<td>取出A账户300元修改余额为300元</td>
+<td></td>
+</tr>
+<tr>
+<td>t8</td>
+<td>提交事务A</td>
+</tr>
+</tbody>
+</table>
+<p>原本A账户最后余额为200元，就因为脏读的问题，导致银行亏了100元，A账户多了100元。</p>
+<h5 id="不可重复读（unrepeatable-read）"><a href="#不可重复读（unrepeatable-read）" class="headerlink" title="不可重复读（unrepeatable read）"></a>不可重复读（unrepeatable read）</h5>
+    </div>
+    <p class="post-meta">
+        <span class="post-cat">分类：
+            <a class="cat-link" href="/categories/数据库/">数据库</a>
+        </span>
+        <span class="post-tags">
+            标签：
+            
+        </span>
+    </p>
+</article>
+<!-- 分享按钮 -->
 
-<p class="text-center">
-  <img style="width: 258px; height: 258px; border: 1px solid #eee; padding: 0; border-radius: 3px;" src="/img/wechat_pay.png">
-</p>
+  <div class="article-share clearfix text-center">
+    <div class="share-area">
+      <span class="share-txt">分享到：</span>
+      <a href="javascript: window.open('http://service.weibo.com/share/share.php?url=' + encodeURIComponent(location.href) + '&title=' + document.title + '&language=zh_cn');" class="share-icon weibo"></a>
+      <a href="javascript: alert('请复制链接到微信并发送');" class="share-icon wechat"></a>
+      <a href="javascript: window.open('http://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=' + encodeURIComponent(location.href) + '&title=' + document.title);" class="share-icon qqzone"></a>
+      <a href="javascript: window.open('http://connect.qq.com/widget/shareqq/index.html?url=' + encodeURIComponent(location.href) + '&desc=Jelon个人博客&title=' + document.title + '&callback=' + encodeURIComponent(location.href));" class="share-icon qq"></a>
+      <a href="javascript: window.open('http://shuo.douban.com/!service/share?href=' + encodeURIComponent(location.href) + '&name=' + document.title + '&text=' + document.title);" class="share-icon douban"></a>
+    </div>
+  </div>
 
-<p class="text-center">
-  如果觉得博客对您有用，欢迎微信打赏
-</p>
 
-  
+<!-- 上一篇/下一篇 -->
+
+<div class="article-nav clearfix">
+    
+    <span class="prev fl">
+        上一篇<br >
+        <a href="javascript: void(0);">没有上一篇了</a>
+    </span>
+    
+
+    
+    <span class="next fr">
+        下一篇<br >
+        <a href="/2017/12/17/hashMap死锁分析/">
+            
+                hashMap死锁分析
+            
+        </a>
+    </span>
+    
+</div>
+
+<!-- 文章评论 -->
+
   <script src="/js/comment.js"></script>
   <div id="comments" class="comment">
     <!--
@@ -191,7 +291,7 @@
   <script>
   JELON.Comment({
     container: 'comments',
-    label: '' || 'comment/index.html',
+    label: '数据库隔离级别' || '2017/12/19/数据库隔离级别/',
     owner: 'dongweizhao',
     repo: 'blog_comments',
     clientId: '4d6412796597814f8f3d',
@@ -201,10 +301,6 @@
 
 
 
-
-        
-    </div>
-</article>
             </div>
 
         </section>
