@@ -1,8 +1,12 @@
+var http = require('http')
+  , exec = require('exec')
+
+const PORT = 9988
+
 var deployServer = http.createServer(function(request, response) {
   if (request.url.search(/deploy\/?$/i) > 0) {
 
     var commands = [
-      'cd ' + PATH,
       'git pull origin master'
     ].join(' && ')
 
