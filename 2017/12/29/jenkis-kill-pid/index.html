@@ -109,7 +109,7 @@
         <time datetime="2017-12-29T08:41:29.305Z">2017-12-29</time>
     </p>
     <div class="post-content">
-        <p>在启动脚本中增加BUILD_ID</p>
+        <p>在做自动化部署时，在项目构建完毕后，每次部署完执行部署脚本后，自动又杀掉其进程，解决方法在部署脚本中增加BUILD_ID</p>
 <p><img src="https://ws2.sinaimg.cn/large/006tKfTcgy1fmxqoev285j31e20aiwfi.jpg" alt="jenkis"></p>
 <h6 id="deploy-sh"><a href="#deploy-sh" class="headerlink" title="deploy.sh"></a>deploy.sh</h6><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line">BUILD_ID=3</span><br><span class="line">DEPLOY_PATH=<span class="string">"/Users/dongweizhao/Desktop"</span></span><br><span class="line">APP_NAME=<span class="string">"mycat-1.6.7-SNAPSHOT*mac.tar.gz"</span></span><br><span class="line">rm -rf <span class="variable">$DEPLOY_PATH</span>/<span class="variable">$APP_NAME</span></span><br><span class="line">rm -rf <span class="variable">$DEPLOY_PATH</span>/mycat</span><br><span class="line">cp /Users/dongweizhao/.jenkins/workspace/mycat/target/<span class="variable">$APP_NAME</span> <span class="variable">$DEPLOY_PATH</span></span><br><span class="line"><span class="built_in">cd</span> <span class="variable">$DEPLOY_PATH</span></span><br><span class="line">tar -xvf <span class="variable">$DEPLOY_PATH</span>/<span class="variable">$APP_NAME</span></span><br><span class="line"><span class="variable">$DEPLOY_PATH</span>/mycat/bin/mycat start</span><br></pre></td></tr></table></figure>
 
@@ -268,17 +268,17 @@
         <!-- 文章标签 -->
 <div class="widget-bd tag-wrap">
   
-    <a class="tag-item" href="/tags/jenkins/" title="jenkins">jenkins (1)</a>
-  
     <a class="tag-item" href="/tags/java/" title="java">java (2)</a>
   
     <a class="tag-item" href="/tags/并发/" title="并发">并发 (2)</a>
   
     <a class="tag-item" href="/tags/网络通信/" title="网络通信">网络通信 (1)</a>
   
+    <a class="tag-item" href="/tags/分布式/" title="分布式">分布式 (1)</a>
+  
     <a class="tag-item" href="/tags/数据库/" title="数据库">数据库 (2)</a>
   
-    <a class="tag-item" href="/tags/分布式/" title="分布式">分布式 (1)</a>
+    <a class="tag-item" href="/tags/jenkins/" title="jenkins">jenkins (1)</a>
   
 </div>
 
