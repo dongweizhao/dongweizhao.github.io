@@ -9,7 +9,7 @@
     <meta name="google-site-verification" content="P3RNPgvLP-2XOkC905i_eBTn9dVL2hGAHurIlYcYftM" />
 
     
-    <title>留言 | Weizhao</title>
+    <title>`jenkins`标签下的文章 | Weizhao</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" >
     <meta name="keywords" content="Weizhao , dweizhao , dongweizhao , 后端, Web, 董伟召 , 后端开发,Netty的编解码框架-解码" >
     <meta name="description" content="董伟召的工作小站" >
@@ -50,15 +50,15 @@
         <div class="dropnav icon-paragraph-justify" id="JELON__btnDropNav"></div>
         <ul class="menu hidden" id="JELON__menu">
             
-            <li rel="/comment/index.html" class="item ">
+            <li rel="/tags/jenkins/index.html" class="item ">
                 <a href="/" title="首页" class="icon-home">&nbsp;首页</a>
             </li>
             
-            <li rel="/comment/index.html" class="item ">
+            <li rel="/tags/jenkins/index.html" class="item ">
                 <a href="/about/" title="关于" class="icon-about">&nbsp;关于</a>
             </li>
             
-            <li rel="/comment/index.html" class="item current">
+            <li rel="/tags/jenkins/index.html" class="item ">
                 <a href="/comment/" title="留言" class="icon-comment">&nbsp;留言</a>
             </li>
             
@@ -98,106 +98,77 @@
     <div class="container body clearfix">
         <section class="content">
             <div class="content-main widget">
-                <!-- 独立页面 -->
-<article class="post article">
-    <header class="text-center">
-        <h4 class="post-title"><a href="javascript: void(0);">留言</a></h4>
+                <!-- 按标签分类 -->
+
+    <h3 class="widget-hd">
+        <strong>
+            
+                `jenkins`标签下的文章
+            
+        </strong>
+    </h3>
+    
+        <!-- 文章 -->
+<article class="post">
+    <header>
+        <!-- 标签这有且只能显示一个 -->
+        
+        <a class="cat-link" href="/categories/后端/">后端</a>
+        
+        <!-- 文章标题 -->
+        
+    <h3 class="post-title">
+    	<a href="http://weizhao.link/2017/12/29/jenkis-kill-pid/">
+    		jenkis部署后自动删掉进程解决方法
+    	</a>
+    </h3>
+
     </header>
+    <p class="post-meta">
+        Douglat 发表于
+        <time datetime="2017-12-29T08:41:29.305Z">2017-12-29</time>
+        &nbsp;&nbsp;
+        <span class="post-tags">
+            标签：
+            
+    
+        <a href="/tags/jenkins/" title="jenkins">jenkins</a>
+    
+
+        </span>
+    </p>
+
     <div class="post-content">
-        
-            <!-- 自定义留言页 -->
+        <div class="post-excerpt">
+            
+                <p>在启动脚本中增加BUILD_ID</p>
+<p><img src="https://ws2.sinaimg.cn/large/006tKfTcgy1fmxqoev285j31e20aiwfi.jpg" alt="jenkis"></p>
+<h6 id="deploy-sh"><a href="#deploy-sh" class="headerlink" title="deploy.sh"></a>deploy.sh</h6><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line">BUILD_ID=3</span><br><span class="line">DEPLOY_PATH=<span class="string">"/Users/dongweizhao/Desktop"</span></span><br><span class="line">APP_NAME=<span class="string">"mycat-1.6.7-SNAPSHOT*mac.tar.gz"</span></span><br><span class="line">rm -rf <span class="variable">$DEPLOY_PATH</span>/<span class="variable">$APP_NAME</span></span><br><span class="line">rm -rf <span class="variable">$DEPLOY_PATH</span>/mycat</span><br><span class="line">cp /Users/dongweizhao/.jenkins/workspace/mycat/target/<span class="variable">$APP_NAME</span> <span class="variable">$DEPLOY_PATH</span></span><br><span class="line"><span class="built_in">cd</span> <span class="variable">$DEPLOY_PATH</span></span><br><span class="line">tar -xvf <span class="variable">$DEPLOY_PATH</span>/<span class="variable">$APP_NAME</span></span><br><span class="line"><span class="variable">$DEPLOY_PATH</span>/mycat/bin/mycat start</span><br></pre></td></tr></table></figure>
 
-<p class="text-center">
-  <img style="width: 258px; height: 258px; border: 1px solid #eee; padding: 0; border-radius: 3px;" src="/img/wechat_pay.png">
-</p>
-
-<p class="text-center">
-  如果觉得博客对您有用，欢迎微信打赏
-</p>
-
-  
-  <script src="/js/comment.js"></script>
-  <div id="comments" class="comment">
-    <!--
-    <div class="sign-bar">
-      GitHub 已登录!
-      <span class="sign-link">登出</span>
-    </div>
-    <section class="box">
-      <div class="com-avatar"><img src="/img/jelon.jpg" alt="avatar"></div>
-      <div class="com-text">
-        <div class="main">
-          <textarea class="text-area-edited show" placeholder="欢迎评论！"></textarea>
-          <div class="text-area-preview"></div>
+            
+            <p class="more">
+                <a href="http://weizhao.link/2017/12/29/jenkis-kill-pid/">阅读剩下更多</a>
+            </p>
         </div>
-        <div class="switch">
-          <div class="switch-item on">编辑</div>
-          <div class="switch-item">预览</div>
+        <div class="post-thumbnail" data-img="">
+            <a href="http://weizhao.link/2017/12/29/jenkis-kill-pid/" title="jenkis部署后自动删掉进程解决方法">
+                
+                    <img class="thumbnail" src="/img/default.png" data-echo="/img/thumbnail/9.jpg" alt="默认配图" >
+                
+            </a>
         </div>
-        <div class="button">提交</div>
-      </div>
-    </section>
-    <section class="tips">注：评论支持 markdown 语法！</section>
-    <section class="list-wrap">
-      <ul class="list">
-        <li>
-          <div class="user-avatar">
-            <a href="/">
-              <img src="/img/jelon.jpg" alt="user-avatar">
-            </a>
-          </div>
-          <div class="user-comment">
-            <div class="user-comment-header">
-              <span class="post-name">张德龙</span>
-              <span class="post-time">2017年12月12日</span>
-              <span class="like liked">已赞</span>
-              <span class="like-num">2</span>
-            </div>
-            <div class="user-comment-body">333333</div>
-          </div>
-        </li>
-        <li>
-          <div class="user-avatar">
-            <a href="/">
-              <img src="/img/jelon.jpg" alt="user-avatar">
-            </a>
-          </div>
-          <div class="user-comment">
-            <div class="user-comment-header">
-              <span class="post-name">刘德华</span>
-              <span class="post-time">2017年12月12日</span>
-              <span class="like">点赞</span>
-              <span class="like-num">2</span>
-            </div>
-            <div class="user-comment-body">vvvvv</div>
-          </div>
-        </li>
-      </ul>
-      <div class="page-nav">
-        <a href="javascript: void(0);" class="item">1</a>
-        <a href="javascript: void(0);" class="item">2</a>
-        <a href="javascript: void(0);" class="item current">3</a>
-      </div>
-    </section>
-    -->
-  </div>
-  <script>
-  JELON.Comment({
-    container: 'comments',
-    label: '' || 'comment/index.html',
-    owner: 'dongweizhao',
-    repo: 'blog_comments',
-    clientId: '4d6412796597814f8f3d',
-    clientSecret: '0c3ab59a6e2a4f77a88348acf129a7bf4e24fad1'
-  });
-  </script>
-
-
-
-
-        
     </div>
 </article>
+
+    
+
+    
+    <nav class="page-navigator">
+        <span class="page-number current">1</span>
+    </nav>
+    
+
+
             </div>
 
         </section>

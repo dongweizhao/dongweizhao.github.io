@@ -9,7 +9,7 @@
     <meta name="google-site-verification" content="P3RNPgvLP-2XOkC905i_eBTn9dVL2hGAHurIlYcYftM" />
 
     
-    <title>留言 | Weizhao</title>
+    <title>jenkis部署后自动删掉进程解决方法 | Weizhao</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" >
     <meta name="keywords" content="Weizhao , dweizhao , dongweizhao , 后端, Web, 董伟召 , 后端开发,Netty的编解码框架-解码" >
     <meta name="description" content="董伟召的工作小站" >
@@ -50,15 +50,15 @@
         <div class="dropnav icon-paragraph-justify" id="JELON__btnDropNav"></div>
         <ul class="menu hidden" id="JELON__menu">
             
-            <li rel="/comment/index.html" class="item ">
+            <li rel="/2017/12/29/jenkis-kill-pid/index.html" class="item ">
                 <a href="/" title="首页" class="icon-home">&nbsp;首页</a>
             </li>
             
-            <li rel="/comment/index.html" class="item ">
+            <li rel="/2017/12/29/jenkis-kill-pid/index.html" class="item ">
                 <a href="/about/" title="关于" class="icon-about">&nbsp;关于</a>
             </li>
             
-            <li rel="/comment/index.html" class="item current">
+            <li rel="/2017/12/29/jenkis-kill-pid/index.html" class="item ">
                 <a href="/comment/" title="留言" class="icon-comment">&nbsp;留言</a>
             </li>
             
@@ -98,24 +98,74 @@
     <div class="container body clearfix">
         <section class="content">
             <div class="content-main widget">
-                <!-- 独立页面 -->
+                <!-- 文章页 -->
+<!-- 文章 -->
 <article class="post article">
     <header class="text-center">
-        <h4 class="post-title"><a href="javascript: void(0);">留言</a></h4>
+        <h3 class="post-title"><span>jenkis部署后自动删掉进程解决方法</span></h3>
     </header>
+    <p class="post-meta text-center">
+        Douglat 发表于
+        <time datetime="2017-12-29T08:41:29.305Z">2017-12-29</time>
+    </p>
     <div class="post-content">
-        
-            <!-- 自定义留言页 -->
+        <p>在启动脚本中增加BUILD_ID</p>
+<p><img src="https://ws2.sinaimg.cn/large/006tKfTcgy1fmxqoev285j31e20aiwfi.jpg" alt="jenkis"></p>
+<h6 id="deploy-sh"><a href="#deploy-sh" class="headerlink" title="deploy.sh"></a>deploy.sh</h6><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line">BUILD_ID=3</span><br><span class="line">DEPLOY_PATH=<span class="string">"/Users/dongweizhao/Desktop"</span></span><br><span class="line">APP_NAME=<span class="string">"mycat-1.6.7-SNAPSHOT*mac.tar.gz"</span></span><br><span class="line">rm -rf <span class="variable">$DEPLOY_PATH</span>/<span class="variable">$APP_NAME</span></span><br><span class="line">rm -rf <span class="variable">$DEPLOY_PATH</span>/mycat</span><br><span class="line">cp /Users/dongweizhao/.jenkins/workspace/mycat/target/<span class="variable">$APP_NAME</span> <span class="variable">$DEPLOY_PATH</span></span><br><span class="line"><span class="built_in">cd</span> <span class="variable">$DEPLOY_PATH</span></span><br><span class="line">tar -xvf <span class="variable">$DEPLOY_PATH</span>/<span class="variable">$APP_NAME</span></span><br><span class="line"><span class="variable">$DEPLOY_PATH</span>/mycat/bin/mycat start</span><br></pre></td></tr></table></figure>
 
-<p class="text-center">
-  <img style="width: 258px; height: 258px; border: 1px solid #eee; padding: 0; border-radius: 3px;" src="/img/wechat_pay.png">
-</p>
+    </div>
+    <p class="post-meta">
+        <span class="post-cat">分类：
+            <a class="cat-link" href="/categories/后端/">后端</a>
+        </span>
+        <span class="post-tags">
+            标签：
+            
+    
+        <a href="/tags/jenkins/" title="jenkins">jenkins</a>
+    
 
-<p class="text-center">
-  如果觉得博客对您有用，欢迎微信打赏
-</p>
+        </span>
+    </p>
+</article>
+<!-- 分享按钮 -->
 
-  
+  <div class="article-share clearfix text-center">
+    <div class="share-area">
+      <span class="share-txt">分享到：</span>
+      <a href="javascript: window.open('http://service.weibo.com/share/share.php?url=' + encodeURIComponent(location.href) + '&title=' + document.title + '&language=zh_cn');" class="share-icon weibo"></a>
+      <a href="javascript: alert('请复制链接到微信并发送');" class="share-icon wechat"></a>
+      <a href="javascript: window.open('http://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=' + encodeURIComponent(location.href) + '&title=' + document.title);" class="share-icon qqzone"></a>
+      <a href="javascript: window.open('http://connect.qq.com/widget/shareqq/index.html?url=' + encodeURIComponent(location.href) + '&desc=Jelon个人博客&title=' + document.title + '&callback=' + encodeURIComponent(location.href));" class="share-icon qq"></a>
+      <a href="javascript: window.open('http://shuo.douban.com/!service/share?href=' + encodeURIComponent(location.href) + '&name=' + document.title + '&text=' + document.title);" class="share-icon douban"></a>
+    </div>
+  </div>
+
+
+<!-- 上一篇/下一篇 -->
+
+<div class="article-nav clearfix">
+    
+    <span class="prev fl">
+        上一篇<br >
+        <a href="javascript: void(0);">没有上一篇了</a>
+    </span>
+    
+
+    
+    <span class="next fr">
+        下一篇<br >
+        <a href="/2017/12/24/netty-decoder/">
+            
+                Netty的编解码框架-解码
+            
+        </a>
+    </span>
+    
+</div>
+
+<!-- 文章评论 -->
+
   <script src="/js/comment.js"></script>
   <div id="comments" class="comment">
     <!--
@@ -184,7 +234,7 @@
   <script>
   JELON.Comment({
     container: 'comments',
-    label: '' || 'comment/index.html',
+    label: 'jenkis-kill-pid' || '2017/12/29/jenkis-kill-pid/',
     owner: 'dongweizhao',
     repo: 'blog_comments',
     clientId: '4d6412796597814f8f3d',
@@ -194,10 +244,6 @@
 
 
 
-
-        
-    </div>
-</article>
             </div>
 
         </section>
