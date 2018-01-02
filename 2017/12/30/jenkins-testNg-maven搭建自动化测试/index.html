@@ -164,99 +164,90 @@
 <li>TestNG Results Plugin</li>
 <li>Email Extension Plugin</li>
 </ol>
-<h4 id="全局配置"><a href="#全局配置" class="headerlink" title="全局配置"></a>全局配置</h4><ol>
-<li><p>邮件配置</p>
-<p>​</p>
-<ol>
-<li><img src="https://ws2.sinaimg.cn/large/006tKfTcgy1fn25w74o6fj31kw07x0u4.jpg" alt="">      </li>
-<li><img src="https://ws2.sinaimg.cn/large/006tKfTcgy1fn25tvqho0j31kw0w0gqs.jpg" alt=""></li>
-<li><p><img src="https://ws1.sinaimg.cn/large/006tKfTcgy1fn25uy38lhj31kw0vkq7h.jpg" alt=""></p>
+<h4 id="全局配置"><a href="#全局配置" class="headerlink" title="全局配置"></a>全局配置</h4><h6 id="邮件配置"><a href="#邮件配置" class="headerlink" title="邮件配置"></a>邮件配置</h6><p><img src="https://ws2.sinaimg.cn/large/006tKfTcgy1fn25w74o6fj31kw07x0u4.jpg" alt="">      </p>
+<p><img src="https://ws2.sinaimg.cn/large/006tKfTcgy1fn25tvqho0j31kw0w0gqs.jpg" alt=""></p>
+<p><img src="https://ws1.sinaimg.cn/large/006tKfTcgy1fn25uy38lhj31kw0vkq7h.jpg" alt=""></p>
 <p>​红色圈出的内容，可以自定义修改</p>
-</li>
-</ol>
-</li>
-</ol>
-<h4 id="任务配置"><a href="#任务配置" class="headerlink" title="任务配置"></a>任务配置</h4><ol>
-<li><p>创建一个自由风格的软件项目</p>
+<h4 id="任务配置"><a href="#任务配置" class="headerlink" title="任务配置"></a>任务配置</h4><ul>
+<li>创建一个自由风格的软件项目</li>
+</ul>
 <p><img src="https://ws2.sinaimg.cn/large/006tKfTcgy1fn218dnnyhj31km0ggdj3.jpg" alt=""></p>
-</li>
+<ul>
 <li><p>源码管理配置</p>
 <blockquote>
-<p>本项目是基于git管理的，所以配置git地址，并指定对应的用户名和密码（默认用户名需要点击    [Add]按钮进行新增配置，选择对应的分支</p>
+<p>本项目是基于git管理的，所以配置git地址，并指定对应的用户名和密码（默认用户名需要点击[Add]按钮进行新增配置，选择对应的分支</p>
 </blockquote>
-<p><img src="https://ws3.sinaimg.cn/large/006tKfTcgy1fn21dvfniij31jm0pu77g.jpg" alt="git"></p>
-<p>​</p>
+<p> <img src="https://ws3.sinaimg.cn/large/006tKfTcgy1fn21dvfniij31jm0pu77g.jpg" alt="git"></p>
 </li>
+</ul>
+<ul>
 <li><p>触发器配置</p>
 <blockquote>
 <p>选择scm配置，并使用cron表达式，配置每5分钟检查有变更，则更新代码进行构建。如果不知     怎么配置cron表达式，点击右边  <strong>?</strong>  号按钮,有详细的说明</p>
 </blockquote>
-<p> <img src="https://ws4.sinaimg.cn/large/006tKfTcgy1fn21mngoskj31kw0lzq6o.jpg" alt=""></p>
 </li>
-</ol>
+</ul>
+<p><img src="https://ws4.sinaimg.cn/large/006tKfTcgy1fn21mngoskj31kw0lzq6o.jpg" alt=""></p>
 <p>​      </p>
-<ol>
+<ul>
 <li><p>构建</p>
 <ul>
-<li>打包</li>
-</ul>
+<li><p>打包</p>
 <blockquote>
 <p>因此项目必须部署完成，才能进行测试，因此打包前先跳过测试，选择Invoke top_level Maven targets</p>
 </blockquote>
-<p><img src="https://ws3.sinaimg.cn/large/006tKfTcgy1fn224nx9izj30iy0f23zy.jpg" alt=""></p>
-<p><img src="https://ws3.sinaimg.cn/large/006tKfTcgy1fn221furmvj31gg0eagmz.jpg" alt=""></p>
-<ul>
+<p><img src="https://ws3.sinaimg.cn/large/006tKfTcgy1fn224nx9izj30iy0f23zy.jpg" alt="1"></p>
+<p><img src="https://ws3.sinaimg.cn/large/006tKfTcgy1fn221furmvj31gg0eagmz.jpg" alt="2"></p>
+</li>
 <li><p>部署</p>
 <blockquote>
 <p>选择Execute Shell，编写shell脚本进行部署，可以单独编写shell，也可以在文本框中，直接输入脚本内容</p>
 </blockquote>
-</li>
-</ul>
-</li>
-</ol>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span>!/bin/bash</span><br><span class="line">BUILD_ID=4</span><br><span class="line"><span class="meta">#</span>部署路径</span><br><span class="line">DEPLOY_PATH="/Users/dongweizhao/Desktop"</span><br><span class="line"><span class="meta">#</span>应用名称</span><br><span class="line">APP_NAME="Mycat-*-SNAPSHOT*mac.tar.gz"</span><br><span class="line"></span><br><span class="line">array=$(ps -ef|grep mycat|grep -v "grep"| awk '&#123;print $2&#125;')</span><br><span class="line"><span class="meta">#</span>如果进程存在，则杀掉进程</span><br><span class="line">for data in $array</span><br><span class="line">do</span><br><span class="line">    echo 'kill -9 '$&#123;data&#125;</span><br><span class="line">    kill -9 $data</span><br><span class="line">done</span><br><span class="line">rm -rf $DEPLOY_PATH/$APP_NAME</span><br><span class="line">rm -rf $DEPLOY_PATH/mycat</span><br><span class="line">cp /Users/dongweizhao/.jenkins/workspace/ClientTest/target/$APP_NAME $DEPLOY_PATH</span><br><span class="line">cd $DEPLOY_PATH</span><br><span class="line">tar -xvf $DEPLOY_PATH/$APP_NAME</span><br><span class="line"><span class="meta">$</span>DEPLOY_PATH/mycat/bin/mycat start</span><br></pre></td></tr></table></figure>
-<ol>
+<p>​</p>
+</li>
 <li><p>测试</p>
 <blockquote>
 <p>输入test,等待部署完成，进行测试</p>
 </blockquote>
 <p><img src="https://ws3.sinaimg.cn/large/006tKfTcgy1fn22bregp5j31fc0aegml.jpg" alt=""></p>
-<p>​</p>
 </li>
 <li><p>构建后操作</p>
-<ol>
+<ul>
 <li><p>TestNg测试结果收集配置</p>
 <blockquote>
 <p>选择Publist TetNG Results，进行测试结果收集</p>
 </blockquote>
-<p><img src="https://ws2.sinaimg.cn/large/006tKfTcgy1fn22gdlgujj31g609ut9r.jpg" alt=""></p>
 </li>
+</ul>
+<p><img src="https://ws2.sinaimg.cn/large/006tKfTcgy1fn22gdlgujj31g609ut9r.jpg" alt=""></p>
+<ul>
 <li><p>电子邮件通知</p>
 <blockquote>
 <p>这里有两个邮件配置选项，选择EditTable Email Notification选项，因为此选项比E-Mail Notification功能更强大，如可以选择总是通知、失败通知、成功通知，以及通知模板的自定义等</p>
 </blockquote>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
 <p><img src="https://ws1.sinaimg.cn/large/006tKfTcgy1fn22nsxnpbj30ia0csta3.jpg" alt=""></p>
-<blockquote>
-<p>点击Setting，选择Always,表示不管成功还是失败总是通知，在Recipient List输入在全局配置中配置的邮箱。</p>
-</blockquote>
+<p>​    点击Setting，选择Always,表示不管成功还是失败总是通知，在Recipient List输入在全局配置中配置的邮箱。</p>
 <p><img src="https://ws3.sinaimg.cn/large/006tKfTcgy1fn2317anwfj30xi0rwn0p.jpg" alt=""> </p>
-</li>
-</ol>
-</li>
-</ol>
 <p>​     以上步骤配置完，点击完成，下面进行测试验证。</p>
-<h4 id="执行自动化测试"><a href="#执行自动化测试" class="headerlink" title="执行自动化测试"></a>执行自动化测试</h4><ol>
-<li><p>点击立即构建,进行测试验证</p>
+<h4 id="执行自动化测试"><a href="#执行自动化测试" class="headerlink" title="执行自动化测试"></a>执行自动化测试</h4><ul>
+<li>点击立即构建,进行测试验证</li>
+</ul>
 <p><img src="https://ws2.sinaimg.cn/large/006tKfTcgy1fn23b5nn1rj31kw0470tr.jpg" alt=""></p>
-<p>​</p>
-</li>
+<ul>
 <li><p>测试结果查看</p>
 <ul>
-<li>构建完成选择testNg-Results,进行测试结果查看</li>
-</ul>
+<li><p>构建完成选择testNg-Results,进行测试结果查看</p>
 <p><img src="https://ws1.sinaimg.cn/large/006tKfTcgy1fn23ca6xvsj30q40o60w5.jpg" alt=""></p>
-<ul>
-<li>注意此图表，需要进行两次测试，才能绘制出来</li>
+</li>
+<li><p>注意此图表，需要进行两次测试，才能绘制出来</p>
+</li>
 </ul>
 <p><img src="https://ws2.sinaimg.cn/large/006tKfTcgy1fn23ec0auij31j80xq457.jpg" alt=""></p>
 <ul>
@@ -264,9 +255,10 @@
 </ul>
 <p><img src="https://ws3.sinaimg.cn/large/006tKfTcgy1fn23k9ok20j31kw0mxagt.jpg" alt=""></p>
 </li>
-<li><p>邮件查看<br><img src="https://ws4.sinaimg.cn/large/006tKfTcgy1fn23qzxdydj31gc0fuwhi.jpg" alt=""></p>
+<li><p>邮件查看</p>
 </li>
-</ol>
+</ul>
+<p><img src="https://ws4.sinaimg.cn/large/006tKfTcgy1fn23qzxdydj31gc0fuwhi.jpg" alt=""></p>
 
     </div>
     <p class="post-meta">
@@ -429,11 +421,11 @@
   
     <a class="tag-item" href="/tags/jenkins/" title="jenkins">jenkins (2)</a>
   
+    <a class="tag-item" href="/tags/网络通信/" title="网络通信">网络通信 (1)</a>
+  
     <a class="tag-item" href="/tags/分布式/" title="分布式">分布式 (1)</a>
   
     <a class="tag-item" href="/tags/数据库/" title="数据库">数据库 (1)</a>
-  
-    <a class="tag-item" href="/tags/网络通信/" title="网络通信">网络通信 (1)</a>
   
 </div>
 
