@@ -1,0 +1,495 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" >
+    <meta http-equiv="X-UA-Compatible" content="IE=11,IE=10,IE=9,IE=8" >
+    <meta name="baidu-site-verification" content="SENxnW7IqQ" />
+    <meta name="baidu-site-verification" content="t4IockLb7b" />
+    <meta name="google-site-verification" content="sdvKJXb2ZWqr2lMWfSirujODNyAzOjhK0SP_j1BEv44" />
+    <meta name="google-site-verification" content="095-0MGT9QO4ZF9KQ6METdnolVJDE7HdqQhsOv67JAc" />
+    <meta name="google-site-verification" content="P3RNPgvLP-2XOkC905i_eBTn9dVL2hGAHurIlYcYftM" />
+
+    
+    <title>jenkins+testNg+maven搭建自动化测试 | Weizhao</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" >
+    <meta name="keywords" content="jenkins+testNg+maven搭建自动化测试 , Weizhao , dweizhao , dongweizhao , 后端, Web, 董伟召 , 后端开发" >
+    <meta name="description" content="jenkins+testNg+maven搭建自动化测试 , 董伟召的工作小站" >     
+    
+    <link rel="alternative" href="/atom.xml" title="Weizhao" type="application/atom+xml" >
+    
+    
+    <link rel="shortcut icon" href="/img/favicon.ico" >
+    
+    <link rel="stylesheet" href="/css/style.css">
+    <!--[if lt IE 9]>
+    <script src="/js/html5.js"></script>
+    <![endif]-->
+    
+
+</head>
+
+<body class="home">
+    <!--[if lt IE 9]>
+    <div class="browsehappy">
+        当前网页 <strong>不支持</strong>
+        你正在使用的浏览器. 为了正常的访问, 请 <a href="http://browsehappy.com/">升级你的浏览器</a>.
+    </div>
+    <![endif]-->
+
+    <!-- 博客头部 -->
+    <header class="header">
+    <section class="container header-main">
+        <div class="logo">
+            <a href="/">
+                <div class="cover">
+                    <span class="name">Weizhao</span>
+                    <span class="description">Weizhao的博客</span>
+                </div>
+            </a>
+        </div>
+        <div class="dropnav icon-paragraph-justify" id="JELON__btnDropNav"></div>
+        <ul class="menu hidden" id="JELON__menu">
+            
+            <li rel="/2017/12/30/jenkins-testNg-maven搭建自动化测试/index.html" class="item ">
+                <a href="/" title="首页" class="icon-home">&nbsp;首页</a>
+            </li>
+            
+            <li rel="/2017/12/30/jenkins-testNg-maven搭建自动化测试/index.html" class="item ">
+                <a href="/about/" title="关于" class="icon-about">&nbsp;关于</a>
+            </li>
+            
+            <li rel="/2017/12/30/jenkins-testNg-maven搭建自动化测试/index.html" class="item ">
+                <a href="/comment/" title="留言" class="icon-comment">&nbsp;留言</a>
+            </li>
+            
+        </ul>
+        <div class="profile clearfix">
+            <div class="feeds fl">
+                
+                
+                <p class="links">
+                    
+                        <a href="https://github.com/dongweizhao" target="_blank">Github</a>
+                        
+                    
+                </p>
+                <p class="sns">
+                    
+                    <!-- <a href="javascript: void(0);" class="wechat">
+                        <b>■</b>
+                        公众号
+                        <span class="popover">
+                            <img src="/img/wechat_mp.jpg" width="120" height="120" alt="我的微信订阅号">
+                            <i class="arrow"></i>
+                        </span>
+                    </a> -->
+                </p>
+                
+            </div>
+            <div class="avatar fr">
+                <img src="/img/icon.jpeg" alt="avatar" title="Jelon" >
+            </div>
+        </div>
+    </section>
+</header>
+
+
+    <!-- 博客正文 -->
+    <div class="container body clearfix">
+        <section class="content">
+            <div class="content-main widget">
+                <!-- 文章页 -->
+<!-- 文章 -->
+<article class="post article">
+    <header class="text-center">
+        <h3 class="post-title"><span>jenkins+testNg+maven搭建自动化测试</span></h3>
+    </header>
+    <p class="post-meta text-center">
+        Weizhao 发表于
+        <time datetime="2017-12-30T14:34:06.997Z">2017-12-30</time>
+    </p>
+    <div class="post-content">
+        <blockquote>
+<p>随着业务的发展，项目的复杂度日益增长，不管是增加、修改操作都担心对原有功能造成影响，具体点就是改了bug，而又担心引发其它的bug，为了尽量避免此类问题的出现，所以才有了搭建此平台的想法。</p>
+</blockquote>
+<h3 id="目标"><a href="#目标" class="headerlink" title="目标"></a>目标</h3><ol>
+<li><p>模拟客户端连接此项目，进行各种维度调用测试</p>
+</li>
+<li><p>核心模块测试</p>
+</li>
+</ol>
+<p>如果只是目标1，那么测试程序，可作为独立的测试程序，但是还要满足目标2的需求，所以测试程序不能独立</p>
+<h3 id="自动化测试流程构思"><a href="#自动化测试流程构思" class="headerlink" title="自动化测试流程构思"></a>自动化测试流程构思</h3><p><img src="https://ws1.sinaimg.cn/large/006tKfTcgy1fmz95mwhu8j30mw0eyjs7.jpg" alt="流程图"></p>
+<blockquote>
+<p>开发人员修改代码并提交到到服务器后，测试服务器从版本服务器更新下来，进行部署并测试，测试结果通过email反馈给开发人员，已便决定是再次修改提交，还是发布版本。</p>
+</blockquote>
+<h3 id="技术选型"><a href="#技术选型" class="headerlink" title="技术选型"></a>技术选型</h3><ul>
+<li>版本服务为器：git<ul>
+<li>因为项目中使用的是git，而且git提供的功能也特别强大。</li>
+</ul>
+</li>
+<li>测试框架：testNg<ul>
+<li>为什么选型testNg，因为它涵盖了JUnit4的全部功能，又增加不少新功能，并且在参数化测试、依赖测试以及套件测试（组）方面功能更加强大。</li>
+</ul>
+</li>
+<li>持续集成工具：jenkins <ul>
+<li>目前最流行的持续集成框架，没有理由不使用它。</li>
+</ul>
+</li>
+</ul>
+<h3 id="TestNg相关配置"><a href="#TestNg相关配置" class="headerlink" title="TestNg相关配置"></a>TestNg相关配置</h3><ol>
+<li>在项目中引入pom.xml中引入testNg 相关配置</li>
+</ol>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.testng<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>testng<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">version</span>&gt;</span>6.8<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">scope</span>&gt;</span>test<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<ol>
+<li><p>创建测试类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> client.mysql;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> client.base.BaseJdbc;</span><br><span class="line"><span class="keyword">import</span> org.testng.annotations.BeforeTest;</span><br><span class="line"><span class="keyword">import</span> org.testng.annotations.Test;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.sql.Connection;</span><br><span class="line"><span class="keyword">import</span> java.sql.PreparedStatement;</span><br><span class="line"><span class="keyword">import</span> java.sql.SQLException;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="keyword">static</span> org.junit.Assert.fail;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Mysql测试</span></span><br><span class="line"><span class="comment"> * Created by dongweizhao on 2017/12/27.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MysqlClientTest</span> <span class="keyword">extends</span> <span class="title">BaseJdbc</span> </span>&#123;</span><br><span class="line">    <span class="meta">@BeforeTest</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">before</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        buildMysqlDruid();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 测试分片update</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testUpdate1</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">1</span>; i++) &#123;</span><br><span class="line">            Connection connection = <span class="keyword">null</span>;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                connection = druidDataSource.getConnection();</span><br><span class="line">                connection.setAutoCommit(<span class="keyword">false</span>);</span><br><span class="line">                PreparedStatement pre = connection.prepareStatement(<span class="string">"update test set USER_NICK_NAME='11111' where user_id='UR000000000100'"</span>);</span><br><span class="line">                pre.executeUpdate();</span><br><span class="line">                connection.commit();</span><br><span class="line">            &#125; <span class="keyword">catch</span> (SQLException e) &#123;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    connection.rollback();</span><br><span class="line">                &#125; <span class="keyword">catch</span> (SQLException e1) &#123;</span><br><span class="line">                    fail();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    connection.close();</span><br><span class="line">                &#125; <span class="keyword">catch</span> (SQLException e) &#123;</span><br><span class="line">                    fail();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 测试不分片更新</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testUpdate2</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">1</span>; i++) &#123;</span><br><span class="line">            Connection connection = <span class="keyword">null</span>;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                connection = druidDataSource.getConnection();</span><br><span class="line">                connection.setAutoCommit(<span class="keyword">false</span>);</span><br><span class="line">                PreparedStatement pre = connection.prepareStatement(<span class="string">"update test set  QUESTION_NAME='张三' where id='1'"</span>);</span><br><span class="line">                pre.executeUpdate();</span><br><span class="line">                connection.commit();</span><br><span class="line">            &#125; <span class="keyword">catch</span> (SQLException e) &#123;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    connection.rollback();</span><br><span class="line">                &#125; <span class="keyword">catch</span> (SQLException e1) &#123;</span><br><span class="line">                    fail();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    connection.close();</span><br><span class="line">                &#125; <span class="keyword">catch</span> (SQLException e) &#123;</span><br><span class="line">                    fail();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>​</p>
+</li>
+<li><p>在resource目录，创建testNg.xml</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span><br><span class="line"><span class="tag">&lt;<span class="name">suite</span> <span class="attr">name</span>=<span class="string">"Suite"</span> <span class="attr">parallel</span>=<span class="string">"false"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">test</span> <span class="attr">name</span>=<span class="string">"ClusterDBTest1"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">classes</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">class</span> <span class="attr">name</span>=<span class="string">"client.mysql.MysqlClientTest"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">classes</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">test</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">suite</span>&gt;</span> <span class="comment">&lt;!-- Suite --&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在pom.xml中配置maven-surefire-plugin插件</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">plugin</span>&gt;</span></span><br><span class="line">				<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.maven.plugins<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">				<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>maven-surefire-plugin<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">				<span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">					<span class="tag">&lt;<span class="name">suiteXmlFiles</span>&gt;</span></span><br><span class="line">                         <span class="comment">&lt;!--testNg.xml为第三步创建的文件--&gt;</span></span><br><span class="line">						<span class="tag">&lt;<span class="name">suiteXmlFile</span>&gt;</span>src/test/resources/testNg.xml<span class="tag">&lt;/<span class="name">suiteXmlFile</span>&gt;</span></span><br><span class="line">					<span class="tag">&lt;/<span class="name">suiteXmlFiles</span>&gt;</span></span><br><span class="line">				<span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br><span class="line">				<span class="tag">&lt;<span class="name">version</span>&gt;</span>2.4<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>执行test命令进行测试,验证配置是否正确</p>
+<p><img src="https://ws2.sinaimg.cn/large/006tKfTcgy1fn20uvz9hqj31ge0e4wh4.jpg" alt="test"></p>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Tests run: 2, Failures: 0, Errors: 0, Skipped: 0</span><br><span class="line"></span><br><span class="line">[INFO] ------------------------------------------------------------------------</span><br><span class="line">[INFO] BUILD SUCCESS</span><br><span class="line">[INFO] ------------------------------------------------------------------------</span><br><span class="line">[INFO] Total time: 11.117 s</span><br><span class="line">[INFO] Finished at: 2018-01-02T09:51:24+08:00</span><br><span class="line">[INFO] Final Memory: 27M/475M</span><br><span class="line">[INFO] ------------------------------------------------------------------------</span><br></pre></td></tr></table></figure>
+<p>出现以上结果表明测试通过。</p>
+</li>
+<li><p>提交相关代码至版本服务器，testNg配置完成</p>
+<h3 id="jenkins配置"><a href="#jenkins配置" class="headerlink" title="jenkins配置"></a>jenkins配置</h3></li>
+</ol>
+<h4 id="插件安装"><a href="#插件安装" class="headerlink" title="插件安装"></a>插件安装</h4><ol>
+<li>TestNG Results Plugin</li>
+<li>Email Extension Plugin</li>
+</ol>
+<h4 id="全局配置"><a href="#全局配置" class="headerlink" title="全局配置"></a>全局配置</h4><ol>
+<li><p>邮件配置</p>
+<p>​</p>
+<ol>
+<li><img src="https://ws2.sinaimg.cn/large/006tKfTcgy1fn25w74o6fj31kw07x0u4.jpg" alt="">      </li>
+<li><img src="https://ws2.sinaimg.cn/large/006tKfTcgy1fn25tvqho0j31kw0w0gqs.jpg" alt=""></li>
+<li><img src="https://ws1.sinaimg.cn/large/006tKfTcgy1fn25uy38lhj31kw0vkq7h.jpg" alt=""></li>
+</ol>
+<p>​    红色圈出的内容，可以自定义修改</p>
+</li>
+</ol>
+<h4 id="任务配置"><a href="#任务配置" class="headerlink" title="任务配置"></a>任务配置</h4><ol>
+<li><p>创建一个自由风格的软件项目</p>
+<p><img src="https://ws2.sinaimg.cn/large/006tKfTcgy1fn218dnnyhj31km0ggdj3.jpg" alt=""></p>
+</li>
+<li><p>源码管理配置</p>
+<blockquote>
+<p>本项目是基于git管理的，所以配置git地址，并指定对应的用户名和密码（默认用户名需要点击    [Add]按钮进行新增配置，选择对应的分支</p>
+</blockquote>
+<p><img src="https://ws3.sinaimg.cn/large/006tKfTcgy1fn21dvfniij31jm0pu77g.jpg" alt="git"></p>
+<p>​</p>
+</li>
+<li><p>触发器配置</p>
+<blockquote>
+<p>选择scm配置，并使用cron表达式，配置每5分钟检查有变更，则更新代码进行构建。如果不知     怎么配置cron表达式，点击右边  <strong>?</strong>  号按钮,有详细的说明</p>
+</blockquote>
+<p> <img src="https://ws4.sinaimg.cn/large/006tKfTcgy1fn21mngoskj31kw0lzq6o.jpg" alt=""></p>
+</li>
+</ol>
+<p>​      </p>
+<ol>
+<li><p>构建</p>
+<ol>
+<li><p>打包</p>
+<blockquote>
+<p>因此项目必须部署完成，才能进行测试，因此打包前先跳过测试，选择Invoke top_level Maven targets</p>
+</blockquote>
+</li>
+</ol>
+<p><img src="https://ws3.sinaimg.cn/large/006tKfTcgy1fn224nx9izj30iy0f23zy.jpg" alt=""></p>
+<p>​         <img src="https://ws3.sinaimg.cn/large/006tKfTcgy1fn221furmvj31gg0eagmz.jpg" alt=""></p>
+<ol>
+<li><p>部署</p>
+<blockquote>
+<p>选择Execute Shell，编写shell脚本进行部署，可以单独编写shell，也可以在文本框中，直接输入脚本内容</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span>!/bin/bash</span><br><span class="line">BUILD_ID=4</span><br><span class="line"><span class="meta">#</span>部署路径</span><br><span class="line">DEPLOY_PATH="/Users/dongweizhao/Desktop"</span><br><span class="line"><span class="meta">#</span>应用名称</span><br><span class="line">APP_NAME="Mycat-*-SNAPSHOT*mac.tar.gz"</span><br><span class="line"></span><br><span class="line">array=$(ps -ef|grep mycat|grep -v "grep"| awk '&#123;print $2&#125;')</span><br><span class="line"><span class="meta">#</span>如果进程存在，则杀掉进程</span><br><span class="line">for data in $array</span><br><span class="line">do</span><br><span class="line">    echo 'kill -9 '$&#123;data&#125;</span><br><span class="line">    kill -9 $data</span><br><span class="line">done</span><br><span class="line">rm -rf $DEPLOY_PATH/$APP_NAME</span><br><span class="line">rm -rf $DEPLOY_PATH/mycat</span><br><span class="line">cp /Users/dongweizhao/.jenkins/workspace/ClientTest/target/$APP_NAME $DEPLOY_PATH</span><br><span class="line">cd $DEPLOY_PATH</span><br><span class="line">tar -xvf $DEPLOY_PATH/$APP_NAME</span><br><span class="line"><span class="meta">$</span>DEPLOY_PATH/mycat/bin/mycat start</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>测试</p>
+<blockquote>
+<p>输入test,等待部署完成，进行测试</p>
+</blockquote>
+<p><img src="https://ws3.sinaimg.cn/large/006tKfTcgy1fn22bregp5j31fc0aegml.jpg" alt=""></p>
+</li>
+</ol>
+<p>​</p>
+</li>
+<li><p>构建后操作</p>
+<ol>
+<li><p>TestNg测试结果收集配置</p>
+<blockquote>
+<p>选择Publist TetNG Results，进行测试结果收集</p>
+</blockquote>
+<p><img src="https://ws2.sinaimg.cn/large/006tKfTcgy1fn22gdlgujj31g609ut9r.jpg" alt=""></p>
+</li>
+<li><p>电子邮件通知</p>
+<blockquote>
+<p>这里有两个邮件配置选项，选择EditTable Email Notification选项，因为此选项比E-Mail Notification功能更强大，如可以选择总是通知、失败通知、成功通知，以及通知模板的自定义等</p>
+</blockquote>
+<p><img src="https://ws1.sinaimg.cn/large/006tKfTcgy1fn22nsxnpbj30ia0csta3.jpg" alt=""></p>
+<blockquote>
+<p>点击Setting，选择Always,表示不管成功还是失败总是通知，在Recipient List输入在全局配置中配置的邮箱。</p>
+</blockquote>
+<p><img src="https://ws3.sinaimg.cn/large/006tKfTcgy1fn2317anwfj30xi0rwn0p.jpg" alt=""> </p>
+</li>
+</ol>
+</li>
+</ol>
+<p>​     以上步骤配置完，点击完成，下面进行测试验证。</p>
+<h4 id="执行自动化测试"><a href="#执行自动化测试" class="headerlink" title="执行自动化测试"></a>执行自动化测试</h4><ol>
+<li><p>点击立即构建,进行测试验证</p>
+<p><img src="https://ws2.sinaimg.cn/large/006tKfTcgy1fn23b5nn1rj31kw0470tr.jpg" alt=""></p>
+<p>​</p>
+</li>
+<li><p>测试结果查看</p>
+<ol>
+<li><p>构建完成选择testNg-Results,进行测试结果查看</p>
+<p><img src="https://ws1.sinaimg.cn/large/006tKfTcgy1fn23ca6xvsj30q40o60w5.jpg" alt=""></p>
+</li>
+</ol>
+</li>
+</ol>
+<ol>
+<li><p>注意此图表，需要进行两次测试，才能绘制出来</p>
+<p><img src="https://ws2.sinaimg.cn/large/006tKfTcgy1fn23ec0auij31j80xq457.jpg" alt=""></p>
+</li>
+</ol>
+<ol>
+<li><p>点击build编号链接，查看测试结果详情<img src="https://ws3.sinaimg.cn/large/006tKfTcgy1fn23k9ok20j31kw0mxagt.jpg" alt=""></p>
+</li>
+<li><p>邮件查看</p>
+<p><img src="https://ws4.sinaimg.cn/large/006tKfTcgy1fn23qzxdydj31gc0fuwhi.jpg" alt=""></p>
+</li>
+</ol>
+
+    </div>
+    <p class="post-meta">
+        <span class="post-cat">分类：
+            <a class="cat-link" href="/categories/后端/">后端</a>
+        </span>
+        <span class="post-tags">
+            标签：
+            
+    
+        <a href="/tags/jenkins/" title="jenkins">jenkins</a>
+    
+
+        </span>
+    </p>
+</article>
+<!-- 分享按钮 -->
+
+  <div class="article-share clearfix text-center">
+    <div class="share-area">
+      <span class="share-txt">分享到：</span>
+      <a href="javascript: window.open('http://service.weibo.com/share/share.php?url=' + encodeURIComponent(location.href) + '&title=' + document.title + '&language=zh_cn');" class="share-icon weibo"></a>
+      <a href="javascript: alert('请复制链接到微信并发送');" class="share-icon wechat"></a>
+      <a href="javascript: window.open('http://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=' + encodeURIComponent(location.href) + '&title=' + document.title);" class="share-icon qqzone"></a>
+      <a href="javascript: window.open('http://connect.qq.com/widget/shareqq/index.html?url=' + encodeURIComponent(location.href) + '&desc=Jelon个人博客&title=' + document.title + '&callback=' + encodeURIComponent(location.href));" class="share-icon qq"></a>
+      <a href="javascript: window.open('http://shuo.douban.com/!service/share?href=' + encodeURIComponent(location.href) + '&name=' + document.title + '&text=' + document.title);" class="share-icon douban"></a>
+    </div>
+  </div>
+
+
+<!-- 上一篇/下一篇 -->
+
+<div class="article-nav clearfix">
+    
+    <span class="prev fl">
+        上一篇<br >
+        <a href="javascript: void(0);">没有上一篇了</a>
+    </span>
+    
+
+    
+    <span class="next fr">
+        下一篇<br >
+        <a href="/2017/12/29/jenkis-kill-pid/">
+            
+                jenkis部署后自动删掉进程解决方法
+            
+        </a>
+    </span>
+    
+</div>
+
+<!-- 文章评论 -->
+
+  <script src="/js/comment.js"></script>
+  <div id="comments" class="comment">
+    <!--
+    <div class="sign-bar">
+      GitHub 已登录!
+      <span class="sign-link">登出</span>
+    </div>
+    <section class="box">
+      <div class="com-avatar"><img src="/img/jelon.jpg" alt="avatar"></div>
+      <div class="com-text">
+        <div class="main">
+          <textarea class="text-area-edited show" placeholder="欢迎评论！"></textarea>
+          <div class="text-area-preview"></div>
+        </div>
+        <div class="switch">
+          <div class="switch-item on">编辑</div>
+          <div class="switch-item">预览</div>
+        </div>
+        <div class="button">提交</div>
+      </div>
+    </section>
+    <section class="tips">注：评论支持 markdown 语法！</section>
+    <section class="list-wrap">
+      <ul class="list">
+        <li>
+          <div class="user-avatar">
+            <a href="/">
+              <img src="/img/jelon.jpg" alt="user-avatar">
+            </a>
+          </div>
+          <div class="user-comment">
+            <div class="user-comment-header">
+              <span class="post-name">张德龙</span>
+              <span class="post-time">2017年12月12日</span>
+              <span class="like liked">已赞</span>
+              <span class="like-num">2</span>
+            </div>
+            <div class="user-comment-body">333333</div>
+          </div>
+        </li>
+        <li>
+          <div class="user-avatar">
+            <a href="/">
+              <img src="/img/jelon.jpg" alt="user-avatar">
+            </a>
+          </div>
+          <div class="user-comment">
+            <div class="user-comment-header">
+              <span class="post-name">刘德华</span>
+              <span class="post-time">2017年12月12日</span>
+              <span class="like">点赞</span>
+              <span class="like-num">2</span>
+            </div>
+            <div class="user-comment-body">vvvvv</div>
+          </div>
+        </li>
+      </ul>
+      <div class="page-nav">
+        <a href="javascript: void(0);" class="item">1</a>
+        <a href="javascript: void(0);" class="item">2</a>
+        <a href="javascript: void(0);" class="item current">3</a>
+      </div>
+    </section>
+    -->
+  </div>
+  <script>
+  JELON.Comment({
+    container: 'comments',
+    label: 'jenkins-testNg-maven搭建自动化测试' || '2017/12/30/jenkins-testNg-maven搭建自动化测试/',
+    owner: 'dongweizhao',
+    repo: 'blog_comments',
+    clientId: '4d6412796597814f8f3d',
+    clientSecret: '0c3ab59a6e2a4f77a88348acf129a7bf4e24fad1'
+  });
+  </script>
+
+
+
+            </div>
+
+        </section>
+        <!-- 侧栏部分 -->
+<aside class="sidebar">
+    <section class="widget">
+        <h3 class="widget-hd"><strong>文章分类</strong></h3>
+        <!-- 文章分类 -->
+<ul class="widget-bd">
+    
+    <li>
+        <a href="/categories/后端/">后端</a>
+        <span class="badge">(7)</span>
+    </li>
+    
+</ul>
+    </section>
+
+    
+    <section class="widget">
+        <h3 class="widget-hd"><strong>热门标签</strong></h3>
+        <!-- 文章标签 -->
+<div class="widget-bd tag-wrap">
+  
+    <a class="tag-item" href="/tags/jenkins/" title="jenkins">jenkins (2)</a>
+  
+    <a class="tag-item" href="/tags/java/" title="java">java (2)</a>
+  
+    <a class="tag-item" href="/tags/并发/" title="并发">并发 (2)</a>
+  
+    <a class="tag-item" href="/tags/网络通信/" title="网络通信">网络通信 (1)</a>
+  
+    <a class="tag-item" href="/tags/分布式/" title="分布式">分布式 (1)</a>
+  
+    <a class="tag-item" href="/tags/数据库/" title="数据库">数据库 (2)</a>
+  
+</div>
+
+    </section>
+    
+
+    
+
+    
+    <!-- 友情链接 -->
+    <section class="widget">
+        <h3 class="widget-hd"><strong>友情链接</strong></h3>
+        <!-- 文章分类 -->
+<ul class="widget-bd">
+    
+        <li>
+            <a href="https://spring.io/" target="_blank" title="spring官网">spring官网</a>
+        </li>
+    
+        <li>
+            <a href="http://dubbo.io/" target="_blank" title="dubbo官网">dubbo官网</a>
+        </li>
+    
+        <li>
+            <a href="https://www.jianshu.com/u/f7daa458b874" target="_blank" title="分布式服务框架源码">肥朝的博客</a>
+        </li>
+    
+        <li>
+            <a href="http://www.cnblogs.com/yunai/" target="_blank" title="源码分析">芋艿的博客</a>
+        </li>
+    
+</ul>
+    </section>
+    
+</aside>
+<!-- / 侧栏部分 -->
+    </div>
+
+    <!-- 博客底部 -->
+    <footer class="footer">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    &copy;
+    
+        2016-2018
+    
+
+    <a href="/">Weizhao</a>
+<p>总访问量<span id="busuanzi_value_site_pv"></span>次    访客数<span id="busuanzi_value_site_uv"></span>人次</p>
+
+</footer>
+<div class="back-to-top" id="JELON__backToTop" title="返回顶部">返回顶部</div>
+
+    <!--博客js脚本 -->
+    <!-- 这里放网站js脚本 -->
+<script src="/js/main.js"></script>
+</body>
+</html>
