@@ -203,7 +203,7 @@
 <blockquote>
 <p>选择Execute Shell，编写shell脚本进行部署，可以单独编写shell，也可以在文本框中，直接输入脚本内容</p>
 </blockquote>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/bash</span></span><br><span class="line">BUILD_ID=4</span><br><span class="line"><span class="meta">#</span><span class="bash">部署路径</span></span><br><span class="line">DEPLOY_PATH="/Users/dongweizhao/Desktop"</span><br><span class="line"><span class="meta">#</span><span class="bash">应用名称</span></span><br><span class="line">APP_NAME="Mycat-*-SNAPSHOT*mac.tar.gz"</span><br><span class="line"></span><br><span class="line">array=$(ps -ef|grep mycat|grep -v "grep"| awk '&#123;print $2&#125;')</span><br><span class="line"><span class="meta">#</span><span class="bash">如果进程存在，则杀掉进程</span></span><br><span class="line">for data in $array</span><br><span class="line">do</span><br><span class="line">    echo 'kill -9 '$&#123;data&#125;</span><br><span class="line">    kill -9 $data</span><br><span class="line">done</span><br><span class="line">rm -rf $DEPLOY_PATH/$APP_NAME</span><br><span class="line">rm -rf $DEPLOY_PATH/mycat</span><br><span class="line">cp /Users/dongweizhao/.jenkins/workspace/ClientTest/target/$APP_NAME $DEPLOY_PATH</span><br><span class="line">cd $DEPLOY_PATH</span><br><span class="line">tar -xvf $DEPLOY_PATH/$APP_NAME</span><br><span class="line"><span class="meta">$</span><span class="bash">DEPLOY_PATH/mycat/bin/mycat start</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span>!/bin/bash</span><br><span class="line">BUILD_ID=4</span><br><span class="line"><span class="meta">#</span>部署路径</span><br><span class="line">DEPLOY_PATH="/Users/dongweizhao/Desktop"</span><br><span class="line"><span class="meta">#</span>应用名称</span><br><span class="line">APP_NAME="Mycat-*-SNAPSHOT*mac.tar.gz"</span><br><span class="line"></span><br><span class="line">array=$(ps -ef|grep mycat|grep -v "grep"| awk '&#123;print $2&#125;')</span><br><span class="line"><span class="meta">#</span>如果进程存在，则杀掉进程</span><br><span class="line">for data in $array</span><br><span class="line">do</span><br><span class="line">    echo 'kill -9 '$&#123;data&#125;</span><br><span class="line">    kill -9 $data</span><br><span class="line">done</span><br><span class="line">rm -rf $DEPLOY_PATH/$APP_NAME</span><br><span class="line">rm -rf $DEPLOY_PATH/mycat</span><br><span class="line">cp /Users/dongweizhao/.jenkins/workspace/ClientTest/target/$APP_NAME $DEPLOY_PATH</span><br><span class="line">cd $DEPLOY_PATH</span><br><span class="line">tar -xvf $DEPLOY_PATH/$APP_NAME</span><br><span class="line"><span class="meta">$</span>DEPLOY_PATH/mycat/bin/mycat start</span><br></pre></td></tr></table></figure>
 <p>​</p>
 </li>
 <li><p>测试</p>
@@ -421,15 +421,15 @@
   
     <a class="tag-item" href="/tags/并发/" title="并发">并发 (3)</a>
   
-    <a class="tag-item" href="/tags/java/" title="java">java (2)</a>
-  
     <a class="tag-item" href="/tags/jenkins/" title="jenkins">jenkins (2)</a>
+  
+    <a class="tag-item" href="/tags/java/" title="java">java (2)</a>
   
     <a class="tag-item" href="/tags/网络通信/" title="网络通信">网络通信 (1)</a>
   
     <a class="tag-item" href="/tags/分布式/" title="分布式">分布式 (4)</a>
   
-    <a class="tag-item" href="/tags/数据库中间件/" title="数据库中间件">数据库中间件 (4)</a>
+    <a class="tag-item" href="/tags/分库分表及事务一致性设计/" title="分库分表及事务一致性设计">分库分表及事务一致性设计 (4)</a>
   
 </div>
 
