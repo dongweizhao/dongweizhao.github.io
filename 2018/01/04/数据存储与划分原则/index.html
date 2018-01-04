@@ -10,10 +10,10 @@
     <meta name="google-site-verification" content="P3RNPgvLP-2XOkC905i_eBTn9dVL2hGAHurIlYcYftM" />
 
     
-    <title>留言 | Weizhao</title>
+    <title>03 数据存储与划分原则 | Weizhao</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" >
-    <meta name="keywords" content="留言 , Weizhao , dweizhao , dongweizhao , 后端, Web, 董伟召 , 后端开发" >
-    <meta name="description" content="留言 , 董伟召的工作小站" >     
+    <meta name="keywords" content="03 数据存储与划分原则 , Weizhao , dweizhao , dongweizhao , 后端, Web, 董伟召 , 后端开发" >
+    <meta name="description" content="03 数据存储与划分原则 , 董伟召的工作小站" >     
     
     <link rel="alternative" href="/atom.xml" title="Weizhao" type="application/atom+xml" >
     
@@ -50,15 +50,15 @@
         <div class="dropnav icon-paragraph-justify" id="JELON__btnDropNav"></div>
         <ul class="menu hidden" id="JELON__menu">
             
-            <li rel="/comment/index.html" class="item ">
+            <li rel="/2018/01/04/数据存储与划分原则/index.html" class="item ">
                 <a href="/" title="首页" class="icon-home">&nbsp;首页</a>
             </li>
             
-            <li rel="/comment/index.html" class="item ">
+            <li rel="/2018/01/04/数据存储与划分原则/index.html" class="item ">
                 <a href="/about/" title="关于" class="icon-about">&nbsp;关于</a>
             </li>
             
-            <li rel="/comment/index.html" class="item current">
+            <li rel="/2018/01/04/数据存储与划分原则/index.html" class="item ">
                 <a href="/comment/" title="留言" class="icon-comment">&nbsp;留言</a>
             </li>
             
@@ -98,24 +98,126 @@
     <div class="container body clearfix">
         <section class="content">
             <div class="content-main widget">
-                <!-- 独立页面 -->
+                <!-- 文章页 -->
+<!-- 文章 -->
 <article class="post article">
     <header class="text-center">
-        <h4 class="post-title"><a href="javascript: void(0);">留言</a></h4>
+        <h3 class="post-title"><span>03 数据存储与划分原则</span></h3>
     </header>
+    <p class="post-meta text-center">
+        Weizhao 发表于
+        <time datetime="2018-01-04T13:48:51.283Z">2018-01-04</time>
+    </p>
     <div class="post-content">
-        
-            <!-- 自定义留言页 -->
+        <p>前两节对分库分表和遇到一些问题进行解释和总结，本节对分库分表的数据存储和划分原则进行一个讲解</p>
+<h5 id="数据存储"><a href="#数据存储" class="headerlink" title="数据存储"></a>数据存储</h5><p>分别是：</p>
+<ol>
+<li>独立存储+缓存：适用于数据量少，基本不变的数据；</li>
+<li>读写分离 ： 适用于数据量适中，增长平缓，读多写少的数据</li>
+<li>水平切分： 适用于数据量大，增长快速，读写频繁的数据<h5 id="划分原则"><a href="#划分原则" class="headerlink" title="划分原则"></a>划分原则</h5></li>
+<li>能不分就不分，当单表记录达到一定数量级（&gt;1000万）之后才考虑进行水平切分处理；</li>
+<li>分片字段取决于最频繁的查询SQL，选择合适的切分规则，避免跨库聚合，跨库事务；</li>
+<li>分片数量尽量少，分片尽量均匀分布在多个 DataHost 上，一个查询 SQL 跨分片越多，则总体性能越差；</li>
+<li>考虑数据的增长模式，数据的访问模式，分片关联性能问题，分片扩容问题；</li>
+<li>分片表要避免不带任何where条件的查询；</li>
+</ol>
+<h5 id="分片规则"><a href="#分片规则" class="headerlink" title="分片规则"></a>分片规则</h5><p>下面对常用的分片进行一个介绍</p>
+<h6 id="范围约定"><a href="#范围约定" class="headerlink" title="范围约定"></a>范围约定</h6><p><img src="https://note.youdao.com/yws/api/personal/file/WEB470831992412c350e3eeb52ec3c72b0b?method=download&amp;shareKey=636f8b5cfb318b4eaf36f7c752dd5232" alt="image"></p>
+<ul>
+<li><p>优点：此分片规则在扩容时只需要添加节点，指定日期范围，可以避免扩容时的数据迁移,</p>
+<p>  例如：表test规划了两个节点分别为db1、db2，db1存储2015.12之前的数据，db2存储2016.1-2016.6的数据，当时间达到2016.6以后，现有分片规则无法满足，所以就面临分片的增加，一般分片的增加需要进行数据迁移，而基于范围的分片规则，只需增加2016.7 -2016.12即可，不需要对以前的数据进行迁移。</p>
+</li>
+</ul>
+<ul>
+<li><p>缺点：负载不均衡</p>
+<p>  如2015.12以前这个业务发展不是特别快，数据量相对不大，但是以后随着营销和推广，业务飞速发展，那么2016.1-2016.6这个节点数据量就相对比较大。</p>
+<p>  ​</p>
+<h6 id="取模"><a href="#取模" class="headerlink" title="取模"></a>取模</h6><p><img src="https://note.youdao.com/yws/api/personal/file/WEBd630d46ad3b571954f88399362fdfd30?method=download&amp;shareKey=a0b9e920eb61662595b50558f9ed5306" alt="image"></p>
+<blockquote>
+<p>根据分片键的值进行hash，并根据节点数进行取余</p>
+</blockquote>
+</li>
+<li><p>优点：负载均衡</p>
+</li>
+<li>缺点：在扩容时需要全量迁移<h6 id="一致性Hash"><a href="#一致性Hash" class="headerlink" title="一致性Hash"></a>一致性Hash</h6><img src="https://note.youdao.com/yws/api/personal/file/WEB9d2ad3069263f96953e124d88e1689a8?method=download&amp;shareKey=ec74a07602379b4d582c26150594ddc6" alt="image"><blockquote>
+<p>按照常用的hash算法来将对应的key哈希到一个具有2^32次方个桶的空间中，即0~(2^32)-1的数字空间中。现在我们可以将这些数字头尾相连，想象成一个闭合的环形.</p>
+</blockquote>
+</li>
+</ul>
+<ol>
+<li>首先求出数据库节点的哈希值，并将其配置到0-2^32圆上，如<ol>
+<li>Hash(NODE1) = KEY1=2^10;</li>
+<li>Hash(NODE2) = KEY2=2^20;</li>
+<li>Hash(NODE3) = KEY3=2^30;</li>
+</ol>
+</li>
+<li>然后采用同样的方法求出存储数据的键的哈希值，并映射到相同的圆上。</li>
+<li>然后从数据映射到的位置开始顺时针查找，将数据保存到找到的第一个服务器上。如果超过2^32仍然找不到服务器，则从0开始查找。<ol>
+<li>示例：<br>根据用户ID分片，流水号规则为UR+12位序号,如UR000000000013, 进行hash计算为2^5，则属于NODE1</li>
+</ol>
+</li>
+</ol>
+<ul>
+<li>优点：负载相对均衡</li>
+<li>缺点：在扩容时需要部分迁移</li>
+</ul>
+<p>​    </p>
 
-<p class="text-center">
-  <img style="width: 258px; height: 258px; border: 1px solid #eee; padding: 0; border-radius: 3px;" src="/img/wechat_pay.png">
-</p>
+    </div>
+    <p class="post-meta">
+        <span class="post-cat">分类：
+            <a class="cat-link" href="/categories/后端/">后端</a>
+        </span>
+        <span class="post-tags">
+            标签：
+            
+    
+        <a href="/tags/分布式/" title="分布式">分布式</a> / 
+    
+        <a href="/tags/数据库中间件/" title="数据库中间件">数据库中间件</a>
+    
 
-<p class="text-center">
-  如果觉得博客对您有用，欢迎微信打赏
-</p>
+        </span>
+    </p>
+</article>
+<!-- 分享按钮 -->
 
-  
+  <div class="article-share clearfix text-center">
+    <div class="share-area">
+      <span class="share-txt">分享到：</span>
+      <a href="javascript: window.open('http://service.weibo.com/share/share.php?url=' + encodeURIComponent(location.href) + '&title=' + document.title + '&language=zh_cn');" class="share-icon weibo"></a>
+      <a href="javascript: alert('请复制链接到微信并发送');" class="share-icon wechat"></a>
+      <a href="javascript: window.open('http://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=' + encodeURIComponent(location.href) + '&title=' + document.title);" class="share-icon qqzone"></a>
+      <a href="javascript: window.open('http://connect.qq.com/widget/shareqq/index.html?url=' + encodeURIComponent(location.href) + '&desc=Jelon个人博客&title=' + document.title + '&callback=' + encodeURIComponent(location.href));" class="share-icon qq"></a>
+      <a href="javascript: window.open('http://shuo.douban.com/!service/share?href=' + encodeURIComponent(location.href) + '&name=' + document.title + '&text=' + document.title);" class="share-icon douban"></a>
+    </div>
+  </div>
+
+
+<!-- 上一篇/下一篇 -->
+
+<div class="article-nav clearfix">
+    
+    <span class="prev fl">
+        上一篇<br >
+        <a href="javascript: void(0);">没有上一篇了</a>
+    </span>
+    
+
+    
+    <span class="next fr">
+        下一篇<br >
+        <a href="/2018/01/04/分库分表带来的挑战/">
+            
+                02 分库分表带来的挑战
+            
+        </a>
+    </span>
+    
+</div>
+
+<!-- 文章评论 -->
+
   <script src="/js/comment.js"></script>
   <div id="comments" class="comment">
     <!--
@@ -184,7 +286,7 @@
   <script>
   JELON.Comment({
     container: 'comments',
-    label: '' || 'comment/index.html',
+    label: '数据存储与划分原则' || '2018/01/04/数据存储与划分原则/',
     owner: 'dongweizhao',
     repo: 'blog_comments',
     clientId: '4d6412796597814f8f3d',
@@ -194,10 +296,6 @@
 
 
 
-
-        
-    </div>
-</article>
             </div>
 
         </section>
