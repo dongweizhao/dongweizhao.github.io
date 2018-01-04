@@ -10,10 +10,10 @@
     <meta name="google-site-verification" content="P3RNPgvLP-2XOkC905i_eBTn9dVL2hGAHurIlYcYftM" />
 
     
-    <title>留言 | Weizhao</title>
+    <title>04 案例分享 | Weizhao</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" >
-    <meta name="keywords" content="留言 , Weizhao , dweizhao , dongweizhao , 后端, Web, 董伟召 , 后端开发" >
-    <meta name="description" content="留言 , 董伟召的工作小站" >     
+    <meta name="keywords" content="04 案例分享 , Weizhao , dweizhao , dongweizhao , 后端, Web, 董伟召 , 后端开发" >
+    <meta name="description" content="04 案例分享 , 董伟召的工作小站" >     
     
     <link rel="alternative" href="/atom.xml" title="Weizhao" type="application/atom+xml" >
     
@@ -50,15 +50,15 @@
         <div class="dropnav icon-paragraph-justify" id="JELON__btnDropNav"></div>
         <ul class="menu hidden" id="JELON__menu">
             
-            <li rel="/comment/index.html" class="item ">
+            <li rel="/2018/01/04/案例分享/index.html" class="item ">
                 <a href="/" title="首页" class="icon-home">&nbsp;首页</a>
             </li>
             
-            <li rel="/comment/index.html" class="item ">
+            <li rel="/2018/01/04/案例分享/index.html" class="item ">
                 <a href="/about/" title="关于" class="icon-about">&nbsp;关于</a>
             </li>
             
-            <li rel="/comment/index.html" class="item current">
+            <li rel="/2018/01/04/案例分享/index.html" class="item ">
                 <a href="/comment/" title="留言" class="icon-comment">&nbsp;留言</a>
             </li>
             
@@ -98,24 +98,82 @@
     <div class="container body clearfix">
         <section class="content">
             <div class="content-main widget">
-                <!-- 独立页面 -->
+                <!-- 文章页 -->
+<!-- 文章 -->
 <article class="post article">
     <header class="text-center">
-        <h4 class="post-title"><a href="javascript: void(0);">留言</a></h4>
+        <h3 class="post-title"><span>04 案例分享</span></h3>
     </header>
+    <p class="post-meta text-center">
+        Weizhao 发表于
+        <time datetime="2018-01-04T13:52:42.611Z">2018-01-04</time>
+    </p>
     <div class="post-content">
-        
-            <!-- 自定义留言页 -->
+        <p>本节对在其它银行实施的案例，进行一个分享</p>
+<h4 id="业务分析"><a href="#业务分析" class="headerlink" title="业务分析"></a>业务分析</h4><p><img src="https://note.youdao.com/yws/api/personal/file/WEB2b4fad25fd719cc96f41a3e0e8c5a21d?method=download&amp;shareKey=50f53abd550644cb51745ac6bea7f1e5" alt="image"><br>本次分享的系统是一个客户信息系统，首先分析行内现有用户数据量大概为1千万，业务需求都是以用户的维度出发所以用户ID作为分片键比较合适,考虑后续数据迁移的问题，分片规则采用一致性hash。</p>
+<p>基于以上原则，对数据库表进行设计，表分为两类：分别为参数类表、业务类表，所以先进行垂直切分，其中业务类是需要分片的，所以在进行水平切分。</p>
+<h4 id="预设分片"><a href="#预设分片" class="headerlink" title="预设分片"></a>预设分片</h4><p><img src="https://note.youdao.com/yws/api/personal/file/WEB7ea8d135748a986821df4853fae2ee39?method=download&amp;shareKey=8bde4b977af9e02f484a525f65625f6f" alt="image"></p>
+<ol>
+<li>考虑未来5年的客户数据量增长到6千万—8千万，单表按1000万的数据量上限来考虑，需要预设8个分片，考虑到未来比较大的数据增量，预设32个分片；</li>
+<li>考虑到前期上线后2-3年内大约2000万的数据量（包括近1000万的存量数据），系统上线初期配置2个物理节点，每个节点16个分片（SCHEMA），每个分片（SCHEMA）单表大约62.5万的数据记录数，其中默认节点放在其中一台物理节点中。</li>
+<li>未来根据客户量的增长情况进行扩容处理，按预设32个分片未来最多可扩展到32个物理节点，最优可支持扩容到3.2亿的用户数；</li>
+</ol>
 
-<p class="text-center">
-  <img style="width: 258px; height: 258px; border: 1px solid #eee; padding: 0; border-radius: 3px;" src="/img/wechat_pay.png">
-</p>
+    </div>
+    <p class="post-meta">
+        <span class="post-cat">分类：
+            <a class="cat-link" href="/categories/后端/">后端</a>
+        </span>
+        <span class="post-tags">
+            标签：
+            
+    
+        <a href="/tags/分布式/" title="分布式">分布式</a> / 
+    
+        <a href="/tags/数据库中间件/" title="数据库中间件">数据库中间件</a>
+    
 
-<p class="text-center">
-  如果觉得博客对您有用，欢迎微信打赏
-</p>
+        </span>
+    </p>
+</article>
+<!-- 分享按钮 -->
 
-  
+  <div class="article-share clearfix text-center">
+    <div class="share-area">
+      <span class="share-txt">分享到：</span>
+      <a href="javascript: window.open('http://service.weibo.com/share/share.php?url=' + encodeURIComponent(location.href) + '&title=' + document.title + '&language=zh_cn');" class="share-icon weibo"></a>
+      <a href="javascript: alert('请复制链接到微信并发送');" class="share-icon wechat"></a>
+      <a href="javascript: window.open('http://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=' + encodeURIComponent(location.href) + '&title=' + document.title);" class="share-icon qqzone"></a>
+      <a href="javascript: window.open('http://connect.qq.com/widget/shareqq/index.html?url=' + encodeURIComponent(location.href) + '&desc=Jelon个人博客&title=' + document.title + '&callback=' + encodeURIComponent(location.href));" class="share-icon qq"></a>
+      <a href="javascript: window.open('http://shuo.douban.com/!service/share?href=' + encodeURIComponent(location.href) + '&name=' + document.title + '&text=' + document.title);" class="share-icon douban"></a>
+    </div>
+  </div>
+
+
+<!-- 上一篇/下一篇 -->
+
+<div class="article-nav clearfix">
+    
+    <span class="prev fl">
+        上一篇<br >
+        <a href="javascript: void(0);">没有上一篇了</a>
+    </span>
+    
+
+    
+    <span class="next fr">
+        下一篇<br >
+        <a href="/2018/01/04/数据存储与划分原则/">
+            
+                03 数据存储与划分原则
+            
+        </a>
+    </span>
+    
+</div>
+
+<!-- 文章评论 -->
+
   <script src="/js/comment.js"></script>
   <div id="comments" class="comment">
     <!--
@@ -184,7 +242,7 @@
   <script>
   JELON.Comment({
     container: 'comments',
-    label: '' || 'comment/index.html',
+    label: '案例分享' || '2018/01/04/案例分享/',
     owner: 'dongweizhao',
     repo: 'blog_comments',
     clientId: '4d6412796597814f8f3d',
@@ -194,10 +252,6 @@
 
 
 
-
-        
-    </div>
-</article>
             </div>
 
         </section>
