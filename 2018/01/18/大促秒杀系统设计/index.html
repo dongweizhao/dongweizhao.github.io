@@ -10,10 +10,10 @@
     <meta name="google-site-verification" content="P3RNPgvLP-2XOkC905i_eBTn9dVL2hGAHurIlYcYftM" />
 
     
-    <title>04 案例分享 | Weizhao</title>
+    <title>大促秒杀系统设计 | Weizhao</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" >
-    <meta name="keywords" content="04 案例分享 , Weizhao , dweizhao , dongweizhao , 后端, Web, 董伟召 , 后端开发" >
-    <meta name="description" content="04 案例分享 , 董伟召的工作小站" >     
+    <meta name="keywords" content="大促秒杀系统设计 , Weizhao , dweizhao , dongweizhao , 后端, Web, 董伟召 , 后端开发" >
+    <meta name="description" content="大促秒杀系统设计 , 董伟召的工作小站" >     
     
     <link rel="alternative" href="/atom.xml" title="Weizhao" type="application/atom+xml" >
     
@@ -50,15 +50,15 @@
         <div class="dropnav icon-paragraph-justify" id="JELON__btnDropNav"></div>
         <ul class="menu hidden" id="JELON__menu">
             
-            <li rel="/2018/01/04/案例分享/index.html" class="item ">
+            <li rel="/2018/01/18/大促秒杀系统设计/index.html" class="item ">
                 <a href="/" title="首页" class="icon-home">&nbsp;首页</a>
             </li>
             
-            <li rel="/2018/01/04/案例分享/index.html" class="item ">
+            <li rel="/2018/01/18/大促秒杀系统设计/index.html" class="item ">
                 <a href="/about/" title="关于" class="icon-about">&nbsp;关于</a>
             </li>
             
-            <li rel="/2018/01/04/案例分享/index.html" class="item ">
+            <li rel="/2018/01/18/大促秒杀系统设计/index.html" class="item ">
                 <a href="/comment/" title="留言" class="icon-comment">&nbsp;留言</a>
             </li>
             
@@ -102,22 +102,40 @@
 <!-- 文章 -->
 <article class="post article">
     <header class="text-center">
-        <h3 class="post-title"><span>04 案例分享</span></h3>
+        <h3 class="post-title"><span>大促秒杀系统设计</span></h3>
     </header>
     <p class="post-meta text-center">
         Weizhao 发表于
-        <time datetime="2018-01-04T13:52:42.611Z">2018-01-04</time>
+        <time datetime="2018-01-18T12:42:48.349Z">2018-01-18</time>
     </p>
     <div class="post-content">
-        <p>本节对在其它银行实施的案例，进行一个分享</p>
-<h4 id="业务分析"><a href="#业务分析" class="headerlink" title="业务分析"></a>业务分析</h4><p><img src="https://note.youdao.com/yws/api/personal/file/WEB2b4fad25fd719cc96f41a3e0e8c5a21d?method=download&amp;shareKey=50f53abd550644cb51745ac6bea7f1e5" alt="image"><br>本次分享的系统是一个客户信息系统，首先分析行内现有用户数据量大概为1千万，业务需求都是以用户的维度出发所以用户ID作为分片键比较合适,考虑后续数据迁移的问题，分片规则采用一致性hash。</p>
-<p>基于以上原则，对数据库表进行设计，表分为两类：分别为参数类表、业务类表，所以先进行垂直切分，其中业务类是需要分片的，所以在进行水平切分。</p>
-<h4 id="预设分片"><a href="#预设分片" class="headerlink" title="预设分片"></a>预设分片</h4><p><img src="https://note.youdao.com/yws/api/personal/file/WEB7ea8d135748a986821df4853fae2ee39?method=download&amp;shareKey=8bde4b977af9e02f484a525f65625f6f" alt="image"></p>
-<ol>
-<li>考虑未来5年的客户数据量增长到6千万—8千万，单表按1000万的数据量上限来考虑，需要预设8个分片，考虑到未来比较大的数据增量，预设32个分片；</li>
-<li>考虑到前期上线后2-3年内大约2000万的数据量（包括近1000万的存量数据），系统上线初期配置2个物理节点，每个节点16个分片（SCHEMA），每个分片（SCHEMA）单表大约62.5万的数据记录数，其中默认节点放在其中一台物理节点中。</li>
-<li>未来根据客户量的增长情况进行扩容处理，按预设32个分片未来最多可扩展到32个物理节点，最优可支持扩容到3.2亿的用户数；</li>
-</ol>
+        <p><img src="https://ws1.sinaimg.cn/large/006tKfTcgy1fnl1scgzduj31go0hk43q.jpg" alt=""></p>
+<h4 id="动静分离"><a href="#动静分离" class="headerlink" title="动静分离"></a>动静分离</h4><p><img src="https://ws1.sinaimg.cn/large/006tKfTcgy1fnl1tatfw6j309v08p74j.jpg" alt=""></p>
+<ul>
+<li><p>把整个页面Cache在用户浏览器</p>
+</li>
+<li><p>如果强制刷新整个页面，也会请求到CDN</p>
+</li>
+<li><p>实际有效请求只是点击“抢购”等按钮请求</p>
+</li>
+<li><p>对抢购商品基本信息存放至缓存系统，无需访问DB</p>
+</li>
+</ul>
+<h4 id="数据分层校验"><a href="#数据分层校验" class="headerlink" title="数据分层校验"></a>数据分层校验</h4><p><img src="https://ws2.sinaimg.cn/large/006tKfTcgy1fnl1vi6pcyj30sg0nin2t.jpg" alt=""></p>
+<p>所谓分层校验就是对大量的请求做成“漏斗”式设计：在不同层次尽可能把无效的请求过滤，“漏斗”的最末端才是有效的请求，要达到这个效果必须对数据做分层的校验，下面是一些原则：</p>
+<ul>
+<li>数据的动静分离</li>
+<li>将90%的数据缓存在客户端浏览器</li>
+<li>将动态请求的读数据缓存在Web端</li>
+<li>对读数据不做强一致性校验</li>
+<li>对写请求做限流保护</li>
+<li>对写数据进行强一致性校验</li>
+</ul>
+<h4 id="系统架构图"><a href="#系统架构图" class="headerlink" title="系统架构图"></a>系统架构图</h4><p><img src="https://ws4.sinaimg.cn/large/006tKfTcgy1fnl1xhy31kj30ya0osgrp.jpg" alt=""></p>
+<h4 id="示意图"><a href="#示意图" class="headerlink" title="示意图"></a>示意图</h4><p><img src="https://ws3.sinaimg.cn/large/006tKfTcgy1fnl1ylgr3zj31bg0nqgqd.jpg" alt=""><br><img src="https://ws3.sinaimg.cn/large/006tKfTcgy1fnl1z9fv88j30yo0j6wh6.jpg" alt=""></p>
+<p>在进行大促、秒杀前，首先初始商品库存/基本信息值缓存中心（0.1）所示   当点击购买时，首先查看缓存中心是否商品库存是否已为空，如果不为空，扣减库存，并调用下单服务进行实际库存扣减，如果扣减成功，则产生订单，如调用下单服务失败则回滚对应的商品库存。</p>
+<h4 id="处理流程图"><a href="#处理流程图" class="headerlink" title="处理流程图"></a>处理流程图</h4><p><img src="https://ws2.sinaimg.cn/large/006tKfTcgy1fnl23lr54lj31420meaed.jpg" alt=""></p>
+<p>限流阈值、是否降级可通过配置中心动态调整</p>
 
     </div>
     <p class="post-meta">
@@ -128,9 +146,9 @@
             标签：
             
     
-        <a href="/tags/分布式/" title="分布式">分布式</a> / 
+        <a href="/tags/并发/" title="并发">并发</a> / 
     
-        <a href="/tags/分库分表及事务一致性设计/" title="分库分表及事务一致性设计">分库分表及事务一致性设计</a>
+        <a href="/tags/架构设计/" title="架构设计">架构设计</a>
     
 
         </span>
@@ -156,20 +174,16 @@
     
     <span class="prev fl">
         上一篇<br >
-        <a href="/2018/01/16/thread-interrupt/">
-            
-                线程中断
-            
-        </a>
+        <a href="javascript: void(0);">没有上一篇了</a>
     </span>
     
 
     
     <span class="next fr">
         下一篇<br >
-        <a href="/2018/01/04/数据存储与划分原则/">
+        <a href="/2018/01/18/mycatbug/">
             
-                03 数据存储与划分原则
+                MyCat Bug
             
         </a>
     </span>
@@ -246,7 +260,7 @@
   <script>
   JELON.Comment({
     container: 'comments',
-    label: '案例分享' || '2018/01/04/案例分享/',
+    label: '大促秒杀系统设计' || '2018/01/18/大促秒杀系统设计/',
     owner: 'dongweizhao',
     repo: 'blog_comments',
     clientId: '4d6412796597814f8f3d',
