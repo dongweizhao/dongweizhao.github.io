@@ -119,6 +119,60 @@
         <!-- 文章标题 -->
         
     <h3 class="post-title">
+    	<a href="http://weizhao.link/2018/01/18/mycatbug/">
+    		Mycat Bug
+    	</a>
+    </h3>
+
+    </header>
+    <p class="post-meta">
+        Weizhao 发表于
+        <time datetime="2018-01-18T02:44:23.062Z">2018-01-18</time>
+        &nbsp;&nbsp;
+        <span class="post-tags">
+            标签：
+            
+    
+        <a href="/tags/mycat/" title="mycat">mycat</a>
+    
+
+        </span>
+    </p>
+
+    <div class="post-content">
+        <div class="post-excerpt">
+            
+                <h3 id="高并发场景线程池堵塞"><a href="#高并发场景线程池堵塞" class="headerlink" title="高并发场景线程池堵塞"></a>高并发场景线程池堵塞</h3><p><img src="https://ws3.sinaimg.cn/large/006tKfTcgy1fnkkfpcl2wj30qe0rcadh.jpg" alt=""></p>
+<blockquote>
+<p>在使用mycat使用jdbc对接后台数据库时，会出现以上问题，线程池中核心线程数是固定的，如果超过更多的任务添加到线程池，就会添加至等待队列，等核心线程处理当前任务，在从等待队列中获取执行<br>   而正好出现流程所示场景，入队顺序打乱，当然请求T1获取完，分片1和分片2的行级锁后，正好是请求T2执行分片1和分片2，而分片1和分片2的数据被T1锁住，所以无法执行，所以后续的任务无法执行。从而会导致大量的任务堵塞。<br>   如果排队顺序进入，会大大影响clusterdb的吞吐量，如果改成缓存线程池，线程数是不可控的 ，会导致内存溢出</p>
+</blockquote>
+
+            
+            <p class="more">
+                <a href="http://weizhao.link/2018/01/18/mycatbug/">阅读剩下更多</a>
+            </p>
+        </div>
+        <div class="post-thumbnail" data-img="">
+            <a href="http://weizhao.link/2018/01/18/mycatbug/" title="Mycat Bug">
+                
+                    <img class="thumbnail" src="/img/default.png" data-echo="/img/thumbnail/8.jpg" alt="默认配图" >
+                
+            </a>
+        </div>
+    </div>
+</article>
+
+    
+        <!-- 文章 -->
+<article class="post">
+    <header>
+        <!-- 标签这有且只能显示一个 -->
+        
+        <a class="cat-link" href="/categories/后端/">后端</a>
+        
+        <!-- 文章标题 -->
+        
+    <h3 class="post-title">
     	<a href="http://weizhao.link/2018/01/16/thread-interrupt/">
     		线程中断
     	</a>
@@ -579,61 +633,6 @@
 </article>
 
     
-        <!-- 文章 -->
-<article class="post">
-    <header>
-        <!-- 标签这有且只能显示一个 -->
-        
-        <a class="cat-link" href="/categories/后端/">后端</a>
-        
-        <!-- 文章标题 -->
-        
-    <h3 class="post-title">
-    	<a href="http://weizhao.link/2017/12/17/线程池分析/">
-    		线程池的创建与销毁分析
-    	</a>
-    </h3>
-
-    </header>
-    <p class="post-meta">
-        Weizhao 发表于
-        <time datetime="2017-12-17T14:50:30.412Z">2017-12-17</time>
-        &nbsp;&nbsp;
-        <span class="post-tags">
-            标签：
-            
-    
-        <a href="/tags/并发/" title="并发">并发</a> / 
-    
-        <a href="/tags/java/" title="java">java</a>
-    
-
-        </span>
-    </p>
-
-    <div class="post-content">
-        <div class="post-excerpt">
-            
-                固定线程池(newFixedThreadPool)  指定固定大小线程数，如果执行的任务超过线程数，则添加至阻塞队列中，当线程池线程处理完在从队列中进行获取任务进行处理
-            
-            <p class="more">
-                <a href="http://weizhao.link/2017/12/17/线程池分析/">阅读剩下更多</a>
-            </p>
-        </div>
-        <div class="post-thumbnail" data-img="">
-            <a href="http://weizhao.link/2017/12/17/线程池分析/" title="线程池的创建与销毁分析">
-                
-                    <!--
-                    <img src="http://blog.zhangruipeng.me/hexo-theme-minos/gallery/shoes.jpg" class="thumbnail">
-                    -->
-                    <img class="thumbnail" src="/img/default.png" data-echo="http://blog.zhangruipeng.me/hexo-theme-minos/gallery/shoes.jpg" alt="线程池的创建与销毁分析" >
-                
-            </a>
-        </div>
-    </div>
-</article>
-
-    
 
     
     <nav class="page-navigator">
@@ -656,7 +655,7 @@
     
     <li>
         <a href="/categories/后端/">后端</a>
-        <span class="badge">(11)</span>
+        <span class="badge">(12)</span>
     </li>
     
 </ul>
@@ -668,9 +667,11 @@
         <!-- 文章标签 -->
 <div class="widget-bd tag-wrap">
   
-    <a class="tag-item" href="/tags/jenkins/" title="jenkins">jenkins (2)</a>
-  
     <a class="tag-item" href="/tags/并发/" title="并发">并发 (4)</a>
+  
+    <a class="tag-item" href="/tags/mycat/" title="mycat">mycat (1)</a>
+  
+    <a class="tag-item" href="/tags/jenkins/" title="jenkins">jenkins (2)</a>
   
     <a class="tag-item" href="/tags/java/" title="java">java (2)</a>
   
