@@ -119,7 +119,7 @@
         
     <h3 class="post-title">
     	<a href="http://weizhao.link/2018/01/18/mycatbug/">
-    		Mycat Bug
+    		MyCat Bug
     	</a>
     </h3>
 
@@ -141,18 +141,14 @@
     <div class="post-content">
         <div class="post-excerpt">
             
-                <h3 id="高并发场景线程池堵塞"><a href="#高并发场景线程池堵塞" class="headerlink" title="高并发场景线程池堵塞"></a>高并发场景线程池堵塞</h3><p><img src="https://ws3.sinaimg.cn/large/006tKfTcgy1fnkkfpcl2wj30qe0rcadh.jpg" alt=""></p>
-<blockquote>
-<p>在使用mycat使用jdbc对接后台数据库时，会出现以上问题，线程池中核心线程数是固定的，如果超过更多的任务添加到线程池，就会添加至等待队列，等核心线程处理当前任务，在从等待队列中获取执行<br>   而正好出现流程所示场景，入队顺序打乱，当然请求T1获取完，分片1和分片2的行级锁后，正好是请求T2执行分片1和分片2，而分片1和分片2的数据被T1锁住，所以无法执行，所以后续的任务无法执行。从而会导致大量的任务堵塞。<br>   如果排队顺序进入，会大大影响clusterdb的吞吐量，如果改成缓存线程池，线程数是不可控的 ，会导致内存溢出</p>
-</blockquote>
-
+                记录下使用MyCat遇到的问题，以及对应的解决方案
             
             <p class="more">
                 <a href="http://weizhao.link/2018/01/18/mycatbug/">阅读剩下更多</a>
             </p>
         </div>
         <div class="post-thumbnail" data-img="">
-            <a href="http://weizhao.link/2018/01/18/mycatbug/" title="Mycat Bug">
+            <a href="http://weizhao.link/2018/01/18/mycatbug/" title="MyCat Bug">
                 
                     <img class="thumbnail" src="/img/default.png" data-echo="/img/thumbnail/8.jpg" alt="默认配图" >
                 
@@ -666,17 +662,17 @@
   
     <a class="tag-item" href="/tags/并发/" title="并发">并发 (4)</a>
   
-    <a class="tag-item" href="/tags/mycat/" title="mycat">mycat (1)</a>
+    <a class="tag-item" href="/tags/java/" title="java">java (2)</a>
   
     <a class="tag-item" href="/tags/jenkins/" title="jenkins">jenkins (2)</a>
   
-    <a class="tag-item" href="/tags/java/" title="java">java (2)</a>
+    <a class="tag-item" href="/tags/mycat/" title="mycat">mycat (1)</a>
+  
+    <a class="tag-item" href="/tags/网络通信/" title="网络通信">网络通信 (1)</a>
   
     <a class="tag-item" href="/tags/分布式/" title="分布式">分布式 (4)</a>
   
     <a class="tag-item" href="/tags/分库分表及事务一致性设计/" title="分库分表及事务一致性设计">分库分表及事务一致性设计 (4)</a>
-  
-    <a class="tag-item" href="/tags/网络通信/" title="网络通信">网络通信 (1)</a>
   
 </div>
 
