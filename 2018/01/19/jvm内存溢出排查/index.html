@@ -10,10 +10,10 @@
     <meta name="google-site-verification" content="P3RNPgvLP-2XOkC905i_eBTn9dVL2hGAHurIlYcYftM" />
 
     
-    <title>jenkis部署后自动删掉进程解决方法 | Weizhao</title>
+    <title>jvm内存溢出/CPU过高问题排查 | Weizhao</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" >
-    <meta name="keywords" content="jenkis部署后自动删掉进程解决方法 , Weizhao , dweizhao , dongweizhao , 后端, Web, 董伟召 , 后端开发" >
-    <meta name="description" content="jenkis部署后自动删掉进程解决方法 , 董伟召的工作小站" >     
+    <meta name="keywords" content="jvm内存溢出/CPU过高问题排查 , Weizhao , dweizhao , dongweizhao , 后端, Web, 董伟召 , 后端开发" >
+    <meta name="description" content="jvm内存溢出/CPU过高问题排查 , 董伟召的工作小站" >     
     
     <link rel="alternative" href="/atom.xml" title="Weizhao" type="application/atom+xml" >
     
@@ -50,15 +50,15 @@
         <div class="dropnav icon-paragraph-justify" id="JELON__btnDropNav"></div>
         <ul class="menu hidden" id="JELON__menu">
             
-            <li rel="/2017/12/29/jenkis-kill-pid/index.html" class="item ">
+            <li rel="/2018/01/19/jvm内存溢出排查/index.html" class="item ">
                 <a href="/" title="首页" class="icon-home">&nbsp;首页</a>
             </li>
             
-            <li rel="/2017/12/29/jenkis-kill-pid/index.html" class="item ">
+            <li rel="/2018/01/19/jvm内存溢出排查/index.html" class="item ">
                 <a href="/about/" title="关于" class="icon-about">&nbsp;关于</a>
             </li>
             
-            <li rel="/2017/12/29/jenkis-kill-pid/index.html" class="item ">
+            <li rel="/2018/01/19/jvm内存溢出排查/index.html" class="item ">
                 <a href="/comment/" title="留言" class="icon-comment">&nbsp;留言</a>
             </li>
             
@@ -102,16 +102,50 @@
 <!-- 文章 -->
 <article class="post article">
     <header class="text-center">
-        <h3 class="post-title"><span>jenkis部署后自动删掉进程解决方法</span></h3>
+        <h3 class="post-title"><span>jvm内存溢出/CPU过高问题排查</span></h3>
     </header>
     <p class="post-meta text-center">
         Weizhao 发表于
-        <time datetime="2017-12-29T08:41:29.305Z">2017-12-29</time>
+        <time datetime="2018-01-19T14:11:26.913Z">2018-01-19</time>
     </p>
     <div class="post-content">
-        <p>在做自动化部署时，在项目构建完毕后，每次部署完执行部署脚本后，自动又杀掉其进程，解决方法在部署脚本中增加BUILD_ID</p>
-<p><img src="https://ws2.sinaimg.cn/large/006tKfTcgy1fmxqoev285j31e20aiwfi.jpg" alt="jenkis"></p>
-<h6 id="deploy-sh"><a href="#deploy-sh" class="headerlink" title="deploy.sh"></a>deploy.sh</h6><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line">BUILD_ID=3</span><br><span class="line">DEPLOY_PATH=<span class="string">"/Users/dongweizhao/Desktop"</span></span><br><span class="line">APP_NAME=<span class="string">"mycat-1.6.7-SNAPSHOT*mac.tar.gz"</span></span><br><span class="line">rm -rf <span class="variable">$DEPLOY_PATH</span>/<span class="variable">$APP_NAME</span></span><br><span class="line">rm -rf <span class="variable">$DEPLOY_PATH</span>/mycat</span><br><span class="line">cp /Users/dongweizhao/.jenkins/workspace/mycat/target/<span class="variable">$APP_NAME</span> <span class="variable">$DEPLOY_PATH</span></span><br><span class="line"><span class="built_in">cd</span> <span class="variable">$DEPLOY_PATH</span></span><br><span class="line">tar -xvf <span class="variable">$DEPLOY_PATH</span>/<span class="variable">$APP_NAME</span></span><br><span class="line"><span class="variable">$DEPLOY_PATH</span>/mycat/bin/mycat start</span><br></pre></td></tr></table></figure>
+        <p>问题：用户量3千左右，并且业务没有对外开放，CPU一直居高不下。</p>
+<p>分析：初步怀疑开发人员逻辑控制不严谨， 导致死循环，因为业务量不大，用户量不大，不可能出现高并发。</p>
+<ol>
+<li>通过jstack查找出对应执行线程是Vm Thread 线程,初步怀疑是频繁的GC导致cpu过高。</li>
+<li>查看堆栈信息 jmap -heap 16190，如下图：</li>
+</ol>
+<p><img src="http://img.blog.csdn.net/20170620100712138?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZHdlaXpoYW8=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt="img"></p>
+<p>​    </p>
+<p>​    看到年老区已使用86%</p>
+<ol>
+<li>查看垃圾回收频率,再次确认：jstat -gcutil 16190 1000</li>
+</ol>
+<p><img src="http://img.blog.csdn.net/20170620100803610?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZHdlaXpoYW8=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt="img"></p>
+<p>​    FGC频率非常高，基本确定就是GC回收频繁，导致CPU过高。</p>
+<ol>
+<li><p>确认问题代码，执行jmap -dump:format=b,file=heap.bin 16190，生成堆栈文件，通过MAT进行分析，如下图：</p>
+<p><img src="http://img.blog.csdn.net/20170620100904860?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZHdlaXpoYW8=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt="img"></p>
+<p>JceSecurity这个类就占用大部分内存，点击Dominator Tree进行分析，如下图：</p>
+<p><img src="http://img.blog.csdn.net/20170620100950392?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZHdlaXpoYW8=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt="img"></p>
+<p>​</p>
+<p>由于IdentityHashMap存放过多BouncyCastleProvider这个类，占用了大部分内存，查看JceSecurity中的IdentityHashMap，如下图:</p>
+<p><img src="http://img.blog.csdn.net/20170620101059752?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZHdlaXpoYW8=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt="img"></p>
+<p>​</p>
+<p>现在已经确定是由于map是static修饰导致，导致存放的类不能被jvm回收导致</p>
+</li>
+<li><p>查找程序中使用BouncyCastleProvider的代码，跟开发人员确认是解密类，如下图：</p>
+<p><img src="http://img.blog.csdn.net/20170620101231191?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZHdlaXpoYW8=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt="img"></p>
+<p><img src="http://img.blog.csdn.net/20170620101409414?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZHdlaXpoYW8=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt="img"><img src="http://img.blog.csdn.net/20170620101353632?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZHdlaXpoYW8=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt="img"></p>
+</li>
+<li><p>修改RSAUtil类中BouncyCastleProvider为单例，在此进行压测观察，如下图：<img src="http://img.blog.csdn.net/20170620102306815?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZHdlaXpoYW8=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt="img"></p>
+<p>​</p>
+<p>压测进行2小时，GC回收频率如下图：<img src="http://img.blog.csdn.net/20170620102340042?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZHdlaXpoYW8=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt="img"></p>
+<p>内存使用情况：</p>
+</li>
+</ol>
+<p><img src="http://img.blog.csdn.net/20170620102441323?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZHdlaXpoYW8=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt="img"></p>
+<p><img src="http://img.blog.csdn.net/20170620102500573?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZHdlaXpoYW8=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt="img"></p>
 
     </div>
     <p class="post-meta">
@@ -122,7 +156,7 @@
             标签：
             
     
-        <a href="/tags/jenkins/" title="jenkins">jenkins</a>
+        <a href="/tags/jvm/" title="jvm">jvm</a>
     
 
         </span>
@@ -148,20 +182,16 @@
     
     <span class="prev fl">
         上一篇<br >
-        <a href="/2017/12/30/jenkins-testNg-maven搭建自动化测试/">
-            
-                基于jenkins+testNg+maven搭建自动化测试
-            
-        </a>
+        <a href="javascript: void(0);">没有上一篇了</a>
     </span>
     
 
     
     <span class="next fr">
         下一篇<br >
-        <a href="/2017/12/24/netty-decoder/">
+        <a href="/2018/01/18/大促秒杀系统设计/">
             
-                Netty的编解码框架-解码
+                大促秒杀系统设计
             
         </a>
     </span>
@@ -238,7 +268,7 @@
   <script>
   JELON.Comment({
     container: 'comments',
-    label: 'jenkis-kill-pid' || '2017/12/29/jenkis-kill-pid/',
+    label: 'jvm内存溢出排查' || '2018/01/19/jvm内存溢出排查/',
     owner: 'dongweizhao',
     repo: 'blog_comments',
     clientId: '4d6412796597814f8f3d',
