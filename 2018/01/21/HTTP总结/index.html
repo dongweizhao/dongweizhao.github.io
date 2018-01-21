@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" >
+    <meta http-equiv="X-UA-Compatible" content="IE=11,IE=10,IE=9,IE=8" >
+    <meta name="baidu-site-verification" content="SENxnW7IqQ" />
+    <meta name="baidu-site-verification" content="t4IockLb7b" />
+    <meta name="google-site-verification" content="sdvKJXb2ZWqr2lMWfSirujODNyAzOjhK0SP_j1BEv44" />
+    <meta name="google-site-verification" content="095-0MGT9QO4ZF9KQ6METdnolVJDE7HdqQhsOv67JAc" />
+    <meta name="google-site-verification" content="P3RNPgvLP-2XOkC905i_eBTn9dVL2hGAHurIlYcYftM" />
+
+    
+    <title>HTTP总结 | Weizhao</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" >
+    <meta name="keywords" content="HTTP总结 , Weizhao , dweizhao , dongweizhao , 后端, Web, 董伟召 , 后端开发" >
+    <meta name="description" content="HTTP总结 , 董伟召的工作小站" >     
+    
+    <link rel="alternative" href="/atom.xml" title="Weizhao" type="application/atom+xml" >
+    
+    
+    <link rel="shortcut icon" href="/img/favicon.ico" >
+    
+    <link rel="stylesheet" href="/css/style.css">
+    <!--[if lt IE 9]>
+    <script src="/js/html5.js"></script>
+    <![endif]-->
+    
+
+</head>
+
+<body class="home">
+    <!--[if lt IE 9]>
+    <div class="browsehappy">
+        当前网页 <strong>不支持</strong>
+        你正在使用的浏览器. 为了正常的访问, 请 <a href="http://browsehappy.com/">升级你的浏览器</a>.
+    </div>
+    <![endif]-->
+
+    <!-- 博客头部 -->
+    <header class="header">
+    <section class="container header-main">
+        <div class="logo">
+            <a href="/">
+                <div class="cover">
+                    <span class="name">Weizhao</span>
+                    <span class="description">Weizhao的博客</span>
+                </div>
+            </a>
+        </div>
+        <div class="dropnav icon-paragraph-justify" id="JELON__btnDropNav"></div>
+        <ul class="menu hidden" id="JELON__menu">
+            
+            <li rel="/2018/01/21/HTTP总结/index.html" class="item ">
+                <a href="/" title="首页" class="icon-home">&nbsp;首页</a>
+            </li>
+            
+            <li rel="/2018/01/21/HTTP总结/index.html" class="item ">
+                <a href="/about/" title="关于" class="icon-about">&nbsp;关于</a>
+            </li>
+            
+            <li rel="/2018/01/21/HTTP总结/index.html" class="item ">
+                <a href="/comment/" title="留言" class="icon-comment">&nbsp;留言</a>
+            </li>
+            
+        </ul>
+        <div class="profile clearfix">
+            <div class="feeds fl">
+                
+                
+                <p class="links">
+                    
+                        <a href="https://github.com/dongweizhao" target="_blank">Github</a>
+                        
+                    
+                </p>
+                <p class="sns">
+                    
+                    <!-- <a href="javascript: void(0);" class="wechat">
+                        <b>■</b>
+                        公众号
+                        <span class="popover">
+                            <img src="/img/wechat_mp.jpg" width="120" height="120" alt="我的微信订阅号">
+                            <i class="arrow"></i>
+                        </span>
+                    </a> -->
+                </p>
+                
+            </div>
+            <div class="avatar fr">
+                <img src="/img/icon.jpeg" alt="avatar" title="Jelon" >
+            </div>
+        </div>
+    </section>
+</header>
+
+
+    <!-- 博客正文 -->
+    <div class="container body clearfix">
+        <section class="content">
+            <div class="content-main widget">
+                <!-- 文章页 -->
+<!-- 文章 -->
+<article class="post article">
+    <header class="text-center">
+        <h3 class="post-title"><span>HTTP总结</span></h3>
+    </header>
+    <p class="post-meta text-center">
+        Weizhao 发表于
+        <time datetime="2018-01-21T12:34:10.023Z">2018-01-21</time>
+    </p>
+    <div class="post-content">
+        <h2 id="HTTP-1-1-时代"><a href="#HTTP-1-1-时代" class="headerlink" title="HTTP/1.1 时代"></a>HTTP/1.1 时代</h2><p>HTTP/1.1 对 HTTP/1.0 做了许多优化，也是当今使用得最多的 HTTP 协议：</p>
+<ol>
+<li>持久化连接以支持连接重用</li>
+<li>分块传输编码以支持流式响应</li>
+<li>请求管道以支持并行请求处理</li>
+<li>字节服务以支持基于范围的资源请求</li>
+<li>改进的更好的缓存机制</li>
+</ol>
+<h3 id="持久连接"><a href="#持久连接" class="headerlink" title="持久连接"></a>持久连接</h3><p>在 HTTP/1.0 时代，每一个请求都会重新建立一个 TCP 连接，一旦响应返回，就关闭连接。 而建立一个连接，则需要进行三次握手(https的话则是9次握手)，这极大的浪费了性能</p>
+<p><img src="http://7jpo3s.com1.z0.glb.clouddn.com/http-1.png" alt="img"></p>
+<p>因此 HTTP/1.1 新增了「keep-alive」功能，当浏览器建立一个 TCP 连接时，多个请求都会使用这条连接。（现如今大多数浏览器默认都是开启的)</p>
+<p><img src="http://7jpo3s.com1.z0.glb.clouddn.com/http-2.png" alt="img"></p>
+<h3 id="PipeLining-管道"><a href="#PipeLining-管道" class="headerlink" title="PipeLining 管道"></a>PipeLining 管道</h3><p>持久连接解决了连接复用问题，但还是存在着一个问题：在一个 TCP 连接中，同一时间只能够发送一个请求，并且需要等响应完成才能够发送第二个请求。</p>
+<p>因此 HTTP/1.1 制订了 PipeLining 管道，通过这个管道，浏览器的多个请求可以同时发到服务器，但是服务器的响应只能够一个接着一个的返回 ( 但各大浏览器有些不支持/默认关闭,因此这功能可以说是鸡肋)</p>
+<p><img src="http://7jpo3s.com1.z0.glb.clouddn.com/http-3.png" alt="img"></p>
+<p>因为每一条连接同时只能够返回一个响应，因此浏览器为了改善这种情况，会同时开启4~8个 TCP 连接进行发送请求。</p>
+<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><p>在 HTTP/1.1 时代主要增加了：</p>
+<ol>
+<li>keep-alive 选项，建立连接后，在一定时间内不会断开，其他请求都可以使用这条连接。</li>
+<li>pipelining 管道，通过这个管道，浏览器的多个请求可以同时发到服务器，但是服务器的响应只能够一个接着一个的返回 ( 但各大浏览器有些不支持/默认关闭,因此这功能可以说是鸡肋)</li>
+</ol>
+<h2 id="HTTP-1-1-时代的优化"><a href="#HTTP-1-1-时代的优化" class="headerlink" title="HTTP/1.1 时代的优化"></a>HTTP/1.1 时代的优化</h2><h3 id="1、连接和拼接"><a href="#1、连接和拼接" class="headerlink" title="1、连接和拼接"></a>1、连接和拼接</h3><p>连接或拼接JS和CSS文件，雪碧图，以减少HTTP请求，同时浏览器可缓存这些静态资源，为下次访问节约时间。但是这样带来的副作用是，维护成本高，其中某一个小改动都会使得整个拼接后的文件发生改变，重新缓存。</p>
+<p>当然并不是说无止境的拼接，建议大小为： 30~50 KB</p>
+<h3 id="2、域名分区"><a href="#2、域名分区" class="headerlink" title="2、域名分区"></a>2、域名分区</h3><p>由于浏览器的限制，同一个域下最多只能建立6个连接。我们通常使用子域名来减少所有资源在只有一个连接时的产生的排队延迟。这个显然不适用在HTTP2中，因为不同的域需要建立不同的连接。</p>
+<h3 id="3、资源内嵌"><a href="#3、资源内嵌" class="headerlink" title="3、资源内嵌"></a>3、资源内嵌</h3><p>对于不常用的，较小大资源内嵌在文档中，比如base64的图片，以减少HTTP请求，但是这样的资源不能在浏览器中缓存，也不可能被其他页面共享，同时还有可能编码之后的资源变等更大了。在HTTP2中，这样的资源就可以使用SERVER PUSH来推送。</p>
+<p>建议:</p>
+<ol>
+<li>只考虑嵌入1~2 KB 以下的资源，因为小于这个标准的资源经常会导致比它自身更高的HTTP 开销</li>
+<li>如果文件很小，而且只有个别页面使用，可以考虑嵌入。理想情况下，最好是只用一次的资源</li>
+<li>如果文件很小，但需要在多个页面中重用，应该考虑集中打包</li>
+<li>如果小文件经常需要更新，就不要嵌入了</li>
+<li>通过减少 HTTP cookie的大小将协议开销最小化</li>
+</ol>
+<h2 id="SPDY-时代"><a href="#SPDY-时代" class="headerlink" title="SPDY 时代"></a>SPDY 时代</h2><p>由于现代网页的不断丰富， HTTP/1.1 协议的性能也逐渐吃不消，因此2012年google如一声惊雷提出了SPDY的方案，实际上，HTTP/2.0 也是以 SPDY 作为原型进行开发的。</p>
+<h3 id="SPDY基础功能"><a href="#SPDY基础功能" class="headerlink" title="SPDY基础功能"></a>SPDY基础功能</h3><h4 id="多路复用（multiplexing"><a href="#多路复用（multiplexing" class="headerlink" title="多路复用（multiplexing)"></a>多路复用（multiplexing)</h4><p>多路复用通过多个请求stream共享一个tcp连接的方式，解决了http1.x holb（head of line blocking）的问题，降低了延迟同时提高了带宽的利用率。</p>
+<h4 id="请求优先级（request-prioritization"><a href="#请求优先级（request-prioritization" class="headerlink" title="请求优先级（request prioritization)"></a>请求优先级（request prioritization)</h4><p>多路复用带来一个新的问题是，在连接共享的基础之上有可能会导致关键请求被阻塞。SPDY允许给每个request设置优先级，这样重要的请求就会优先得到响应。比如浏览器加载首页，首页的html内容应该优先展示，之后才是各种静态资源文件，脚本文件等加载，这样可以保证用户能第一时间看到网页内容。</p>
+<h4 id="header压缩"><a href="#header压缩" class="headerlink" title="header压缩"></a>header压缩</h4><p>前面提到过几次http1.x的header很多时候都是重复多余的。选择合适的压缩算法可以减小包的大小和数量。SPDY对header的压缩率可以达到80%以上，低带宽环境下效果很大。</p>
+<p>SPDY 现已经被大多数浏览器以及 WEB 服务器所支持，但为了推进 HTTP/2.0, Google 已经宣布在 2016年对其停止开发。</p>
+<h2 id="HTTP-2-0-时代"><a href="#HTTP-2-0-时代" class="headerlink" title="HTTP/2.0 时代"></a>HTTP/2.0 时代</h2><p>2015年5月, HTTP/2.0 在万众瞩目下以RFC 7540正式发表。（热烈鼓掌~啪啪啪啪~~)</p>
+<h3 id="二进制分帧"><a href="#二进制分帧" class="headerlink" title="二进制分帧"></a>二进制分帧</h3><p>在应用层与传输层之间增加一个二进制分帧层，以此达到“在不改动HTTP的语义，HTTP 方法、状态码、URI及首部字段的情况下，突破HTTP1.1的性能限制，改进传输性能，实现低延迟和高吞吐量。”</p>
+<p>在二进制分帧层上，HTTP2.0会将所有传输的信息分割为更小的消息和帧,并对它们采用二进制格式的编码，其中HTTP1.x的首部信息会被封装到Headers帧，而我们的request body则封装到Data帧里面。</p>
+<p><img src="http://7jpo3s.com1.z0.glb.clouddn.com/http-4.png" alt="img"></p>
+<h3 id="压缩头部"><a href="#压缩头部" class="headerlink" title="压缩头部"></a>压缩头部</h3><p>HTTP/2.0规定了在客户端和服务器端会使用并且维护「首部表」来跟踪和存储之前发送的键值对，对于相同的头部，不必再通过请求发送，只需发送一次</p>
+<p>事实上,如果请求中不包含首部（例如对同一资源的轮询请求），那么首部开销就是零字节。此时所有首部都自动使用之前请求发送的首部。</p>
+<p>如果首部发生变化了，那么只需要发送变化了数据在Headers帧里面，新增或修改的首部帧会被追加到“首部表”。首部表在 HTTP2.0的连接存续期内始终存在,由客户端和服务器共同渐进地更新。</p>
+<p><img src="http://7jpo3s.com1.z0.glb.clouddn.com/http-5.png" alt="img"></p>
+<h3 id="多路复用"><a href="#多路复用" class="headerlink" title="多路复用"></a>多路复用</h3><p>HTTP/2.0 时代拥有了「多路复用」功能，意思是: 在一条连接上，我可以同时发起无数个请求，并且响应可以同时返回。</p>
+<p>这个连接可以承载任意数量的双向数据流。在过去， HTTP 性能优化的关键并不在于高带宽，而是低延迟。TCP 连接会随着时间进行自我调节，起初会限制连接的最大速度，如果数据成功传输，会随着时间的推移提高传输的速度。这种调节则被称为 TCP 慢启动。由于这种原因，让原本就具有突发性和短时性的 HTTP 连接变的十分低效。HTTP/2.0 通过让所有数据流共用同一个连接，可以更有效地使用 TCP 连接，让高带宽也能真正的服务于 HTTP 的性能提升。</p>
+<p>这种单连接多资源的方式，减少服务端的连接压力,内存占用更少,连接吞吐量更大；而且由于 TCP 连接的减少而使网络拥塞状况得以改善，同时慢启动时间的减少,使拥塞和丢包恢复速度更快。</p>
+<p><img src="http://7jpo3s.com1.z0.glb.clouddn.com/http-6.png" alt="img"></p>
+<p>客户端和服务器可以把HTTP消息分解为互不依赖的帧，然后乱序发送，最后再在另一端把它们重新组合起来。注意，同一链接上有多个不同方向的数据流在传输。客户端可以一边乱序发送stream，也可以一边接收者服务器的响应，而服务器那端同理。</p>
+<p><img src="http://7jpo3s.com1.z0.glb.clouddn.com/http-7.png" alt="img"></p>
+<p>也就是说，HTTP2.0通信都在一个连接上完成，这个连接可以承载任意数量的双向数据流。就好比，我请求一个页面<a href="http://www.qq.com%E3%80%82%E9%A1%B5%E9%9D%A2%E4%B8%8A%E6%89%80%E6%9C%89%E7%9A%84%E8%B5%84%E6%BA%90%E8%AF%B7%E6%B1%82%E9%83%BD%E6%98%AF%E5%AE%A2%E6%88%B7%E7%AB%AF%E4%B8%8E%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B8%8A%E7%9A%84%E4%B8%80%E6%9D%A1tcp%E4%B8%8A%E8%AF%B7%E6%B1%82%E5%92%8C%E5%93%8D%E5%BA%94%E7%9A%84%EF%BC%81/" target="_blank" rel="noopener">http://www.qq.com%E3%80%82%E9%A1%B5%E9%9D%A2%E4%B8%8A%E6%89%80%E6%9C%89%E7%9A%84%E8%B5%84%E6%BA%90%E8%AF%B7%E6%B1%82%E9%83%BD%E6%98%AF%E5%AE%A2%E6%88%B7%E7%AB%AF%E4%B8%8E%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B8%8A%E7%9A%84%E4%B8%80%E6%9D%A1TCP%E4%B8%8A%E8%AF%B7%E6%B1%82%E5%92%8C%E5%93%8D%E5%BA%94%E7%9A%84%EF%BC%81</a></p>
+<p>注意，对一个域名，只需要开启一条 TCP 连接，请求都在这条 TCP 连接上干活。</p>
+<p>因此在 HTTP/2.0 时代，之前的合并 JS、CSS 文件技巧，反而不适用了。</p>
+<h3 id="请求优先级"><a href="#请求优先级" class="headerlink" title="请求优先级"></a>请求优先级</h3><p>既然所有资源都是并行发送，那么就需要「优先级」的概念了，这样就可以对重要的文件进行先传输，加速页面的渲染。</p>
+<h3 id="服务器推送"><a href="#服务器推送" class="headerlink" title="服务器推送"></a>服务器推送</h3><p>在 HTTP2.0中，服务器推送是指在客户端请求之前发送数据的机制。如果一个请求是由你的主页发起的，服务器很可能响应主页内容、logo以及样式表，因为它知道客户端会用到这些东西。这相当于在一个 HTML 文档内集合了所有的资源，不过与之相比，服务器推送有一个很大的优势：可以缓存！</p>
+<h3 id="强制-SSL"><a href="#强制-SSL" class="headerlink" title="强制 SSL"></a>强制 SSL</h3><p>虽然 HTTP/2.0 协议并没声明一定要用 SSL，但是 Google Chrome 等浏览器强制要求使用 HTTP/2.0 必须要用上 SSL， 也就是说必须要： <a href="https:" target="_blank" rel="noopener">https://</a></p>
+<p><a href="http:" target="_blank" rel="noopener">http://</a> 将继续使用 http/1.0</p>
+<h3 id="对优化的影响："><a href="#对优化的影响：" class="headerlink" title="对优化的影响："></a>对优化的影响：</h3><ol>
+<li><p>因为“所有的HTTP2.0的请求都在一个TCP链接上”，“资源合并减少请求”，比如CSS Sprites,多个JS文件、CSS文件合并等手段没有效果，或者说没有必要。</p>
+</li>
+<li><p>因为“多路复用”，采用“cdn1.cn,cdn2.cn,cdn3.cn，打开多个TCP会话，突破浏览器对同一域名的链接数的限制”的手段是没有必要的。因为因为资源都是并行交错发送，且没有限制，不需要额外的多域名并行下载。</p>
+</li>
+<li><p>因为“服务器推送”，内嵌资源的优化手段也变得没有意义了。而且使用服务器推送的资源的方式更加高效，因为客户端还可以缓存起来，甚至可以由不同的页面共享（依旧遵循同源策略）</p>
+</li>
+</ol>
+<h3 id="如何使用上-HTTP-2-0"><a href="#如何使用上-HTTP-2-0" class="headerlink" title="如何使用上 HTTP/2.0"></a>如何使用上 HTTP/2.0</h3><pre><code>1. 需要浏览器的支持，目前最新版的 Chrome、Opera、 FireFox、 IE11、 edge 都已经支持了
+2. 需要 WEB 服务器的支持，比如 Nginx , H20
+</code></pre><p>   如果浏览器或服务器有一方不支持，那么会自动变成 Http/1.1</p>
+<h2 id="HTTP-1-1-HTTP-2-0性能比较"><a href="#HTTP-1-1-HTTP-2-0性能比较" class="headerlink" title="HTTP/1.1  HTTP/2.0性能比较"></a>HTTP/1.1  HTTP/2.0性能比较</h2><p><a href="https://http2.akamai.com/demo这是Akamai公司建立的一个官方演示，这个演示同时请求379张图片，用于展示HTTP/1.1和HTTP/2的性能差距。不同的电脑配置、网络情况以及服务器负载等情况不同，得到的结果肯定也不同，下图是使用自己的电脑加载时间截图" target="_blank" rel="noopener">https://http2.akamai.com/demo这是Akamai公司建立的一个官方演示，这个演示同时请求379张图片，用于展示HTTP/1.1和HTTP/2的性能差距。不同的电脑配置、网络情况以及服务器负载等情况不同，得到的结果肯定也不同，下图是使用自己的电脑加载时间截图</a>:</p>
+<p><img src="https://ws3.sinaimg.cn/large/006tKfTcgy1fnoje4jbp9j31j212etxz.jpg" alt=""></p>
+<p>参考：</p>
+<p><a href="https://linjunzhu.github.io/blog/2016/03/10/http2-zongjie/" target="_blank" rel="noopener">HTTP/2.0 简单总结</a></p>
+<p><a href="https://www.jianshu.com/p/52d86558ca57" target="_blank" rel="noopener">面试时如何优雅的谈论HTTP／1.0／1.1／2.0</a></p>
+<p><a href="http://mp.weixin.qq.com/s/vKzK3fDmaijWfqHTV--s6Q" target="_blank" rel="noopener">服务化基石之远程通信系列二：通信协议之应用层</a></p>
+
+    </div>
+    <p class="post-meta">
+        <span class="post-cat">分类：
+            <a class="cat-link" href="/categories/后端/">后端</a>
+        </span>
+        <span class="post-tags">
+            标签：
+            
+    
+        <a href="/tags/网络通信/" title="网络通信">网络通信</a> / 
+    
+        <a href="/tags/HTTP/" title="HTTP">HTTP</a>
+    
+
+        </span>
+    </p>
+</article>
+<!-- 分享按钮 -->
+
+  <div class="article-share clearfix text-center">
+    <div class="share-area">
+      <span class="share-txt">分享到：</span>
+      <a href="javascript: window.open('http://service.weibo.com/share/share.php?url=' + encodeURIComponent(location.href) + '&title=' + document.title + '&language=zh_cn');" class="share-icon weibo"></a>
+      <a href="javascript: alert('请复制链接到微信并发送');" class="share-icon wechat"></a>
+      <a href="javascript: window.open('http://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=' + encodeURIComponent(location.href) + '&title=' + document.title);" class="share-icon qqzone"></a>
+      <a href="javascript: window.open('http://connect.qq.com/widget/shareqq/index.html?url=' + encodeURIComponent(location.href) + '&desc=Jelon个人博客&title=' + document.title + '&callback=' + encodeURIComponent(location.href));" class="share-icon qq"></a>
+      <a href="javascript: window.open('http://shuo.douban.com/!service/share?href=' + encodeURIComponent(location.href) + '&name=' + document.title + '&text=' + document.title);" class="share-icon douban"></a>
+    </div>
+  </div>
+
+
+<!-- 上一篇/下一篇 -->
+
+<div class="article-nav clearfix">
+    
+    <span class="prev fl">
+        上一篇<br >
+        <a href="javascript: void(0);">没有上一篇了</a>
+    </span>
+    
+
+    
+    <span class="next fr">
+        下一篇<br >
+        <a href="/2018/01/19/jvm内存溢出排查/">
+            
+                jvm内存溢出/CPU过高问题排查
+            
+        </a>
+    </span>
+    
+</div>
+
+<!-- 文章评论 -->
+
+  <script src="/js/comment.js"></script>
+  <div id="comments" class="comment">
+    <!--
+    <div class="sign-bar">
+      GitHub 已登录!
+      <span class="sign-link">登出</span>
+    </div>
+    <section class="box">
+      <div class="com-avatar"><img src="/img/jelon.jpg" alt="avatar"></div>
+      <div class="com-text">
+        <div class="main">
+          <textarea class="text-area-edited show" placeholder="欢迎评论！"></textarea>
+          <div class="text-area-preview"></div>
+        </div>
+        <div class="switch">
+          <div class="switch-item on">编辑</div>
+          <div class="switch-item">预览</div>
+        </div>
+        <div class="button">提交</div>
+      </div>
+    </section>
+    <section class="tips">注：评论支持 markdown 语法！</section>
+    <section class="list-wrap">
+      <ul class="list">
+        <li>
+          <div class="user-avatar">
+            <a href="/">
+              <img src="/img/jelon.jpg" alt="user-avatar">
+            </a>
+          </div>
+          <div class="user-comment">
+            <div class="user-comment-header">
+              <span class="post-name">张德龙</span>
+              <span class="post-time">2017年12月12日</span>
+              <span class="like liked">已赞</span>
+              <span class="like-num">2</span>
+            </div>
+            <div class="user-comment-body">333333</div>
+          </div>
+        </li>
+        <li>
+          <div class="user-avatar">
+            <a href="/">
+              <img src="/img/jelon.jpg" alt="user-avatar">
+            </a>
+          </div>
+          <div class="user-comment">
+            <div class="user-comment-header">
+              <span class="post-name">刘德华</span>
+              <span class="post-time">2017年12月12日</span>
+              <span class="like">点赞</span>
+              <span class="like-num">2</span>
+            </div>
+            <div class="user-comment-body">vvvvv</div>
+          </div>
+        </li>
+      </ul>
+      <div class="page-nav">
+        <a href="javascript: void(0);" class="item">1</a>
+        <a href="javascript: void(0);" class="item">2</a>
+        <a href="javascript: void(0);" class="item current">3</a>
+      </div>
+    </section>
+    -->
+  </div>
+  <script>
+  JELON.Comment({
+    container: 'comments',
+    label: 'HTTP总结' || '2018/01/21/HTTP总结/',
+    owner: 'dongweizhao',
+    repo: 'blog_comments',
+    clientId: '4d6412796597814f8f3d',
+    clientSecret: '0c3ab59a6e2a4f77a88348acf129a7bf4e24fad1'
+  });
+  </script>
+
+
+
+            </div>
+
+        </section>
+        <!-- 侧栏部分 -->
+<aside class="sidebar">
+    <section class="widget">
+        <h3 class="widget-hd"><strong>文章分类</strong></h3>
+        <!-- 文章分类 -->
+<ul class="widget-bd">
+    
+    <li>
+        <a href="/categories/后端/">后端</a>
+        <span class="badge">(15)</span>
+    </li>
+    
+</ul>
+    </section>
+
+    
+    <section class="widget">
+        <h3 class="widget-hd"><strong>热门标签</strong></h3>
+        <!-- 文章标签 -->
+<div class="widget-bd tag-wrap">
+  
+    <a class="tag-item" href="/tags/网络通信/" title="网络通信">网络通信 (2)</a>
+  
+    <a class="tag-item" href="/tags/HTTP/" title="HTTP">HTTP (1)</a>
+  
+    <a class="tag-item" href="/tags/并发/" title="并发">并发 (5)</a>
+  
+    <a class="tag-item" href="/tags/java/" title="java">java (2)</a>
+  
+    <a class="tag-item" href="/tags/mycat/" title="mycat">mycat (1)</a>
+  
+    <a class="tag-item" href="/tags/jvm/" title="jvm">jvm (1)</a>
+  
+    <a class="tag-item" href="/tags/jenkins/" title="jenkins">jenkins (2)</a>
+  
+    <a class="tag-item" href="/tags/分布式/" title="分布式">分布式 (4)</a>
+  
+    <a class="tag-item" href="/tags/分库分表及事务一致性设计/" title="分库分表及事务一致性设计">分库分表及事务一致性设计 (4)</a>
+  
+    <a class="tag-item" href="/tags/架构设计/" title="架构设计">架构设计 (1)</a>
+  
+</div>
+
+    </section>
+    
+
+    
+
+    
+    <!-- 友情链接 -->
+    <section class="widget">
+        <h3 class="widget-hd"><strong>友情链接</strong></h3>
+        <!-- 文章分类 -->
+<ul class="widget-bd">
+    
+        <li>
+            <a href="https://spring.io/" target="_blank" title="spring官网">spring官网</a>
+        </li>
+    
+        <li>
+            <a href="http://dubbo.io/" target="_blank" title="dubbo官网">dubbo官网</a>
+        </li>
+    
+        <li>
+            <a href="https://www.jianshu.com/u/f7daa458b874" target="_blank" title="分布式服务框架源码">肥朝的博客</a>
+        </li>
+    
+        <li>
+            <a href="http://www.cnblogs.com/yunai/" target="_blank" title="源码分析">芋艿的博客</a>
+        </li>
+    
+</ul>
+    </section>
+    
+</aside>
+<!-- / 侧栏部分 -->
+    </div>
+
+    <!-- 博客底部 -->
+    <footer class="footer">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    &copy;
+    
+        2016-2018
+    
+
+    <a href="/">Weizhao</a>
+<p>总访问量<span id="busuanzi_value_site_pv"></span>次    访客数<span id="busuanzi_value_site_uv"></span>人次</p>
+
+</footer>
+<div class="back-to-top" id="JELON__backToTop" title="返回顶部">返回顶部</div>
+
+    <!--博客js脚本 -->
+    <!-- 这里放网站js脚本 -->
+<script src="/js/main.js"></script>
+</body>
+</html>
