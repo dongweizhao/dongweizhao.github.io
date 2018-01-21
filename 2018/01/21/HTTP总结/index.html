@@ -132,7 +132,7 @@
 </ol>
 <h2 id="HTTP-1-1-时代的优化"><a href="#HTTP-1-1-时代的优化" class="headerlink" title="HTTP/1.1 时代的优化"></a>HTTP/1.1 时代的优化</h2><h3 id="1、连接和拼接"><a href="#1、连接和拼接" class="headerlink" title="1、连接和拼接"></a>1、连接和拼接</h3><p>连接或拼接JS和CSS文件，雪碧图，以减少HTTP请求，同时浏览器可缓存这些静态资源，为下次访问节约时间。但是这样带来的副作用是，维护成本高，其中某一个小改动都会使得整个拼接后的文件发生改变，重新缓存。</p>
 <p>当然并不是说无止境的拼接，建议大小为： 30~50 KB</p>
-<h3 id="2、域名分区"><a href="#2、域名分区" class="headerlink" title="2、域名分区"></a>2、域名分区</h3><p>由于浏览器的限制，同一个域下最多只能建立6个连接。我们通常使用子域名来减少所有资源在只有一个连接时的产生的排队延迟。这个显然不适用在HTTP2中，因为不同的域需要建立不同的连接。</p>
+<h3 id="2、域名分区"><a href="#2、域名分区" class="headerlink" title="2、域名分区"></a>2、域名分区</h3><p>由于浏览器的限制，同一个域名下最多只能建立6个连接（不同的浏览器限制不一样）。我们通常使用子域名来减少所有资源在只有一个连接时的产生的排队延迟。这个显然不适用在HTTP2中，因为不同的域需要建立不同的连接。</p>
 <h3 id="3、资源内嵌"><a href="#3、资源内嵌" class="headerlink" title="3、资源内嵌"></a>3、资源内嵌</h3><p>对于不常用的，较小大资源内嵌在文档中，比如base64的图片，以减少HTTP请求，但是这样的资源不能在浏览器中缓存，也不可能被其他页面共享，同时还有可能编码之后的资源变等更大了。在HTTP2中，这样的资源就可以使用SERVER PUSH来推送。</p>
 <p>建议:</p>
 <ol>
@@ -142,7 +142,7 @@
 <li>如果小文件经常需要更新，就不要嵌入了</li>
 <li>通过减少 HTTP cookie的大小将协议开销最小化</li>
 </ol>
-<h2 id="SPDY-时代"><a href="#SPDY-时代" class="headerlink" title="SPDY 时代"></a>SPDY 时代</h2><p>由于现代网页的不断丰富， HTTP/1.1 协议的性能也逐渐吃不消，因此2012年google如一声惊雷提出了SPDY的方案，实际上，HTTP/2.0 也是以 SPDY 作为原型进行开发的。</p>
+<h2 id="SPDY-时代"><a href="#SPDY-时代" class="headerlink" title="SPDY 时代"></a>SPDY 时代</h2><p>由于现代网页的不断丰富， HTTP/1.1 协议的性能也逐渐吃不消，因此2012年google（google就是牛逼）如一声惊雷提出了SPDY的方案，实际上，HTTP/2.0 也是以 SPDY 作为原型进行开发的。</p>
 <h3 id="SPDY基础功能"><a href="#SPDY基础功能" class="headerlink" title="SPDY基础功能"></a>SPDY基础功能</h3><h4 id="多路复用（multiplexing"><a href="#多路复用（multiplexing" class="headerlink" title="多路复用（multiplexing)"></a>多路复用（multiplexing)</h4><p>多路复用通过多个请求stream共享一个tcp连接的方式，解决了http1.x holb（head of line blocking）的问题，降低了延迟同时提高了带宽的利用率。</p>
 <h4 id="请求优先级（request-prioritization"><a href="#请求优先级（request-prioritization" class="headerlink" title="请求优先级（request prioritization)"></a>请求优先级（request prioritization)</h4><p>多路复用带来一个新的问题是，在连接共享的基础之上有可能会导致关键请求被阻塞。SPDY允许给每个request设置优先级，这样重要的请求就会优先得到响应。比如浏览器加载首页，首页的html内容应该优先展示，之后才是各种静态资源文件，脚本文件等加载，这样可以保证用户能第一时间看到网页内容。</p>
 <h4 id="header压缩"><a href="#header压缩" class="headerlink" title="header压缩"></a>header压缩</h4><p>前面提到过几次http1.x的header很多时候都是重复多余的。选择合适的压缩算法可以减小包的大小和数量。SPDY对header的压缩率可以达到80%以上，低带宽环境下效果很大。</p>
@@ -176,10 +176,12 @@
 <li><p>因为“服务器推送”，内嵌资源的优化手段也变得没有意义了。而且使用服务器推送的资源的方式更加高效，因为客户端还可以缓存起来，甚至可以由不同的页面共享（依旧遵循同源策略）</p>
 </li>
 </ol>
-<h3 id="如何使用上-HTTP-2-0"><a href="#如何使用上-HTTP-2-0" class="headerlink" title="如何使用上 HTTP/2.0"></a>如何使用上 HTTP/2.0</h3><pre><code>1. 需要浏览器的支持，目前最新版的 Chrome、Opera、 FireFox、 IE11、 edge 都已经支持了
-2. 需要 WEB 服务器的支持，比如 Nginx , H20
-</code></pre><p>   如果浏览器或服务器有一方不支持，那么会自动变成 Http/1.1</p>
-<h2 id="HTTP-1-1-HTTP-2-0性能比较"><a href="#HTTP-1-1-HTTP-2-0性能比较" class="headerlink" title="HTTP/1.1  HTTP/2.0性能比较"></a>HTTP/1.1  HTTP/2.0性能比较</h2><p><a href="https://http2.akamai.com/demo这是Akamai公司建立的一个官方演示，这个演示同时请求379张图片，用于展示HTTP/1.1和HTTP/2的性能差距。不同的电脑配置、网络情况以及服务器负载等情况不同，得到的结果肯定也不同，下图是使用自己的电脑加载时间截图" target="_blank" rel="noopener">https://http2.akamai.com/demo这是Akamai公司建立的一个官方演示，这个演示同时请求379张图片，用于展示HTTP/1.1和HTTP/2的性能差距。不同的电脑配置、网络情况以及服务器负载等情况不同，得到的结果肯定也不同，下图是使用自己的电脑加载时间截图</a>:</p>
+<h3 id="如何使用上-HTTP-2-0"><a href="#如何使用上-HTTP-2-0" class="headerlink" title="如何使用上 HTTP/2.0"></a>如何使用上 HTTP/2.0</h3><ol>
+<li>需要浏览器的支持，目前最新版的 Chrome、Opera、 FireFox、 IE11、 edge 都已经支持了</li>
+<li>需要 WEB 服务器的支持，比如 Nginx , H20</li>
+</ol>
+<p>如果浏览器或服务器有一方不支持，那么会自动变成 Http/1.1</p>
+<h2 id="HTTP-1-1-HTTP-2-0性能比较"><a href="#HTTP-1-1-HTTP-2-0性能比较" class="headerlink" title="HTTP/1.1  HTTP/2.0性能比较"></a>HTTP/1.1  HTTP/2.0性能比较</h2><p><a href="https://http2.akamai.com/demo" target="_blank" rel="noopener">https://http2.akamai.com/demo</a><br>这是Akamai公司建立的一个官方演示，这个演示同时请求379张图片，用于展示HTTP/1.1和HTTP/2的性能差距。不同的电脑配置、网络情况以及服务器负载等情况不同，得到的结果肯定也不同，下图是使用自己的电脑加载时间截图:</p>
 <p><img src="https://ws3.sinaimg.cn/large/006tKfTcgy1fnoje4jbp9j31j212etxz.jpg" alt=""></p>
 <p>参考：</p>
 <p><a href="https://linjunzhu.github.io/blog/2016/03/10/http2-zongjie/" target="_blank" rel="noopener">HTTP/2.0 简单总结</a></p>
@@ -343,19 +345,19 @@
         <!-- 文章标签 -->
 <div class="widget-bd tag-wrap">
   
-    <a class="tag-item" href="/tags/网络通信/" title="网络通信">网络通信 (2)</a>
-  
-    <a class="tag-item" href="/tags/HTTP/" title="HTTP">HTTP (1)</a>
-  
     <a class="tag-item" href="/tags/并发/" title="并发">并发 (5)</a>
   
     <a class="tag-item" href="/tags/java/" title="java">java (2)</a>
   
-    <a class="tag-item" href="/tags/mycat/" title="mycat">mycat (1)</a>
+    <a class="tag-item" href="/tags/网络通信/" title="网络通信">网络通信 (2)</a>
+  
+    <a class="tag-item" href="/tags/HTTP/" title="HTTP">HTTP (1)</a>
+  
+    <a class="tag-item" href="/tags/jenkins/" title="jenkins">jenkins (2)</a>
   
     <a class="tag-item" href="/tags/jvm/" title="jvm">jvm (1)</a>
   
-    <a class="tag-item" href="/tags/jenkins/" title="jenkins">jenkins (2)</a>
+    <a class="tag-item" href="/tags/mycat/" title="mycat">mycat (1)</a>
   
     <a class="tag-item" href="/tags/分布式/" title="分布式">分布式 (4)</a>
   
