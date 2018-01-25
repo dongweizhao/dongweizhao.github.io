@@ -146,8 +146,8 @@
 <li>无法判定请求来自何方，出自谁手。</li>
 <li>即使是无意义的请求，也会照单全收。如海量的Dos攻击。</li>
 </ul>
-<h5 id="如何防止-1"><a href="#如何防止-1" class="headerlink" title="如何防止"></a>如何防止</h5><p>使用SSL才可以防止此类问题，SSL不仅提供加密功能，还提供证书，通过证书可以确定通信的方是意料之中的，这里肯定有人会问那证书如果保证可信呢？</p>
-<p>证书是有值得信赖的第三方机构颁发的，其他机构是没有颁发证书权限的，只有第三方机构是可信赖的，那么这个证书也是可信赖的，因为伪造证书是非常困难的。</p>
+<h5 id="如何防止-1"><a href="#如何防止-1" class="headerlink" title="如何防止"></a>如何防止</h5><p>使用SSL才可以防止此类问题，SSL不仅提供加密功能，还提供证书，通过证书可以确定通信的方是意料之中的，这里肯定有人会问那证书如何保证可信呢？</p>
+<p>证书是有公认值得信赖的CA机构颁发的，其他机构是没有颁发证书权限的。CA机构是可信赖的，那么颁发的证书也是可信赖的。</p>
 <p><img src="https://ws2.sinaimg.cn/large/006tKfTcly1fnrzujlovsj30r00hmaci.jpg" alt=""></p>
 <p>   客户端验证服务端是否是可信的服务端，即单向认证。</p>
 <p><img src="https://ws1.sinaimg.cn/large/006tKfTcly1fns03dck5kj30x60h2jui.jpg" alt=""></p>
@@ -166,7 +166,7 @@
 <p><img src="https://ws3.sinaimg.cn/large/006tKfTcly1fns1rs76lzj30yk088jsv.jpg" alt=""></p>
 <p>通过对下载后文件在通过MD5生成散列码，与官网上的散列码进行比较，来确定文件是否被篡改。</p>
 <p><img src="https://ws4.sinaimg.cn/large/006tKfTcly1fns1t86drej30p6036dga.jpg" alt=""></p>
-<p>但是从其它方式证明此种方式也不是绝对安全的，具体可以参见：<a href="http://bobao.360.cn/news/detail/768.html" target="_blank" rel="noopener">http://bobao.360.cn/news/detail/768.html</a>大概意思就是构造”前缀碰撞法“，来制造MD5值一样，文件内容不一样的文件。</p>
+<p>但是从其他方式证明此种方式也不是绝对安全的，具体可以参见：<a href="http://bobao.360.cn/news/detail/768.html" target="_blank" rel="noopener">http://bobao.360.cn/news/detail/768.html</a>大概意思就是构造”前缀碰撞法“，来制造MD5值一样，文件内容不一样的文件。</p>
 
     </div>
     <p class="post-meta">
@@ -325,11 +325,11 @@
         <!-- 文章标签 -->
 <div class="widget-bd tag-wrap">
   
-    <a class="tag-item" href="/tags/并发/" title="并发">并发 (5)</a>
-  
     <a class="tag-item" href="/tags/网络通信/" title="网络通信">网络通信 (3)</a>
   
     <a class="tag-item" href="/tags/HTTP/" title="HTTP">HTTP (2)</a>
+  
+    <a class="tag-item" href="/tags/并发/" title="并发">并发 (5)</a>
   
     <a class="tag-item" href="/tags/java/" title="java">java (2)</a>
   
@@ -337,13 +337,13 @@
   
     <a class="tag-item" href="/tags/jvm/" title="jvm">jvm (1)</a>
   
-    <a class="tag-item" href="/tags/mycat/" title="mycat">mycat (1)</a>
-  
     <a class="tag-item" href="/tags/分布式/" title="分布式">分布式 (4)</a>
   
     <a class="tag-item" href="/tags/分库分表及事务一致性设计/" title="分库分表及事务一致性设计">分库分表及事务一致性设计 (4)</a>
   
     <a class="tag-item" href="/tags/架构设计/" title="架构设计">架构设计 (1)</a>
+  
+    <a class="tag-item" href="/tags/mycat/" title="mycat">mycat (1)</a>
   
 </div>
 
