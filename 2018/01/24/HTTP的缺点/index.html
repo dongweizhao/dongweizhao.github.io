@@ -10,10 +10,10 @@
     <meta name="google-site-verification" content="P3RNPgvLP-2XOkC905i_eBTn9dVL2hGAHurIlYcYftM" />
 
     
-    <title>线程中断 | Weizhao</title>
+    <title>聊聊HTTP的缺点 | Weizhao</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" >
-    <meta name="keywords" content="线程中断 , Weizhao , dweizhao , dongweizhao , 后端, Web, 董伟召 , 后端开发" >
-    <meta name="description" content="线程中断 , 董伟召的工作小站" >     
+    <meta name="keywords" content="聊聊HTTP的缺点 , Weizhao , dweizhao , dongweizhao , 后端, Web, 董伟召 , 后端开发" >
+    <meta name="description" content="聊聊HTTP的缺点 , 董伟召的工作小站" >     
     
     <link rel="alternative" href="/atom.xml" title="Weizhao" type="application/atom+xml" >
     
@@ -50,15 +50,15 @@
         <div class="dropnav icon-paragraph-justify" id="JELON__btnDropNav"></div>
         <ul class="menu hidden" id="JELON__menu">
             
-            <li rel="/2018/01/16/thread-interrupt/index.html" class="item ">
+            <li rel="/2018/01/24/HTTP的缺点/index.html" class="item ">
                 <a href="/" title="首页" class="icon-home">&nbsp;首页</a>
             </li>
             
-            <li rel="/2018/01/16/thread-interrupt/index.html" class="item ">
+            <li rel="/2018/01/24/HTTP的缺点/index.html" class="item ">
                 <a href="/about/" title="关于" class="icon-about">&nbsp;关于</a>
             </li>
             
-            <li rel="/2018/01/16/thread-interrupt/index.html" class="item ">
+            <li rel="/2018/01/24/HTTP的缺点/index.html" class="item ">
                 <a href="/comment/" title="留言" class="icon-comment">&nbsp;留言</a>
             </li>
             
@@ -102,39 +102,71 @@
 <!-- 文章 -->
 <article class="post article">
     <header class="text-center">
-        <h3 class="post-title"><span>线程中断</span></h3>
+        <h3 class="post-title"><span>聊聊HTTP的缺点</span></h3>
     </header>
     <p class="post-meta text-center">
         Weizhao 发表于
-        <time datetime="2018-01-16T07:30:39.342Z">2018-01-16</time>
+        <time datetime="2018-01-24T06:23:16.479Z">2018-01-24</time>
     </p>
     <div class="post-content">
-        <h3 id="中断线程"><a href="#中断线程" class="headerlink" title="中断线程"></a>中断线程</h3><p>在java中通过调用线程的interrupt()进行线程中断，调用之后线程设置中断标识为true，当线程检测中断状态后，来决定是直接退出还是继续后续的处理。</p>
-<h3 id="中断状态捕获"><a href="#中断状态捕获" class="headerlink" title="中断状态捕获"></a>中断状态捕获</h3><h5 id="非阻塞状态线程"><a href="#非阻塞状态线程" class="headerlink" title="非阻塞状态线程"></a>非阻塞状态线程</h5><p>当调用interrupt()方法后，可以在线程中通过调用</p>
-<ul>
-<li>Thread.currentThread().isInterrupted()</li>
+        <p>我们大多了解的http优秀和方便的一面，但是事务总有两面性，有好的一面也有不好的一面，本节聊聊不好的一面。</p>
+<h3 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h3><ul>
+<li>通信使用明文（不加密），内容可能会被窃听。</li>
+<li>不验证通信方的身份，因此有可能遭遇伪装（客户端和服务端都有可能）</li>
+<li>无法证明报文的完整性，有可能会被篡改。</li>
 </ul>
-<ul>
-<li>Thread.interrupted()</li>
-</ul>
-<p>方法进行中断状态判断，如：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (!Thread.currentThread().isInterrupted()) &#123;</span><br><span class="line">               System.out.println(<span class="string">"Atask running !"</span>);</span><br><span class="line">         &#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (!Thread.interrupted()) &#123;</span><br><span class="line">              System.out.println(<span class="string">"Atask running !"</span>);</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
-<p> 其中isInterrupted()不会重置线程中断状态，而Thread.interrupted()调用会重置中断状态为false，而在底层他们使用都是同一个方法，只是参数不一样</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isInterrupted</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> isInterrupted(<span class="keyword">false</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">boolean</span> <span class="title">interrupted</span><span class="params">()</span> </span>&#123;</span><br><span class="line">   <span class="keyword">return</span> currentThread().isInterrupted(<span class="keyword">true</span>);</span><br><span class="line"> &#125;</span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * true表示调用完清除中断状态而false则不清除。</span></span><br><span class="line"><span class="comment"> * Tests if some Thread has been interrupted.  The interrupted state</span></span><br><span class="line"><span class="comment"> * is reset or not based on the value of ClearInterrupted that is</span></span><br><span class="line"><span class="comment"> * passed.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">native</span> <span class="keyword">boolean</span> <span class="title">isInterrupted</span><span class="params">(<span class="keyword">boolean</span> ClearInterrupted)</span></span>;</span><br></pre></td></tr></table></figure>
-<h5 id="阻塞状态"><a href="#阻塞状态" class="headerlink" title="阻塞状态"></a>阻塞状态</h5><p>以上两种方法主要用于非阻塞状态的线程，而对于阻塞状态（如调用了thread.sleep、thread.join、thread.wait、1.5中的condition.await、以及可中断的通道上的 I/O 操作方法后可进入阻塞状态）的线程需要捕获<strong>InterruptedException</strong>进行中断。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Ftask</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            Thread.sleep(<span class="number">100</span>);</span><br><span class="line">            System.out.println(<span class="string">"Ftask running!"</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(<span class="string">"Ctask stop !"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>Ftask逻辑比较简单，如果比较复杂的逻辑，要注意抛出InterruptedException后，会清除中断状态，即设置中断状态为false。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"> </span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Ctask</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">while</span> (!Thread.currentThread().isInterrupted()) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                ....</span><br><span class="line">                Thread.sleep(<span class="number">100</span>);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                <span class="comment">//线程中断状态会被清空,需要再次调用interrupt方法,重新设置中断标示位。</span></span><br><span class="line">                Thread.currentThread().interrupt();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(<span class="string">"Ctask stop !"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>如果不知捕获到异常如何处理，可以抛出InterruptedException让上层调用Thread.currentThread().isInterrupted()方法，来决定后续处理。</p>
-<h3 id="无法中断的线程"><a href="#无法中断的线程" class="headerlink" title="无法中断的线程"></a>无法中断的线程</h3><ul>
-<li><p>死锁状态的状态线程无法中断</p>
+<p>其实以上问题不止http有，其他未加密的协议也有此类问题。</p>
+<h4 id="通信使用明文（不加密），内容可能会被窃听"><a href="#通信使用明文（不加密），内容可能会被窃听" class="headerlink" title="通信使用明文（不加密），内容可能会被窃听"></a>通信使用明文（不加密），内容可能会被窃听</h4><p>因为http不具备加密的功能，所以无法对通信报文进行加密，所以是使用明文进行发送，那么就有可能被窃听。</p>
+<p><img src="https://ws1.sinaimg.cn/large/006tKfTcgy1fnroynlkxij316u0g816n.jpg" alt=""></p>
+<p>   可以看到窃听无处不在</p>
+<p>窃听的方式有多种，比较常见有抓包工具（Wireshark）或者嗅探器（Sniffer）等工具，进行窃听。</p>
+<p>下面图片是使用Wireshark抓取的数据：</p>
+<p><img src="https://ws2.sinaimg.cn/large/006tKfTcgy1fnrplac6kyj31ge0t6k3p.jpg" alt=""></p>
+<h5 id="如何防止"><a href="#如何防止" class="headerlink" title="如何防止"></a>如何防止</h5><ul>
+<li><p>通信的层加密</p>
+<p>通过http与SSL/TLS的组合使用（SSL/TSS后续章节介绍），可以加密http通信内容。<img src="https://ws1.sinaimg.cn/large/006tKfTcgy1fnrprc6fkej30vu0ga10w.jpg" alt=""></p>
 </li>
-<li><p>synchronized、Lock.lock()，inputSteam.read()等，调用interrupt()对于这几个方法无效，因为都不抛出中断异常。如果拿不到资源，它们会无限期阻塞下去。</p>
+<li><p>通信报文内容加密</p>
+<p><img src="https://ws4.sinaimg.cn/large/006tKfTcly1fns2755t5qj30uq0fogpz.jpg" alt=""></p>
+<p>​</p>
+<p>​</p>
+<p>双方约定好密钥，在传输前对原报文进行一个加密，传输至服务端或客户端在进行解密，因为此类方式不同于https方式，所以还是有一定的风险。</p>
+<ul>
+<li>密钥不是一次一密，而且是内嵌在代码中，都有可能被获取。</li>
+<li>如果是基于浏览器的工程，那么这个密钥是内嵌在js中的，而js是可以访问的，那么就有可能被获取。</li>
+<li>如果是app工程中，也有可能被反编译获取。</li>
+</ul>
 </li>
 </ul>
-<p>对于Lock.lock()可以使用Lock.lockInterruptibly()方法，此方法相当于超时设置为无限长的Lock.tryLock(long time, TimeUnit unit)。</p>
-<p>对于inputStream等资源，有些(实现了interruptibleChannel接口)可以通过close()方法将资源关闭，对应的阻塞也会被放开。</p>
+<h4 id="不验证通信方的身份，因此有可能遭遇伪装"><a href="#不验证通信方的身份，因此有可能遭遇伪装" class="headerlink" title="不验证通信方的身份，因此有可能遭遇伪装"></a>不验证通信方的身份，因此有可能遭遇伪装</h4><p> http协议的请求与响应不会对通信方进行身份的确认，因此这种无法确认通信方，总结有以下几类问题：</p>
+<ul>
+<li>无法确定请求目标的Web服务器是否，真正要访问的服务器。</li>
+<li>无法确定客户端是否是真实要响应的客户端。</li>
+<li>无法确定正在通信的双方是否具备访问权限，比如：提供的WEB服务只想开发给指定的客户端访问。</li>
+<li>无法判定请求来自何方，出自谁手。</li>
+<li>即使是无意义的请求，也会照单全收。如海量的Dos攻击。</li>
+</ul>
+<h5 id="如何防止-1"><a href="#如何防止-1" class="headerlink" title="如何防止"></a>如何防止</h5><p>使用SSL才可以防止此类问题，SSL不仅提供加密功能，还提供证书，通过证书可以确定通信的方是意料之中的，这里肯定有人会问那证书如果保证可信呢？</p>
+<p>证书是有值得信赖的第三方机构颁发的，其他机构是没有颁发证书权限的，只有第三方机构是可信赖的，那么这个证书也是可信赖的，因为伪造证书是非常困难的。</p>
+<p><img src="https://ws2.sinaimg.cn/large/006tKfTcly1fnrzujlovsj30r00hmaci.jpg" alt=""></p>
+<p>   客户端验证服务端是否是可信的服务端，即单向认证。</p>
+<p><img src="https://ws1.sinaimg.cn/large/006tKfTcly1fns03dck5kj30x60h2jui.jpg" alt=""></p>
+<p>客户端与服务端相互认证，即双向认证。</p>
+<h4 id="无法证明报文的完整性，有可能会被篡改"><a href="#无法证明报文的完整性，有可能会被篡改" class="headerlink" title="无法证明报文的完整性，有可能会被篡改"></a>无法证明报文的完整性，有可能会被篡改</h4><p>所谓完整性指信息的准确度。无法证明完整性，那么也就无法判定信息是否准确。</p>
+<p>由于http协议无法证明通信的完整性，那么请求或者响应过程中报文就有可能被篡改，而服务端或者客户端是无法感知的。</p>
+<p><img src="https://ws1.sinaimg.cn/large/006tKfTcly1fns0ky1g54j31240a245g.jpg" alt=""></p>
+<p>比如从网上下载的内容，是无法确认下载后的内容是否跟服务器上的内容一致。</p>
+<p>像这样在请求/响应途中，遭攻击者拦截并篡改内容攻击，称为中间人攻击。</p>
+<p><img src="https://ws4.sinaimg.cn/large/006tKfTcly1fns0ofsgrbj30yc0kegyl.jpg" alt=""></p>
+<h5 id="如何防止-2"><a href="#如何防止-2" class="headerlink" title="如何防止"></a>如何防止</h5><ul>
+<li>使用md5/sha1/pgp来确定报文完整性的方法</li>
+</ul>
+<p><img src="https://ws1.sinaimg.cn/large/006tKfTcly1fns1pgirr5j312c0byjug.jpg" alt=""></p>
+<p>点击下载后，可以查看对应文件签名或者散列值，当我点击MD5后，如下图：</p>
+<p><img src="https://ws3.sinaimg.cn/large/006tKfTcly1fns1rs76lzj30yk088jsv.jpg" alt=""></p>
+<p>通过对下载后文件在通过MD5生成散列码，与官网上的散列码进行比较，来确定文件是否被篡改。</p>
+<p><img src="https://ws4.sinaimg.cn/large/006tKfTcly1fns1t86drej30p6036dga.jpg" alt=""></p>
+<p>但是从其它方式证明此种方式也不是绝对安全的，具体可以参见：<a href="http://bobao.360.cn/news/detail/768.html，大概意思就是构造”前缀碰撞法“，来制造MD5值一样，文件内容不一样的文件。" target="_blank" rel="noopener">http://bobao.360.cn/news/detail/768.html，大概意思就是构造”前缀碰撞法“，来制造MD5值一样，文件内容不一样的文件。</a></p>
 
     </div>
     <p class="post-meta">
@@ -145,7 +177,9 @@
             标签：
             
     
-        <a href="/tags/并发/" title="并发">并发</a>
+        <a href="/tags/网络通信/" title="网络通信">网络通信</a> / 
+    
+        <a href="/tags/HTTP/" title="HTTP">HTTP</a>
     
 
         </span>
@@ -171,20 +205,16 @@
     
     <span class="prev fl">
         上一篇<br >
-        <a href="/2018/01/18/mycatbug/">
-            
-                MyCat Bug
-            
-        </a>
+        <a href="javascript: void(0);">没有上一篇了</a>
     </span>
     
 
     
     <span class="next fr">
         下一篇<br >
-        <a href="/2018/01/04/案例分享/">
+        <a href="/2018/01/21/HTTP总结/">
             
-                04 案例分享
+                HTTP总结
             
         </a>
     </span>
@@ -261,7 +291,7 @@
   <script>
   JELON.Comment({
     container: 'comments',
-    label: 'thread-interrupt' || '2018/01/16/thread-interrupt/',
+    label: 'HTTP的缺点' || '2018/01/24/HTTP的缺点/',
     owner: 'dongweizhao',
     repo: 'blog_comments',
     clientId: '4d6412796597814f8f3d',

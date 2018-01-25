@@ -119,6 +119,116 @@
         <!-- 文章标题 -->
         
     <h3 class="post-title">
+    	<a href="http://weizhao.link/2018/01/24/HTTP的缺点/">
+    		聊聊HTTP的缺点
+    	</a>
+    </h3>
+
+    </header>
+    <p class="post-meta">
+        Weizhao 发表于
+        <time datetime="2018-01-24T06:23:16.479Z">2018-01-24</time>
+        &nbsp;&nbsp;
+        <span class="post-tags">
+            标签：
+            
+    
+        <a href="/tags/网络通信/" title="网络通信">网络通信</a> / 
+    
+        <a href="/tags/HTTP/" title="HTTP">HTTP</a>
+    
+
+        </span>
+    </p>
+
+    <div class="post-content">
+        <div class="post-excerpt">
+            
+                <p>我们大多了解的http优秀和方便的一面，但是事务总有两面性，有好的一面也有不好的一面，本节聊聊不好的一面。</p>
+<h3 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h3><ul>
+<li>通信使用明文（不加密），内容可能会被窃听。</li>
+<li>不验证通信方的身份，因此有可能遭遇伪装（客户端和服务端都有可能）</li>
+<li>无法证明报文的完整性，有可能会被篡改。</li>
+</ul>
+<p>其实以上问题不止http有，其他未加密的协议也有此类问题。</p>
+<h4 id="通信使用明文（不加密），内容可能会被窃听"><a href="#通信使用明文（不加密），内容可能会被窃听" class="headerlink" title="通信使用明文（不加密），内容可能会被窃听"></a>通信使用明文（不加密），内容可能会被窃听</h4><p>因为http不具备加密的功能，所以无法对通信报文进行加密，所以是使用明文进行发送，那么就有可能被窃听。</p>
+<p><img src="https://ws1.sinaimg.cn/large/006tKfTcgy1fnroynlkxij316u0g816n.jpg" alt=""></p>
+<p>   可以看到窃听无处不在</p>
+<p>窃听的方式有多种，比较常见有抓包工具（Wireshark）或者嗅探器（Sniffer）等工具，进行窃听。</p>
+<p>下面图片是使用Wireshark抓取的数据：</p>
+<p><img src="https://ws2.sinaimg.cn/large/006tKfTcgy1fnrplac6kyj31ge0t6k3p.jpg" alt=""></p>
+<h5 id="如何防止"><a href="#如何防止" class="headerlink" title="如何防止"></a>如何防止</h5><ul>
+<li><p>通信的层加密</p>
+<p>通过http与SSL/TLS的组合使用（SSL/TSS后续章节介绍），可以加密http通信内容。<img src="https://ws1.sinaimg.cn/large/006tKfTcgy1fnrprc6fkej30vu0ga10w.jpg" alt=""></p>
+</li>
+<li><p>通信报文内容加密</p>
+<p><img src="https://ws4.sinaimg.cn/large/006tKfTcly1fns2755t5qj30uq0fogpz.jpg" alt=""></p>
+<p>​</p>
+<p>​</p>
+<p>双方约定好密钥，在传输前对原报文进行一个加密，传输至服务端或客户端在进行解密，因为此类方式不同于https方式，所以还是有一定的风险。</p>
+<ul>
+<li>密钥不是一次一密，而且是内嵌在代码中，都有可能被获取。</li>
+<li>如果是基于浏览器的工程，那么这个密钥是内嵌在js中的，而js是可以访问的，那么就有可能被获取。</li>
+<li>如果是app工程中，也有可能被反编译获取。</li>
+</ul>
+</li>
+</ul>
+<h4 id="不验证通信方的身份，因此有可能遭遇伪装"><a href="#不验证通信方的身份，因此有可能遭遇伪装" class="headerlink" title="不验证通信方的身份，因此有可能遭遇伪装"></a>不验证通信方的身份，因此有可能遭遇伪装</h4><p> http协议的请求与响应不会对通信方进行身份的确认，因此这种无法确认通信方，总结有以下几类问题：</p>
+<ul>
+<li>无法确定请求目标的Web服务器是否，真正要访问的服务器。</li>
+<li>无法确定客户端是否是真实要响应的客户端。</li>
+<li>无法确定正在通信的双方是否具备访问权限，比如：提供的WEB服务只想开发给指定的客户端访问。</li>
+<li>无法判定请求来自何方，出自谁手。</li>
+<li>即使是无意义的请求，也会照单全收。如海量的Dos攻击。</li>
+</ul>
+<h5 id="如何防止-1"><a href="#如何防止-1" class="headerlink" title="如何防止"></a>如何防止</h5><p>使用SSL才可以防止此类问题，SSL不仅提供加密功能，还提供证书，通过证书可以确定通信的方是意料之中的，这里肯定有人会问那证书如果保证可信呢？</p>
+<p>证书是有值得信赖的第三方机构颁发的，其他机构是没有颁发证书权限的，只有第三方机构是可信赖的，那么这个证书也是可信赖的，因为伪造证书是非常困难的。</p>
+<p><img src="https://ws2.sinaimg.cn/large/006tKfTcly1fnrzujlovsj30r00hmaci.jpg" alt=""></p>
+<p>   客户端验证服务端是否是可信的服务端，即单向认证。</p>
+<p><img src="https://ws1.sinaimg.cn/large/006tKfTcly1fns03dck5kj30x60h2jui.jpg" alt=""></p>
+<p>客户端与服务端相互认证，即双向认证。</p>
+<h4 id="无法证明报文的完整性，有可能会被篡改"><a href="#无法证明报文的完整性，有可能会被篡改" class="headerlink" title="无法证明报文的完整性，有可能会被篡改"></a>无法证明报文的完整性，有可能会被篡改</h4><p>所谓完整性指信息的准确度。无法证明完整性，那么也就无法判定信息是否准确。</p>
+<p>由于http协议无法证明通信的完整性，那么请求或者响应过程中报文就有可能被篡改，而服务端或者客户端是无法感知的。</p>
+<p><img src="https://ws1.sinaimg.cn/large/006tKfTcly1fns0ky1g54j31240a245g.jpg" alt=""></p>
+<p>比如从网上下载的内容，是无法确认下载后的内容是否跟服务器上的内容一致。</p>
+<p>像这样在请求/响应途中，遭攻击者拦截并篡改内容攻击，称为中间人攻击。</p>
+<p><img src="https://ws4.sinaimg.cn/large/006tKfTcly1fns0ofsgrbj30yc0kegyl.jpg" alt=""></p>
+<h5 id="如何防止-2"><a href="#如何防止-2" class="headerlink" title="如何防止"></a>如何防止</h5><ul>
+<li>使用md5/sha1/pgp来确定报文完整性的方法</li>
+</ul>
+<p><img src="https://ws1.sinaimg.cn/large/006tKfTcly1fns1pgirr5j312c0byjug.jpg" alt=""></p>
+<p>点击下载后，可以查看对应文件签名或者散列值，当我点击MD5后，如下图：</p>
+<p><img src="https://ws3.sinaimg.cn/large/006tKfTcly1fns1rs76lzj30yk088jsv.jpg" alt=""></p>
+<p>通过对下载后文件在通过MD5生成散列码，与官网上的散列码进行比较，来确定文件是否被篡改。</p>
+<p><img src="https://ws4.sinaimg.cn/large/006tKfTcly1fns1t86drej30p6036dga.jpg" alt=""></p>
+<p>但是从其它方式证明此种方式也不是绝对安全的，具体可以参见：<a href="http://bobao.360.cn/news/detail/768.html，大概意思就是构造”前缀碰撞法“，来制造MD5值一样，文件内容不一样的文件。" target="_blank" rel="noopener">http://bobao.360.cn/news/detail/768.html，大概意思就是构造”前缀碰撞法“，来制造MD5值一样，文件内容不一样的文件。</a></p>
+
+            
+            <p class="more">
+                <a href="http://weizhao.link/2018/01/24/HTTP的缺点/">阅读剩下更多</a>
+            </p>
+        </div>
+        <div class="post-thumbnail" data-img="">
+            <a href="http://weizhao.link/2018/01/24/HTTP的缺点/" title="聊聊HTTP的缺点">
+                
+                    <img class="thumbnail" src="/img/default.png" data-echo="/img/thumbnail/4.jpg" alt="默认配图" >
+                
+            </a>
+        </div>
+    </div>
+</article>
+
+    
+        <!-- 文章 -->
+<article class="post">
+    <header>
+        <!-- 标签这有且只能显示一个 -->
+        
+        <a class="cat-link" href="/categories/后端/">后端</a>
+        
+        <!-- 文章标题 -->
+        
+    <h3 class="post-title">
     	<a href="http://weizhao.link/2018/01/21/HTTP总结/">
     		HTTP总结
     	</a>
@@ -581,56 +691,6 @@
 </article>
 
     
-        <!-- 文章 -->
-<article class="post">
-    <header>
-        <!-- 标签这有且只能显示一个 -->
-        
-        <a class="cat-link" href="/categories/后端/">后端</a>
-        
-        <!-- 文章标题 -->
-        
-    <h3 class="post-title">
-    	<a href="http://weizhao.link/2017/12/30/jenkins-testNg-maven搭建自动化测试/">
-    		基于jenkins+testNg+maven搭建自动化测试
-    	</a>
-    </h3>
-
-    </header>
-    <p class="post-meta">
-        Weizhao 发表于
-        <time datetime="2017-12-30T14:34:06.997Z">2017-12-30</time>
-        &nbsp;&nbsp;
-        <span class="post-tags">
-            标签：
-            
-    
-        <a href="/tags/jenkins/" title="jenkins">jenkins</a>
-    
-
-        </span>
-    </p>
-
-    <div class="post-content">
-        <div class="post-excerpt">
-            
-                随着业务的发展，项目的复杂度日益增长，不管是增加、修改操作都担心对原有功能造成影响，为了尽量避免此类问题的出现，所以才有了搭建此平台的想法。
-            
-            <p class="more">
-                <a href="http://weizhao.link/2017/12/30/jenkins-testNg-maven搭建自动化测试/">阅读剩下更多</a>
-            </p>
-        </div>
-        <div class="post-thumbnail" data-img="">
-            <a href="http://weizhao.link/2017/12/30/jenkins-testNg-maven搭建自动化测试/" title="基于jenkins+testNg+maven搭建自动化测试">
-                
-                    <img class="thumbnail" src="/img/default.png" data-echo="/img/thumbnail/0.jpg" alt="默认配图" >
-                
-            </a>
-        </div>
-    </div>
-</article>
-
-    
 
     
     <nav class="page-navigator">
@@ -653,7 +713,7 @@
     
     <li>
         <a href="/categories/后端/">后端</a>
-        <span class="badge">(15)</span>
+        <span class="badge">(16)</span>
     </li>
     
 </ul>
@@ -665,25 +725,25 @@
         <!-- 文章标签 -->
 <div class="widget-bd tag-wrap">
   
+    <a class="tag-item" href="/tags/网络通信/" title="网络通信">网络通信 (3)</a>
+  
+    <a class="tag-item" href="/tags/HTTP/" title="HTTP">HTTP (2)</a>
+  
     <a class="tag-item" href="/tags/并发/" title="并发">并发 (5)</a>
-  
-    <a class="tag-item" href="/tags/java/" title="java">java (2)</a>
-  
-    <a class="tag-item" href="/tags/网络通信/" title="网络通信">网络通信 (2)</a>
-  
-    <a class="tag-item" href="/tags/HTTP/" title="HTTP">HTTP (1)</a>
   
     <a class="tag-item" href="/tags/jenkins/" title="jenkins">jenkins (2)</a>
   
-    <a class="tag-item" href="/tags/jvm/" title="jvm">jvm (1)</a>
+    <a class="tag-item" href="/tags/java/" title="java">java (2)</a>
   
     <a class="tag-item" href="/tags/mycat/" title="mycat">mycat (1)</a>
+  
+    <a class="tag-item" href="/tags/jvm/" title="jvm">jvm (1)</a>
+  
+    <a class="tag-item" href="/tags/架构设计/" title="架构设计">架构设计 (1)</a>
   
     <a class="tag-item" href="/tags/分布式/" title="分布式">分布式 (4)</a>
   
     <a class="tag-item" href="/tags/分库分表及事务一致性设计/" title="分库分表及事务一致性设计">分库分表及事务一致性设计 (4)</a>
-  
-    <a class="tag-item" href="/tags/架构设计/" title="架构设计">架构设计 (1)</a>
   
 </div>
 
