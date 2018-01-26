@@ -10,10 +10,10 @@
     <meta name="google-site-verification" content="P3RNPgvLP-2XOkC905i_eBTn9dVL2hGAHurIlYcYftM" />
 
     
-    <title>MyCat Bug | Weizhao</title>
+    <title>`nio`标签下的文章 | Weizhao</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" >
-    <meta name="keywords" content="MyCat Bug , Weizhao , dweizhao , dongweizhao , 后端, Web, 董伟召 , 后端开发" >
-    <meta name="description" content="MyCat Bug , 董伟召的工作小站" >     
+    <meta name="keywords" content="`nio`标签下的文章 , Weizhao , dweizhao , dongweizhao , 后端, Web, 董伟召 , 后端开发" >
+    <meta name="description" content="`nio`标签下的文章 , 董伟召的工作小站" >     
     
     <link rel="alternative" href="/atom.xml" title="Weizhao" type="application/atom+xml" >
     
@@ -50,15 +50,15 @@
         <div class="dropnav icon-paragraph-justify" id="JELON__btnDropNav"></div>
         <ul class="menu hidden" id="JELON__menu">
             
-            <li rel="/2018/01/18/mycatbug/index.html" class="item ">
+            <li rel="/tags/nio/index.html" class="item ">
                 <a href="/" title="首页" class="icon-home">&nbsp;首页</a>
             </li>
             
-            <li rel="/2018/01/18/mycatbug/index.html" class="item ">
+            <li rel="/tags/nio/index.html" class="item ">
                 <a href="/about/" title="关于" class="icon-about">&nbsp;关于</a>
             </li>
             
-            <li rel="/2018/01/18/mycatbug/index.html" class="item ">
+            <li rel="/tags/nio/index.html" class="item ">
                 <a href="/comment/" title="留言" class="icon-comment">&nbsp;留言</a>
             </li>
             
@@ -98,155 +98,72 @@
     <div class="container body clearfix">
         <section class="content">
             <div class="content-main widget">
-                <!-- 文章页 -->
-<!-- 文章 -->
-<article class="post article">
-    <header class="text-center">
-        <h3 class="post-title"><span>MyCat Bug</span></h3>
-    </header>
-    <p class="post-meta text-center">
-        Weizhao 发表于
-        <time datetime="2018-01-18T02:44:23.062Z">2018-01-18</time>
-    </p>
-    <div class="post-content">
-        <h3 id="高并发场景线程池堵塞"><a href="#高并发场景线程池堵塞" class="headerlink" title="高并发场景线程池堵塞"></a>高并发场景线程池堵塞</h3><p><img src="https://ws3.sinaimg.cn/large/006tKfTcgy1fnkkfpcl2wj30qe0rcadh.jpg" alt=""></p>
-<blockquote>
-<p>在使用mycat使用jdbc对接后台数据库时，会出现以上问题，线程池中核心线程数是固定的，如果超过更多的任务添加到线程池，就会添加至等待队列，等核心线程处理当前任务，在从等待队列中获取执行<br>   而正好出现流程所示场景，入队顺序打乱，当然请求T1获取完，分片1和分片2的行级锁后，正好是请求T2执行分片1和分片2，而分片1和分片2的数据被T1锁住，所以无法执行，所以后续的任务无法执行。从而会导致大量的任务堵塞。<br>   如果排队顺序进入，会大大影响clusterdb的吞吐量，如果改成缓存线程池，线程数是不可控的 ，会导致内存溢出</p>
-</blockquote>
+                <!-- 按标签分类 -->
 
-    </div>
+    <h3 class="widget-hd">
+        <strong>
+            
+                `nio`标签下的文章
+            
+        </strong>
+    </h3>
+    
+        <!-- 文章 -->
+<article class="post">
+    <header>
+        <!-- 标签这有且只能显示一个 -->
+        
+        <a class="cat-link" href="/categories/后端/">后端</a>
+        
+        <!-- 文章标题 -->
+        
+    <h3 class="post-title">
+    	<a href="http://weizhao.link/2018/01/26/Buffer/">
+    		Buffer剖析
+    	</a>
+    </h3>
+
+    </header>
     <p class="post-meta">
-        <span class="post-cat">分类：
-            <a class="cat-link" href="/categories/后端/">后端</a>
-        </span>
+        Weizhao 发表于
+        <time datetime="2018-01-26T02:06:11.824Z">2018-01-26</time>
+        &nbsp;&nbsp;
         <span class="post-tags">
             标签：
             
     
-        <a href="/tags/mycat/" title="mycat">mycat</a>
+        <a href="/tags/nio/" title="nio">nio</a>
     
 
         </span>
     </p>
+
+    <div class="post-content">
+        <div class="post-excerpt">
+            
+                Buffer 类是 java.nio 的构造基础。一个 Buffer 对象是固定数量的数据的容器，其作用是一个存储器，或者分段运输区，在这里，数据可被存储并在之后用于检索。缓冲区可以被写满或释放。对于每个非布尔原始数据类型都有一个缓冲区类，即 Buffer 的子类有：ByteBuffer、CharBuffer、DoubleBuffer、FloatBuffer、IntBuffer、LongBuffer 和 ShortBuffer，是没有 BooleanBuffer 之说的。尽管缓冲区作用于它们存储的原始数据类型，但缓冲区十分倾向于处理字节。非字节缓冲区可以在后台执行从字节或到字节的转换，这取决于缓冲区是如何创建的。
+            
+            <p class="more">
+                <a href="http://weizhao.link/2018/01/26/Buffer/">阅读剩下更多</a>
+            </p>
+        </div>
+        <div class="post-thumbnail" data-img="">
+            <a href="http://weizhao.link/2018/01/26/Buffer/" title="Buffer剖析">
+                
+                    <img class="thumbnail" src="/img/default.png" data-echo="/img/thumbnail/6.jpg" alt="默认配图" >
+                
+            </a>
+        </div>
+    </div>
 </article>
-<!-- 分享按钮 -->
 
-  <div class="article-share clearfix text-center">
-    <div class="share-area">
-      <span class="share-txt">分享到：</span>
-      <a href="javascript: window.open('http://service.weibo.com/share/share.php?url=' + encodeURIComponent(location.href) + '&title=' + document.title + '&language=zh_cn');" class="share-icon weibo"></a>
-      <a href="javascript: alert('请复制链接到微信并发送');" class="share-icon wechat"></a>
-      <a href="javascript: window.open('http://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=' + encodeURIComponent(location.href) + '&title=' + document.title);" class="share-icon qqzone"></a>
-      <a href="javascript: window.open('http://connect.qq.com/widget/shareqq/index.html?url=' + encodeURIComponent(location.href) + '&desc=Jelon个人博客&title=' + document.title + '&callback=' + encodeURIComponent(location.href));" class="share-icon qq"></a>
-      <a href="javascript: window.open('http://shuo.douban.com/!service/share?href=' + encodeURIComponent(location.href) + '&name=' + document.title + '&text=' + document.title);" class="share-icon douban"></a>
-    </div>
-  </div>
-
-
-<!-- 上一篇/下一篇 -->
-
-<div class="article-nav clearfix">
-    
-    <span class="prev fl">
-        上一篇<br >
-        <a href="/2018/01/18/大促秒杀系统设计/">
-            
-                大促秒杀系统设计
-            
-        </a>
-    </span>
     
 
     
-    <span class="next fr">
-        下一篇<br >
-        <a href="/2018/01/16/thread-interrupt/">
-            
-                线程中断
-            
-        </a>
-    </span>
+    <nav class="page-navigator">
+        <span class="page-number current">1</span>
+    </nav>
     
-</div>
-
-<!-- 文章评论 -->
-
-  <script src="/js/comment.js"></script>
-  <div id="comments" class="comment">
-    <!--
-    <div class="sign-bar">
-      GitHub 已登录!
-      <span class="sign-link">登出</span>
-    </div>
-    <section class="box">
-      <div class="com-avatar"><img src="/img/jelon.jpg" alt="avatar"></div>
-      <div class="com-text">
-        <div class="main">
-          <textarea class="text-area-edited show" placeholder="欢迎评论！"></textarea>
-          <div class="text-area-preview"></div>
-        </div>
-        <div class="switch">
-          <div class="switch-item on">编辑</div>
-          <div class="switch-item">预览</div>
-        </div>
-        <div class="button">提交</div>
-      </div>
-    </section>
-    <section class="tips">注：评论支持 markdown 语法！</section>
-    <section class="list-wrap">
-      <ul class="list">
-        <li>
-          <div class="user-avatar">
-            <a href="/">
-              <img src="/img/jelon.jpg" alt="user-avatar">
-            </a>
-          </div>
-          <div class="user-comment">
-            <div class="user-comment-header">
-              <span class="post-name">张德龙</span>
-              <span class="post-time">2017年12月12日</span>
-              <span class="like liked">已赞</span>
-              <span class="like-num">2</span>
-            </div>
-            <div class="user-comment-body">333333</div>
-          </div>
-        </li>
-        <li>
-          <div class="user-avatar">
-            <a href="/">
-              <img src="/img/jelon.jpg" alt="user-avatar">
-            </a>
-          </div>
-          <div class="user-comment">
-            <div class="user-comment-header">
-              <span class="post-name">刘德华</span>
-              <span class="post-time">2017年12月12日</span>
-              <span class="like">点赞</span>
-              <span class="like-num">2</span>
-            </div>
-            <div class="user-comment-body">vvvvv</div>
-          </div>
-        </li>
-      </ul>
-      <div class="page-nav">
-        <a href="javascript: void(0);" class="item">1</a>
-        <a href="javascript: void(0);" class="item">2</a>
-        <a href="javascript: void(0);" class="item current">3</a>
-      </div>
-    </section>
-    -->
-  </div>
-  <script>
-  JELON.Comment({
-    container: 'comments',
-    label: 'mycatbug' || '2018/01/18/mycatbug/',
-    owner: 'dongweizhao',
-    repo: 'blog_comments',
-    clientId: '4d6412796597814f8f3d',
-    clientSecret: '0c3ab59a6e2a4f77a88348acf129a7bf4e24fad1'
-  });
-  </script>
-
 
 
             </div>
