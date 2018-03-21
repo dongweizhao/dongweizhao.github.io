@@ -114,6 +114,136 @@
     <header>
         <!-- 标签这有且只能显示一个 -->
         
+            <a href="javascript: void(0);" class="cat">未分类</a>
+        
+        <!-- 文章标题 -->
+        
+    </header>
+    <p class="post-meta">
+        Douglat 发表于
+        <time datetime="2018-03-21T13:53:50.678Z">2018-03-21</time>
+        &nbsp;&nbsp;
+        <span class="post-tags">
+            标签：
+            
+        </span>
+    </p>
+
+    <div class="post-content">
+        <div class="post-excerpt">
+            
+                <hr>
+<p>title: mysql安装步骤<br>author: Weizhao<br>categories:</p>
+<ul>
+<li>数据库<br>tags: mysql<br>thumbnail:<br>blogexcerpt: 1、操作系统：CentOS release 6.8 (Final)</li>
+</ul>
+<p>2、安装版本： mysql-5.6.31-linux-glibc2.5-x86_64.tar.gz</p>
+<p>3、下载地址：<a href="http://dev.mysql.com/downloads/mysql/" target="_blank" rel="noopener">http://dev.mysql.com/downloads/mysql/</a></p>
+<p>4、下载说明：上边的下载地址是最新版的，如果想下载老版本可以点击页面中的超链接“Looking for previous GA versions?”</p>
+<h2 id="5、特殊说明：Linux下MySQL5-6与MySQL5-7安装方法略有不同，本文以5-6为主"><a href="#5、特殊说明：Linux下MySQL5-6与MySQL5-7安装方法略有不同，本文以5-6为主" class="headerlink" title="5、特殊说明：Linux下MySQL5.6与MySQL5.7安装方法略有不同，本文以5.6为主"></a>5、特殊说明：Linux下MySQL5.6与MySQL5.7安装方法略有不同，本文以5.6为主</h2><blockquote>
+<p>环境：<br>1、操作系统：CentOS release 6.8 (Final)<br>2、安装版本： mysql-5.6.31-linux-glibc2.5-x86_64.tar.gz<br>3、下载地址：<a href="https://link.jianshu.com?t=http://dev.mysql.com/downloads/mysql/" target="_blank" rel="noopener">http://dev.mysql.com/downloads/mysql/</a><br>4、下载说明：上边的下载地址是最新版的，如果想下载老版本可以点击页面中的超链接“<a href="https://link.jianshu.com?t=http://dev.mysql.com/downloads/mysql/5.6.html" target="_blank" rel="noopener">Looking for previous GA versions?</a>”<br>5、特殊说明：Linux下MySQL5.6与MySQL5.7安装方法略有不同，本文以5.6为主</p>
+</blockquote>
+<h1 id="安装步骤"><a href="#安装步骤" class="headerlink" title="安装步骤"></a>安装步骤</h1><h3 id="0、卸载老版本MySQL"><a href="#0、卸载老版本MySQL" class="headerlink" title="0、卸载老版本MySQL"></a>0、卸载老版本MySQL</h3><p>查找并删除mysql有关的文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">find / -name mysql</span><br><span class="line">rm -rf 上边查找到的路径，多个路径用空格隔开</span><br><span class="line">#或者下边一条命令即可</span><br><span class="line">find / -name mysql|xargs rm -rf</span><br></pre></td></tr></table></figure>
+<p><img src="http://upload-images.jianshu.io/upload_images/1899977-305617e34955e4d3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/700" alt="img"></p>
+<p>Paste_Image.png</p>
+<h3 id="1、在安装包存放目录下执行命令解压文件："><a href="#1、在安装包存放目录下执行命令解压文件：" class="headerlink" title="1、在安装包存放目录下执行命令解压文件："></a>1、在安装包存放目录下执行命令解压文件：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf mysql-5.6.31-linux-glibc2.5-x86_64.tar.gz</span><br></pre></td></tr></table></figure>
+<p><img src="http://upload-images.jianshu.io/upload_images/1899977-f8b6174388c8531d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/700" alt="img"></p>
+<p>Paste_Image.png</p>
+<h3 id="2、删除安装包，重命名解压后的文件"><a href="#2、删除安装包，重命名解压后的文件" class="headerlink" title="2、删除安装包，重命名解压后的文件"></a>2、删除安装包，重命名解压后的文件</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">rm -f mysql-5.6.31-linux-glibc2.5-x86_64.tar.gz</span><br><span class="line">mv mysql-5.6.31-linux-glibc2.5-x86_64/ mysql</span><br></pre></td></tr></table></figure>
+<p><img src="http://upload-images.jianshu.io/upload_images/1899977-7c5b2ca42cf623e1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/700" alt="img"></p>
+<p>Paste_Image.png</p>
+<h3 id="3、添加mysql用户组和mysql用户"><a href="#3、添加mysql用户组和mysql用户" class="headerlink" title="3、添加mysql用户组和mysql用户"></a>3、添加mysql用户组和mysql用户</h3><p>先检查是否有mysql用户组和mysql用户</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">groups mysql</span><br></pre></td></tr></table></figure>
+<p><img src="http://upload-images.jianshu.io/upload_images/1899977-cc398fb960e0cb76.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/443" alt="img"></p>
+<p>Paste_Image.png</p>
+<p>若无，则添加；</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">groupadd mysql</span><br><span class="line">useradd -r -g mysql mysql</span><br></pre></td></tr></table></figure>
+<p><img src="http://upload-images.jianshu.io/upload_images/1899977-f80edc428a9e61cf.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/591" alt="img"></p>
+<p>Paste_Image.png</p>
+<p>若有，则跳过；</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1899977-6aee55a3221c0446.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/426" alt="img"></p>
+<p>Paste_Image.png</p>
+<h3 id="4、进入mysql目录更改权限"><a href="#4、进入mysql目录更改权限" class="headerlink" title="4、进入mysql目录更改权限"></a>4、进入mysql目录更改权限</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd mysql/</span><br><span class="line">chown -R mysql:mysql ./</span><br></pre></td></tr></table></figure>
+<p><img src="http://upload-images.jianshu.io/upload_images/1899977-ad018015ea413b53.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/700" alt="img"></p>
+<p>Paste_Image.png</p>
+<h3 id="5、执行安装脚本"><a href="#5、执行安装脚本" class="headerlink" title="5、执行安装脚本"></a>5、执行安装脚本</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./scripts/mysql_install_db --user=mysql</span><br></pre></td></tr></table></figure>
+<p><img src="http://upload-images.jianshu.io/upload_images/1899977-e07b0b2383d9fc81.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/700" alt="img"></p>
+<p>Paste_Image.png</p>
+<p>安装完之后修改当前目录拥有者为root用户，修改data目录拥有者为mysql</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">chown -R root:root ./</span><br><span class="line">chown -R mysql:mysql data</span><br></pre></td></tr></table></figure>
+<p><img src="http://upload-images.jianshu.io/upload_images/1899977-4e2b1c5c2fd75d24.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/700" alt="img"></p>
+<p>Paste_Image.png</p>
+<h3 id="6、更改mysql密码"><a href="#6、更改mysql密码" class="headerlink" title="6、更改mysql密码"></a>6、更改mysql密码</h3><p>上一步安装脚本执行输出的日志中告诉我们如何更改密码了</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1899977-ccd379696682e6c6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/700" alt="img"></p>
+<p>Paste_Image.png</p>
+<p>但是如果直接执行这两条命令就会报错</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1899977-151811b1ccfd6b75.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/700" alt="img"></p>
+<p>Paste_Image.png</p>
+<p>因为这时还没有启动mysql，这算是一个坑。启动方法如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./support-files/mysql.server start</span><br></pre></td></tr></table></figure>
+<p><img src="http://upload-images.jianshu.io/upload_images/1899977-31eacd5fca58b5b5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/700" alt="img"></p>
+<p>Paste_Image.png</p>
+<p>如果MySQL启动报错，则可能是已经存在MySQL进程，杀掉即可</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ps aux|grep mysql</span><br><span class="line">kill -9 上边的进程号</span><br><span class="line">#或者下边一条命令即可杀掉所有MySQL进程</span><br><span class="line">ps aux|grep mysql|awk &apos;&#123;print $2&#125;&apos;|xargs kill -9</span><br></pre></td></tr></table></figure>
+<p><img src="http://upload-images.jianshu.io/upload_images/1899977-6572db71fdf5faa7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/700" alt="img"></p>
+<p>Paste_Image.png</p>
+<p>杀掉后再启动即可。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1899977-f417bdc69058de74.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/700" alt="img"></p>
+<p>Paste_Image.png</p>
+<p>MySQL启动之后再执行如下命令更改密码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./bin/mysqladmin -u root -h localhost.localdomain password &apos;root&apos;</span><br></pre></td></tr></table></figure>
+<p><img src="http://upload-images.jianshu.io/upload_images/1899977-d1a1c4478febf199.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/700" alt="img"></p>
+<p>Paste_Image.png</p>
+<p>密码更改后即可登录MySQL</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./bin/mysql -h127.0.0.1 -uroot -proot</span><br></pre></td></tr></table></figure>
+<p><img src="http://upload-images.jianshu.io/upload_images/1899977-c22b674ff3f96009.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/700" alt="img"></p>
+<p>Paste_Image.png</p>
+<p>登录之后将其他用户的密码也可改为root</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">update mysql.user set password=password(&apos;root&apos;) where user=&apos;root&apos;;</span><br><span class="line">flush privileges;</span><br></pre></td></tr></table></figure>
+<p><img src="http://upload-images.jianshu.io/upload_images/1899977-010a473ab72f59fc.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/700" alt="img"></p>
+<p>Paste_Image.png</p>
+<p>7、增加远程登录权限</p>
+<p>上一步即可本地登录，但远程登录会报错</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1899977-2185d688960a5413.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/502" alt="img"></p>
+<p>Paste_Image.png</p>
+<p>为解决这一问题，需要本地登陆MySQL后执行如下命令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">grant all privileges on *.* to root@&apos;%&apos; identified by &apos;root&apos;;</span><br><span class="line">flush privileges;</span><br></pre></td></tr></table></figure>
+<p><img src="http://upload-images.jianshu.io/upload_images/1899977-8488efcf4d8d96a1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/700" alt="img"></p>
+<p>Paste_Image.png</p>
+<p>执行之后即可远程登录</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1899977-45f2148fec4a53af.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/486" alt="img"></p>
+<p>Paste_Image.png</p>
+<h3 id="8、将MySQL加入Service系统服务"><a href="#8、将MySQL加入Service系统服务" class="headerlink" title="8、将MySQL加入Service系统服务"></a>8、将MySQL加入Service系统服务</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">cp support-files/mysql.server /etc/init.d/mysqld</span><br><span class="line">chkconfig --add mysqld</span><br><span class="line">chkconfig mysqld on</span><br><span class="line">service mysqld restart</span><br><span class="line"> service mysqld status</span><br></pre></td></tr></table></figure>
+<p><img src="http://upload-images.jianshu.io/upload_images/1899977-e8c7c78c63097796.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/700" alt="img"></p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1899977-ba65cfbc31d07567.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/700" alt="img"></p>
+<h3 id="9、配置my-cnf"><a href="#9、配置my-cnf" class="headerlink" title="9、配置my.cnf"></a>9、配置my.cnf</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">vim my.cnf</span><br><span class="line">#添加以下两条语句并保存退出</span><br><span class="line">character-set-server=utf8</span><br><span class="line">lower_case_table_names=1</span><br><span class="line">max_allowed_packet=100M</span><br></pre></td></tr></table></figure>
+<p><img src="http://upload-images.jianshu.io/upload_images/1899977-d145484bd42a4b63.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/700" alt="img"></p>
+<p>配置好之后，重启mysqld服务</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1899977-c7178785535c5175.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/700" alt="img"></p>
+<p>传送门：<a href="http://www.jianshu.com/p/f4a98a905011" target="_blank" rel="noopener">http://www.jianshu.com/p/f4a98a905011</a></p>
+
+            
+            <p class="more">
+                <a href="http://weizhao.link/2018/03/21/mysql安装/">阅读剩下更多</a>
+            </p>
+        </div>
+        <div class="post-thumbnail" data-img="">
+            <a href="http://weizhao.link/2018/03/21/mysql安装/" title="">
+                
+                    <img class="thumbnail" src="/img/default.png" data-echo="/img/thumbnail/1.jpg" alt="默认配图" >
+                
+            </a>
+        </div>
+    </div>
+</article>
+
+    
+        <!-- 文章 -->
+<article class="post">
+    <header>
+        <!-- 标签这有且只能显示一个 -->
+        
         <a class="cat-link" href="/categories/开发工具/">开发工具</a>
         
         <!-- 文章标题 -->
@@ -567,60 +697,10 @@
 </article>
 
     
-        <!-- 文章 -->
-<article class="post">
-    <header>
-        <!-- 标签这有且只能显示一个 -->
-        
-        <a class="cat-link" href="/categories/后端/">后端</a>
-        
-        <!-- 文章标题 -->
-        
-    <h3 class="post-title">
-    	<a href="http://weizhao.link/2018/01/16/thread-interrupt/">
-    		线程中断
-    	</a>
-    </h3>
-
-    </header>
-    <p class="post-meta">
-        Weizhao 发表于
-        <time datetime="2018-01-16T07:30:39.342Z">2018-01-16</time>
-        &nbsp;&nbsp;
-        <span class="post-tags">
-            标签：
-            
-    
-        <a href="/tags/并发/" title="并发">并发</a>
-    
-
-        </span>
-    </p>
-
-    <div class="post-content">
-        <div class="post-excerpt">
-            
-                在java中通过调用线程的interrupt()进行线程中断，调用之后线程设置中断标识为true，当线程检测中断状态后，来决定是直接退出还是继续后续的处理。
-            
-            <p class="more">
-                <a href="http://weizhao.link/2018/01/16/thread-interrupt/">阅读剩下更多</a>
-            </p>
-        </div>
-        <div class="post-thumbnail" data-img="">
-            <a href="http://weizhao.link/2018/01/16/thread-interrupt/" title="线程中断">
-                
-                    <img class="thumbnail" src="/img/default.png" data-echo="/img/thumbnail/6.jpg" alt="默认配图" >
-                
-            </a>
-        </div>
-    </div>
-</article>
-
-    
 
     
     <nav class="page-navigator">
-        <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">后一页</a>
+        <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/">后一页</a>
     </nav>
     
 
@@ -663,15 +743,15 @@
   
     <a class="tag-item" href="/tags/并发/" title="并发">并发 (5)</a>
   
-    <a class="tag-item" href="/tags/网络通信/" title="网络通信">网络通信 (3)</a>
-  
-    <a class="tag-item" href="/tags/HTTP/" title="HTTP">HTTP (2)</a>
+    <a class="tag-item" href="/tags/nio/" title="nio">nio (1)</a>
   
     <a class="tag-item" href="/tags/java/" title="java">java (2)</a>
   
     <a class="tag-item" href="/tags/jenkins/" title="jenkins">jenkins (2)</a>
   
-    <a class="tag-item" href="/tags/nio/" title="nio">nio (1)</a>
+    <a class="tag-item" href="/tags/网络通信/" title="网络通信">网络通信 (3)</a>
+  
+    <a class="tag-item" href="/tags/HTTP/" title="HTTP">HTTP (2)</a>
   
     <a class="tag-item" href="/tags/jvm/" title="jvm">jvm (1)</a>
   
