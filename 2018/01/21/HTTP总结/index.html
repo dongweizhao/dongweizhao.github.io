@@ -176,11 +176,9 @@
 <li><p>因为“服务器推送”，内嵌资源的优化手段也变得没有意义了。而且使用服务器推送的资源的方式更加高效，因为客户端还可以缓存起来，甚至可以由不同的页面共享（依旧遵循同源策略）</p>
 </li>
 </ol>
-<h3 id="如何使用上-HTTP-2-0"><a href="#如何使用上-HTTP-2-0" class="headerlink" title="如何使用上 HTTP/2.0"></a>如何使用上 HTTP/2.0</h3><ol>
-<li>需要浏览器的支持，目前最新版的 Chrome、Opera、 FireFox、 IE11、 edge 都已经支持了</li>
-<li>需要 WEB 服务器的支持，比如 Nginx , H20</li>
-</ol>
-<p>如果浏览器或服务器有一方不支持，那么会自动变成 Http/1.1</p>
+<h3 id="如何使用上-HTTP-2-0"><a href="#如何使用上-HTTP-2-0" class="headerlink" title="如何使用上 HTTP/2.0"></a>如何使用上 HTTP/2.0</h3><pre><code>1. 需要浏览器的支持，目前最新版的 Chrome、Opera、 FireFox、 IE11、 edge 都已经支持了
+2. 需要 WEB 服务器的支持，比如 Nginx , H20
+</code></pre><p>如果浏览器或服务器有一方不支持，那么会自动变成 Http/1.1</p>
 <h2 id="HTTP-1-1-HTTP-2-0性能比较"><a href="#HTTP-1-1-HTTP-2-0性能比较" class="headerlink" title="HTTP/1.1  HTTP/2.0性能比较"></a>HTTP/1.1  HTTP/2.0性能比较</h2><p><a href="https://http2.akamai.com/demo" target="_blank" rel="noopener">https://http2.akamai.com/demo</a><br>这是Akamai公司建立的一个官方演示，这个演示同时请求379张图片，用于展示HTTP/1.1和HTTP/2的性能差距。不同的电脑配置、网络情况以及服务器负载等情况不同，得到的结果肯定也不同，下图是使用自己的电脑加载时间截图:</p>
 <p><img src="https://ws3.sinaimg.cn/large/006tKfTcgy1fnoje4jbp9j31j212etxz.jpg" alt=""></p>
 <p>参考：</p>
@@ -337,7 +335,7 @@
     
     <li>
         <a href="/categories/后端/">后端</a>
-        <span class="badge">(17)</span>
+        <span class="badge">(18)</span>
     </li>
     
     <li>
@@ -364,13 +362,15 @@
         <!-- 文章标签 -->
 <div class="widget-bd tag-wrap">
   
+    <a class="tag-item" href="/tags/网络通信/" title="网络通信">网络通信 (4)</a>
+  
+    <a class="tag-item" href="/tags/HTTPS/" title="HTTPS">HTTPS (1)</a>
+  
     <a class="tag-item" href="/tags/并发/" title="并发">并发 (5)</a>
   
-    <a class="tag-item" href="/tags/网络通信/" title="网络通信">网络通信 (3)</a>
+    <a class="tag-item" href="/tags/nio/" title="nio">nio (1)</a>
   
     <a class="tag-item" href="/tags/HTTP/" title="HTTP">HTTP (2)</a>
-  
-    <a class="tag-item" href="/tags/nio/" title="nio">nio (1)</a>
   
     <a class="tag-item" href="/tags/java/" title="java">java (2)</a>
   

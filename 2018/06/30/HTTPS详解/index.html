@@ -10,10 +10,10 @@
     <meta name="google-site-verification" content="P3RNPgvLP-2XOkC905i_eBTn9dVL2hGAHurIlYcYftM" />
 
     
-    <title>jvm内存溢出/CPU过高问题排查 | Weizhao</title>
+    <title>HTTPS详解-加密算法（一） | Weizhao</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" >
-    <meta name="keywords" content="jvm内存溢出/CPU过高问题排查 , Weizhao , dweizhao , dongweizhao , 后端, Web, 董伟召 , 后端开发" >
-    <meta name="description" content="jvm内存溢出/CPU过高问题排查 , 董伟召的工作小站" >     
+    <meta name="keywords" content="HTTPS详解-加密算法（一） , Weizhao , dweizhao , dongweizhao , 后端, Web, 董伟召 , 后端开发" >
+    <meta name="description" content="HTTPS详解-加密算法（一） , 董伟召的工作小站" >     
     
     <link rel="alternative" href="/atom.xml" title="Weizhao" type="application/atom+xml" >
     
@@ -50,15 +50,15 @@
         <div class="dropnav icon-paragraph-justify" id="JELON__btnDropNav"></div>
         <ul class="menu hidden" id="JELON__menu">
             
-            <li rel="/2018/01/19/jvm内存溢出排查/index.html" class="item ">
+            <li rel="/2018/06/30/HTTPS详解/index.html" class="item ">
                 <a href="/" title="首页" class="icon-home">&nbsp;首页</a>
             </li>
             
-            <li rel="/2018/01/19/jvm内存溢出排查/index.html" class="item ">
+            <li rel="/2018/06/30/HTTPS详解/index.html" class="item ">
                 <a href="/about/" title="关于" class="icon-about">&nbsp;关于</a>
             </li>
             
-            <li rel="/2018/01/19/jvm内存溢出排查/index.html" class="item ">
+            <li rel="/2018/06/30/HTTPS详解/index.html" class="item ">
                 <a href="/comment/" title="留言" class="icon-comment">&nbsp;留言</a>
             </li>
             
@@ -102,52 +102,54 @@
 <!-- 文章 -->
 <article class="post article">
     <header class="text-center">
-        <h3 class="post-title"><span>jvm内存溢出/CPU过高问题排查</span></h3>
+        <h3 class="post-title"><span>HTTPS详解-加密算法（一）</span></h3>
     </header>
     <p class="post-meta text-center">
         Weizhao 发表于
-        <time datetime="2018-01-19T14:11:26.913Z">2018-01-19</time>
+        <time datetime="2018-06-30T08:55:35.734Z">2018-06-30</time>
     </p>
     <div class="post-content">
-        <p>问题：用户量3千左右，并且业务没有对外开放，CPU一直居高不下。</p>
-<p>分析：初步怀疑开发人员逻辑控制不严谨， 导致死循环，因为业务量不大，用户量不大，不可能出现高并发。</p>
-<ol>
-<li>通过jstack查找出对应执行线程是Vm Thread 线程,初步怀疑是频繁的GC导致cpu过高。</li>
-<li>查看堆栈信息 jmap -heap 16190，如下图：</li>
-</ol>
-<p><img src="http://img.blog.csdn.net/20170620100712138?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZHdlaXpoYW8=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt="img"></p>
-<p>​    </p>
-<p>​    看到年老区已使用86%</p>
-<ol>
-<li>查看垃圾回收频率,再次确认：jstat -gcutil 16190 1000</li>
-</ol>
-<p><img src="http://img.blog.csdn.net/20170620100803610?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZHdlaXpoYW8=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt="img"></p>
-<p>​    FGC频率非常高，基本确定就是GC回收频繁，导致CPU过高。</p>
-<ol>
-<li><p>确认问题代码，执行jmap -dump:format=b,file=heap.bin 16190，生成堆栈文件，通过MAT进行分析，如下图：</p>
-<p><img src="http://img.blog.csdn.net/20170620100904860?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZHdlaXpoYW8=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt="img"></p>
-<p>JceSecurity这个类就占用大部分内存，点击Dominator Tree进行分析，如下图：</p>
-<p><img src="http://img.blog.csdn.net/20170620100950392?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZHdlaXpoYW8=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt="img"></p>
-<p>​</p>
-<p>由于IdentityHashMap存放过多BouncyCastleProvider这个类，占用了大部分内存，查看JceSecurity中的IdentityHashMap，如下图:</p>
-<p><img src="http://img.blog.csdn.net/20170620101059752?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZHdlaXpoYW8=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt="img"></p>
-<p>​</p>
-<p>现在已经确定是由于map是static修饰导致，导致存放的类不能被jvm回收导致</p>
+        <p>近两年，Google、Baidu、Facebook 等这样的互联网巨头，不谋而合地开始大力推行 HTTPS， 国内外的大型互联网公司很多也都已经启用了全站 HTTPS，这也是未来互联网发展的趋势。</p>
+<p>为鼓励全球网站的 HTTPS 实现，一些互联网公司都提出了自己的要求：</p>
+<p>1）Google 已调整搜索引擎算法，让采用 HTTPS 的网站在搜索中排名更靠前；</p>
+<p>2）从 2017 年开始，Chrome 浏览器已把采用 HTTP 协议的网站标记为不安全网站；</p>
+<p>3）苹果要求 2017 年 App Store 中的所有应用都必须使用 HTTPS 加密连接；</p>
+<p>4）当前国内炒的很火热的微信小程序也要求必须使用 HTTPS 协议；</p>
+<p>5）新一代的 HTTP/2 协议的支持需以 HTTPS 为基础。</p>
+<h2 id="https概述"><a href="#https概述" class="headerlink" title="https概述"></a>https概述</h2><p><strong>超文本传输安全协议</strong>（英语：<strong>Hypertext Transfer Protocol Secure</strong>，<a href="https://zh.wikipedia.org/wiki/%E7%B8%AE%E5%AF%AB" target="_blank" rel="noopener">缩写</a>：<strong>HTTPS</strong>，常称为<strong>HTTP over TLS</strong>，<strong>HTTP over SSL</strong>或<strong>HTTP Secure</strong>）是一种通过<a href="https://zh.wikipedia.org/wiki/%E8%A8%88%E7%AE%97%E6%A9%9F%E7%B6%B2%E7%B5%A1" target="_blank" rel="noopener">计算机网络</a>进行安全通信的<a href="https://zh.wikipedia.org/wiki/%E7%B6%B2%E8%B7%AF%E5%82%B3%E8%BC%B8%E5%8D%94%E5%AE%9A" target="_blank" rel="noopener">传输协议</a>。HTTPS经由<a href="https://zh.wikipedia.org/wiki/HTTP" target="_blank" rel="noopener">HTTP</a>进行通信，但利用<a href="https://zh.wikipedia.org/wiki/%E4%BC%A0%E8%BE%93%E5%B1%82%E5%AE%89%E5%85%A8" target="_blank" rel="noopener">SSL/TLS</a>来加密数据包。HTTPS开发的主要目的，是提供对<a href="https://zh.wikipedia.org/wiki/%E7%B6%B2%E7%AB%99" target="_blank" rel="noopener">网站</a>服务器的<a href="https://zh.wikipedia.org/wiki/%E8%BA%AB%E4%BB%BD%E9%AA%8C%E8%AF%81" target="_blank" rel="noopener">身份认证</a>，保护交换数据的隐私与<a href="https://zh.wikipedia.org/wiki/%E5%AE%8C%E6%95%B4%E6%80%A7" target="_blank" rel="noopener">完整性</a>。这个协议由<a href="https://zh.wikipedia.org/wiki/%E7%B6%B2%E6%99%AF" target="_blank" rel="noopener">网景</a>公司（Netscape）在1994年首次提出，随后扩展到<a href="https://zh.wikipedia.org/wiki/%E7%B6%B2%E9%9A%9B%E7%B6%B2%E8%B7%AF" target="_blank" rel="noopener">互联网</a>上。HTTPS是并非应用层的新协议。只是HTTP通信接口用SSL或TLS协议代替而已。</p>
+<p>HTTP直接和TCP通信。当使用ssl时，则演变为跟ssl通信，然后再由ssl与tcp进行通信。简单的讲就是http的plus版。</p>
+<p><img src="https://ws4.sinaimg.cn/large/006tKfTcgy1fstbnsbm17j31100g8jv7.jpg" alt=""> </p>
+<p>在采用ssl后，http就拥有了加密、证书、完整性保护这些功能。</p>
+<p>在讲解ssl时，先讲解下几个关键的知识点。</p>
+<h3 id="加密方法"><a href="#加密方法" class="headerlink" title="加密方法"></a>加密方法</h3><h4 id="对称密钥加密"><a href="#对称密钥加密" class="headerlink" title="对称密钥加密"></a>对称密钥加密</h4><p>又称私钥加密、共享密钥加密。需要对加密和解密使用相同<a href="https://baike.baidu.com/item/%E5%AF%86%E9%92%A5" target="_blank" rel="noopener">密钥</a>的<a href="https://baike.baidu.com/item/%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95" target="_blank" rel="noopener">加密算法</a>。由于其速度快，对称性加密通常在消息发送方需要加密大量数据时使用。对称性加密也称为<a href="https://baike.baidu.com/item/%E5%AF%86%E9%92%A5%E5%8A%A0%E5%AF%86" target="_blank" rel="noopener">密钥加密</a>。</p>
+<p>优点：性能高</p>
+<p>缺点：密钥泄露风险高，因为大家共享一个密钥，假如一方泄露这个密码，就没有安全可言。比如：在前后端调用的过程中使用此种算法，如果前端js中存放密钥，那么就会被窃取，app端也有可能反编译获取。</p>
+<p>常用的算法：DES、3DES、AES、Blowfish、IDEA、RC5、RC6</p>
+<p><img src="https://gss1.bdstatic.com/9vo3dSag_xI4khGkpoWK1HF6hhy/baike/c0%3Dbaike220%2C5%2C5%2C220%2C73/sign=3026813dd21373f0e13267cdc566209e/377adab44aed2e736ab19f6a8401a18b87d6fa18.jpg" alt=""></p>
+<h4 id="公开密钥加密"><a href="#公开密钥加密" class="headerlink" title="公开密钥加密"></a>公开密钥加密</h4><p>（英语：public-key cryptography，又译为公开密钥加密）,也称为非对称加密（asymmetric cryptography），在这种密码学方法中，需要一对密钥，一个是私人密钥，另一个则是公开密钥。</p>
+<p>优点：知道了公钥，也无法计算出来密钥。例如：在开发项目时，一般私钥是保存在服务端，公钥保存在前端，只要服务端安全，那么私钥就不会被窃取。</p>
+<p>缺点：计算量大，需要消耗大量的系统资源，性能低。</p>
+<p>常用的算法：<a href="https://baike.baidu.com/item/RSA" target="_blank" rel="noopener">RSA</a>、<a href="https://baike.baidu.com/item/Elgamal" target="_blank" rel="noopener">Elgamal</a>、背包算法、Rabin、D-H、<a href="https://baike.baidu.com/item/ECC" target="_blank" rel="noopener">ECC</a>（椭圆曲线加密算法）。</p>
+<p><img src="https://gss1.bdstatic.com/9vo3dSag_xI4khGkpoWK1HF6hhy/baike/c0%3Dbaike220%2C5%2C5%2C220%2C73/sign=93e6505161d0f703f2bf9d8e69933a58/1b4c510fd9f9d72a79ac165bd72a2834359bbbaf.jpg" alt=""></p>
+<h4 id="数字签名"><a href="#数字签名" class="headerlink" title="数字签名"></a>数字签名</h4><p>数字签名主要是有两个作用</p>
+<ul>
+<li><p>身份证明</p>
 </li>
-<li><p>查找程序中使用BouncyCastleProvider的代码，跟开发人员确认是解密类，如下图：</p>
-<p><img src="http://img.blog.csdn.net/20170620101231191?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZHdlaXpoYW8=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt="img"></p>
-<p><img src="http://img.blog.csdn.net/20170620101409414?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZHdlaXpoYW8=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt="img"><img src="http://img.blog.csdn.net/20170620101353632?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZHdlaXpoYW8=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt="img"></p>
+<li><p>验证信息的内容是否被篡改。</p>
 </li>
-<li><p>修改RSAUtil类中BouncyCastleProvider为单例，在此进行压测观察，如下图：</p>
-<p><img src="http://img.blog.csdn.net/20170620102306815?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZHdlaXpoYW8=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt="img"></p>
-<p>​</p>
-<p>压测进行2小时，GC回收频率如下图：</p>
-<p><img src="http://img.blog.csdn.net/20170620102340042?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZHdlaXpoYW8=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt="img"></p>
-</li>
-</ol>
-<p>内存使用情况：</p>
-<p><img src="http://img.blog.csdn.net/20170620102441323?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZHdlaXpoYW8=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt="img"></p>
-<p><img src="http://img.blog.csdn.net/20170620102500573?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZHdlaXpoYW8=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt="img"></p>
+</ul>
+<p>而数字签名因为采用公钥加密技术实现，又叫公钥数字签名。</p>
+<p>示例：taker给maker给了自己的公钥，说以后通过此公钥可以验证自己的身份和信息是否篡改。</p>
+<p><img src="https://ws3.sinaimg.cn/large/006tKfTcly1fstevytb13j316607y3zi.jpg" alt=""></p>
+<p>有一天，taker在外遇到了点困难需要钱，想要朝maker借点钱，但是又怕无法证明自己，所以采用数字签名。</p>
+<p>首先他把消息内容，通过hash算法计算出一个摘要，然后在采用自己私钥对摘要进行加密</p>
+<p><img src="https://ws2.sinaimg.cn/large/006tKfTcly1fstf0sp5ipj30xo07e756.jpg" alt=""></p>
+<p>然后在把这个加密信息添加到邮件附件中，一同发给maker。</p>
+<p><img src="https://ws3.sinaimg.cn/large/006tKfTcly1fstf2ebm3zj30x20cu3zj.jpg" alt=""></p>
+<p>maker收到邮件后，用公钥对加密信息进行解密得到了摘要。</p>
+<p><img src="https://ws4.sinaimg.cn/large/006tKfTcly1fstf44pi3lj30o804ejri.jpg" alt=""></p>
+<p>然后在用邮件内容进行hash，生成摘要与公钥解密出来的摘要进行比对，就可以确保此邮件是taker所发，并且内容未被篡改，然后在给taker打钱。</p>
+<p><img src="https://ws1.sinaimg.cn/large/006tKfTcly1fstf5qxu7xj30f2050jro.jpg" alt=""></p>
 
     </div>
     <p class="post-meta">
@@ -158,7 +160,9 @@
             标签：
             
     
-        <a href="/tags/jvm/" title="jvm">jvm</a>
+        <a href="/tags/网络通信/" title="网络通信">网络通信</a> / 
+    
+        <a href="/tags/HTTPS/" title="HTTPS">HTTPS</a>
     
 
         </span>
@@ -184,20 +188,16 @@
     
     <span class="prev fl">
         上一篇<br >
-        <a href="/2018/01/21/HTTP总结/">
-            
-                HTTP总结
-            
-        </a>
+        <a href="javascript: void(0);">没有上一篇了</a>
     </span>
     
 
     
     <span class="next fr">
         下一篇<br >
-        <a href="/2018/01/18/大促秒杀系统设计/">
+        <a href="/2018/03/21/mysql安装/">
             
-                大促秒杀系统设计
+                mysql安装步骤
             
         </a>
     </span>
@@ -274,7 +274,7 @@
   <script>
   JELON.Comment({
     container: 'comments',
-    label: 'jvm内存溢出排查' || '2018/01/19/jvm内存溢出排查/',
+    label: 'HTTPS详解' || '2018/06/30/HTTPS详解/',
     owner: 'dongweizhao',
     repo: 'blog_comments',
     clientId: '4d6412796597814f8f3d',
