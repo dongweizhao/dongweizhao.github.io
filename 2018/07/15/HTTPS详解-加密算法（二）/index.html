@@ -10,10 +10,10 @@
     <meta name="google-site-verification" content="P3RNPgvLP-2XOkC905i_eBTn9dVL2hGAHurIlYcYftM" />
 
     
-    <title>04 案例分享 | Weizhao</title>
+    <title>HTTPS详解-加密算法（二）完 | Weizhao</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" >
-    <meta name="keywords" content="04 案例分享 , Weizhao , dweizhao , dongweizhao , 后端, Web, 董伟召 , 后端开发" >
-    <meta name="description" content="04 案例分享 , 董伟召的工作小站" >     
+    <meta name="keywords" content="HTTPS详解-加密算法（二）完 , Weizhao , dweizhao , dongweizhao , 后端, Web, 董伟召 , 后端开发" >
+    <meta name="description" content="HTTPS详解-加密算法（二）完 , 董伟召的工作小站" >     
     
     <link rel="alternative" href="/atom.xml" title="Weizhao" type="application/atom+xml" >
     
@@ -50,15 +50,15 @@
         <div class="dropnav icon-paragraph-justify" id="JELON__btnDropNav"></div>
         <ul class="menu hidden" id="JELON__menu">
             
-            <li rel="/2018/01/04/案例分享/index.html" class="item ">
+            <li rel="/2018/07/15/HTTPS详解-加密算法（二）/index.html" class="item ">
                 <a href="/" title="首页" class="icon-home">&nbsp;首页</a>
             </li>
             
-            <li rel="/2018/01/04/案例分享/index.html" class="item ">
+            <li rel="/2018/07/15/HTTPS详解-加密算法（二）/index.html" class="item ">
                 <a href="/about/" title="关于" class="icon-about">&nbsp;关于</a>
             </li>
             
-            <li rel="/2018/01/04/案例分享/index.html" class="item ">
+            <li rel="/2018/07/15/HTTPS详解-加密算法（二）/index.html" class="item ">
                 <a href="/comment/" title="留言" class="icon-comment">&nbsp;留言</a>
             </li>
             
@@ -102,21 +102,78 @@
 <!-- 文章 -->
 <article class="post article">
     <header class="text-center">
-        <h3 class="post-title"><span>04 案例分享</span></h3>
+        <h3 class="post-title"><span>HTTPS详解-加密算法（二）完</span></h3>
     </header>
     <p class="post-meta text-center">
         Weizhao 发表于
-        <time datetime="2018-01-04T13:52:42.611Z">2018-01-04</time>
+        <time datetime="2018-07-15T13:56:09.782Z">2018-07-15</time>
     </p>
     <div class="post-content">
-        <p>本节对在其它银行实施的案例，进行一个分享</p>
-<h4 id="业务分析"><a href="#业务分析" class="headerlink" title="业务分析"></a>业务分析</h4><p><img src="https://note.youdao.com/yws/api/personal/file/WEB2b4fad25fd719cc96f41a3e0e8c5a21d?method=download&amp;shareKey=50f53abd550644cb51745ac6bea7f1e5" alt="image"><br>本次分享的系统是一个客户信息系统，首先分析行内现有用户数据量大概为1千万，业务需求都是以用户的维度出发所以用户ID作为分片键比较合适,考虑后续数据迁移的问题，分片规则采用一致性hash。</p>
-<p>基于以上原则，对数据库表进行设计，表分为两类：分别为参数类表、业务类表，所以先进行垂直切分，其中业务类是需要分片的，所以在进行水平切分。</p>
-<h4 id="预设分片"><a href="#预设分片" class="headerlink" title="预设分片"></a>预设分片</h4><p><img src="https://note.youdao.com/yws/api/personal/file/WEB7ea8d135748a986821df4853fae2ee39?method=download&amp;shareKey=8bde4b977af9e02f484a525f65625f6f" alt="image"></p>
+        <h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p>在上已一节中介绍了两种加密方法</p>
+<ul>
+<li>对称加密</li>
+<li>非对称加密</li>
+</ul>
+<p>其中对称加密性能高，但是有泄露密钥的风险，而非对称加密相反，加密性能较差，但是密钥不易泄露，那么能不能把他们进行一下结合呢？</p>
+<h3 id="HTTPS采用混合加密"><a href="#HTTPS采用混合加密" class="headerlink" title="HTTPS采用混合加密"></a>HTTPS采用混合加密</h3><p>HTTPS经由<a href="https://zh.wikipedia.org/wiki/HTTP" target="_blank" rel="noopener">HTTP</a>进行通信，但利用<a href="https://zh.wikipedia.org/wiki/%E4%BC%A0%E8%BE%93%E5%B1%82%E5%AE%89%E5%85%A8" target="_blank" rel="noopener">SSL/TLS</a>来加密数据包,而SSL/TLS的加密方式就是采用了对称加密与非对称加密的结合。</p>
+<p>SSL/TLS考虑到非对称加密的性能较低，所以在初始协商对称加密密钥时，使用了非对称加密，当对称加密密钥协商完成后，则后续所有的通讯，全部采用对称加密进行通讯。<br><img src="https://ws4.sinaimg.cn/large/006tKfTcgy1ftk8rztifej31060ryh43.jpg" alt=""><br>但是这种方式也有一些问题，如下</p>
+<ul>
+<li><p>无法证明公开密钥就是真实服务器的公开密钥</p>
+<blockquote>
+<p>比如与B服务器进行通信，怎么确认公开密钥是B服务器的，后续在公开密钥传输途中已经被替换了，但是却发现不了。</p>
+</blockquote>
+<p>​</p>
+</li>
+</ul>
+<p>由于任何人都可以访问服务器，所以不可能一一把公钥告诉他们，那么能不能提供一个公钥下载的地方让客户机访问服务器时先下载公钥，但是下载公钥的地址也有可能是假的，不可取。</p>
+<p>那么有没有更好的方式，既能安全的获取公钥又能确保访问的服务器是真实的？答案：由数字证书认证机构颁发（CA）公开密钥证书</p>
+<p>数字证书认证机构是客户端和服务器端都可以信赖的第三方机构，VeriSign就是一家数字证书机构。流程如下：</p>
 <ol>
-<li>考虑未来5年的客户数据量增长到6千万—8千万，单表按1000万的数据量上限来考虑，需要预设8个分片，考虑到未来比较大的数据增量，预设32个分片；</li>
-<li>考虑到前期上线后2-3年内大约2000万的数据量（包括近1000万的存量数据），系统上线初期配置2个物理节点，每个节点16个分片（SCHEMA），每个分片（SCHEMA）单表大约62.5万的数据记录数，其中默认节点放在其中一台物理节点中。</li>
-<li>未来根据客户量的增长情况进行扩容处理，按预设32个分片未来最多可扩展到32个物理节点，最优可支持扩容到3.2亿的用户数；</li>
+<li>企业向证书机构提出公开密钥申请。</li>
+<li>证书机构首先对公司身份进行核实，核实通过去，使用自己的私钥对企业服务器的公开密钥进行数字签名，并把签名信息绑定在公钥证书里下发给企业。</li>
+<li>拿到证书的客户端对证书的签名进行校验，验证通过，即可确认：<ol>
+<li>服务器的公开密钥是值得信赖的</li>
+<li>根据数字证书签发机构是真实有效的数字证书认证机构。</li>
+</ol>
+</li>
+</ol>
+<p>这里应该有人好奇，证书签发机构的公钥是怎么传到客户端的？浏览器在发布时，已经包含了主流的认证的机构的公开密钥了，所以是不需要传输的。</p>
+<p><img src="https://ws4.sinaimg.cn/large/006tKfTcgy1ftk9gt8tunj30t80ls18e.jpg" alt=""></p>
+<p><img src="https://ws2.sinaimg.cn/large/006tKfTcgy1ftk9ixd8voj31cm0vg7ix.jpg" alt=""></p>
+<h4 id="HTTPS通信流程"><a href="#HTTPS通信流程" class="headerlink" title="HTTPS通信流程"></a>HTTPS通信流程</h4><p><img src="https://ws2.sinaimg.cn/large/006tKfTcgy1ftk8ns8ecaj30mw0own9s.jpg" alt=""></p>
+<p>上图大致描述了 SSL/TLS 的握手过程,具体细节如下：</p>
+<ol>
+<li><h5 id="Client-Hello"><a href="#Client-Hello" class="headerlink" title="Client Hello"></a>Client Hello</h5><p>握手第一步是客户端向服务端发送 Client Hello 消息，这个消息里包含了一个客户端生成的随机数 Random1、客户端支持的加密套件（Support Ciphers）和 SSL Version 等信息。通过 Wireshark 抓包，我们可以看到如下信息：</p>
+<p><img src="https://ws2.sinaimg.cn/large/006tKfTcgy1ftk86uchyej31dy0oge5x.jpg" alt=""></p>
+</li>
+<li><h5 id="Server-Hello"><a href="#Server-Hello" class="headerlink" title="Server Hello"></a>Server Hello</h5><p>第二步是服务端向客户端发送 Server Hello 消息，这个消息会从 Client Hello 传过来的 Support Ciphers 里确定一份加密套件，这个套件决定了后续加密和生成摘要时具体使用哪些算法，另外还会生成一份随机数 Random2。注意，至此客户端和服务端都拥有了两个随机数（Random1+ Random2），这两个随机数会在后续生成对称秘钥时用到。</p>
+<p><img src="https://ws3.sinaimg.cn/large/006tKfTcgy1ftk883wchzj310k0o81ey.jpg" alt=""></p>
+</li>
+<li><h5 id="Certificate"><a href="#Certificate" class="headerlink" title="Certificate"></a>Certificate</h5><p>这一步是服务端将自己的证书下发给客户端，让客户端验证自己的身份，客户端验证通过后取出证书中的公钥。</p>
+<p><img src="https://ws2.sinaimg.cn/large/006tKfTcgy1ftk88yodabj317m0g212e.jpg" alt=""></p>
+<p>​</p>
+</li>
+<li><h5 id="Server-Hello-Done"><a href="#Server-Hello-Done" class="headerlink" title="Server Hello Done"></a>Server Hello Done</h5><p>Server Hello Done 通知客户端 Server Hello 过程结束。</p>
+<p><img src="https://ws1.sinaimg.cn/large/006tKfTcgy1ftk8bwnv5ij31a80es79u.jpg" alt=""></p>
+</li>
+<li><h5 id="Client-Key-Exchange"><a href="#Client-Key-Exchange" class="headerlink" title="Client Key Exchange"></a>Client Key Exchange</h5><p>客户端收到服务端传来的证书后，先从 CA 验证该证书的合法性，验证通过后取出证书中的服务端公钥，再生成一个随机数 Random3，再用服务端公钥非对称加密 Random3生成 PreMaster Key。</p>
+<p>Client Key Exchange 就是将这个 key 传给服务端，服务端再用自己的私钥解出这个 PreMaster Key 得到客户端生成的 Random3。至此，客户端和服务端都拥有 Random1 + Random2 + Random3，两边再根据同样的算法就可以生成一份秘钥，握手结束后的应用层数据都是使用这个秘钥进行对称加密。为什么要使用三个随机数呢？这是因为 SSL/TLS 握手过程的数据都是明文传输的，并且多个随机数种子来生成秘钥不容易被暴力破解出来。客户端将 PreMaster Key 传给服务端的过程如下图所示：</p>
+<p><img src="https://ws2.sinaimg.cn/large/006tKfTcgy1ftk8fa0n84j31eo0nedtn.jpg" alt=""></p>
+<p>​</p>
+</li>
+<li><h5 id="Change-Cipher-Spec-Client"><a href="#Change-Cipher-Spec-Client" class="headerlink" title="Change Cipher Spec(Client)"></a>Change Cipher Spec(Client)</h5><p>这一步是客户端通知服务端后面再发送的消息都会使用前面协商出来的秘钥加密了，是一条事件消息。</p>
+<p><img src="https://ws3.sinaimg.cn/large/006tKfTcgy1ftk8fz61jfj30xq0ki795.jpg" alt=""></p>
+</li>
+<li><h5 id="Encrypted-Handshake-Message-Client"><a href="#Encrypted-Handshake-Message-Client" class="headerlink" title="Encrypted Handshake Message(Client)"></a>Encrypted Handshake Message(Client)</h5><p>这一步对应的是 Client Finish 消息，客户端将前面的握手消息生成摘要再用协商好的秘钥加密，这是客户端发出的第一条加密消息。服务端接收后会用秘钥解密，能解出来说明前面协商出来的秘钥是一致的。</p>
+<p><img src="https://ws1.sinaimg.cn/large/006tKfTcgy1ftk8gwotbmj31580j87dw.jpg" alt=""></p>
+</li>
+<li><h5 id="Change-Cipher-Spec-Server"><a href="#Change-Cipher-Spec-Server" class="headerlink" title="Change Cipher Spec(Server)"></a>Change Cipher Spec(Server)</h5><p>这一步是服务端通知客户端后面再发送的消息都会使用加密，也是一条事件消息。</p>
+</li>
+<li><h5 id="Encrypted-Handshake-Message-Server"><a href="#Encrypted-Handshake-Message-Server" class="headerlink" title="Encrypted Handshake Message(Server)"></a>Encrypted Handshake Message(Server)</h5><p>这一步对应的是 Server Finish 消息，服务端也会将握手过程的消息生成摘要再用秘钥加密，这是服务端发出的第一条加密消息。客户端接收后会用秘钥解密，能解出来说明协商的秘钥是一致的。</p>
+<p><img src="https://ws4.sinaimg.cn/large/006tKfTcgy1ftk8i6v9grj31e80la47p.jpg" alt=""></p>
+</li>
+<li><h5 id="Application-Data"><a href="#Application-Data" class="headerlink" title="Application Data"></a>Application Data</h5><p>应用层协议通信即发送HTTP请求。</p>
+</li>
 </ol>
 
     </div>
@@ -128,9 +185,9 @@
             标签：
             
     
-        <a href="/tags/分布式/" title="分布式">分布式</a> / 
+        <a href="/tags/网络通信/" title="网络通信">网络通信</a> / 
     
-        <a href="/tags/分库分表及事务一致性设计/" title="分库分表及事务一致性设计">分库分表及事务一致性设计</a>
+        <a href="/tags/HTTPS/" title="HTTPS">HTTPS</a>
     
 
         </span>
@@ -156,20 +213,16 @@
     
     <span class="prev fl">
         上一篇<br >
-        <a href="/2018/01/16/thread-interrupt/">
-            
-                线程中断
-            
-        </a>
+        <a href="javascript: void(0);">没有上一篇了</a>
     </span>
     
 
     
     <span class="next fr">
         下一篇<br >
-        <a href="/2018/01/04/数据存储与划分原则/">
+        <a href="/2018/06/30/ HTTPS详解-加密算法（一）/">
             
-                03 数据存储与划分原则
+                HTTPS详解-加密算法（一）
             
         </a>
     </span>
@@ -246,7 +299,7 @@
   <script>
   JELON.Comment({
     container: 'comments',
-    label: '案例分享' || '2018/01/04/案例分享/',
+    label: 'HTTPS详解-加密算法（二）' || '2018/07/15/HTTPS详解-加密算法（二）/',
     owner: 'dongweizhao',
     repo: 'blog_comments',
     clientId: '4d6412796597814f8f3d',
