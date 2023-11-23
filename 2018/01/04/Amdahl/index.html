@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>阿姆达尔定律 | 架构成长指南</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  
+    <meta name="description" content="java技术分享，系统架构剖析，java实践分享，ai相关知识分享，chatGPT,架构成长指南">
+  
+  
+    <meta name="keywords" content="架构成长指南，架构，java，云原生，chatGPT">
+  
+  
+    <link rel="alternate" href="/atom.xml" title="架构成长指南" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/typeface-source-code-pro@0.0.71/index.min.css">
+
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+    
+<link rel="stylesheet" href="/localshare/css/share.css">
+
+  
+  
+  
+<meta name="generator" content="Hexo 7.0.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">架构成长指南</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        
+          <a class="main-nav-link" href="/."><i class="fa fa-home"></i> 首页</a>
+        
+          <a class="main-nav-link" href="/archives/"><i class="fa fa-archive"></i> 归档</a>
+        
+          <a class="main-nav-link" href="/about/"><i class="fa fa-user"></i> 关于</a>
+        
+      </nav>
+    </div>
+    <div id="search-form">
+      <div id="result-mask" class="hide"></div>
+      <label><input id="search-key" type="text" autocomplete="off" placeholder="搜索"></label>
+      <div id="result-wrap" class="hide">
+        <div id="search-result"></div>
+      </div>
+      <div class="hide">
+        <template id="search-tpl">
+          <div class="item">
+            <a href="/{path}" title="{title}">
+              <div class="title">{title}</div>
+              <div class="time">{date}</div>
+              <div class="tags">{tags}</div>
+            </a>
+          </div>
+        </template>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-Amdahl" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      阿姆达尔定律
+    </h1>
+  
+
+
+      </header>
+    
+    <div class="article-meta">
+      
+      <span class="article-date">
+  <i class="fa fa-date"></i>
+  <time class="dt-published" datetime="2018-01-04T01:46:51.000Z" itemprop="datePublished">2018年01月04日</time>
+</span>
+      
+  <div class="article-category">
+    <i class="fa fa-classify"></i>
+    <a class="article-category-link" href="/categories/%E5%90%8E%E7%AB%AF/">后端</a>
+  </div>
+
+      
+        <span class="article-views">
+  <i class="fa fa-views"></i>
+  <i id="busuanzi_container_page_pv">
+      <i id="busuanzi_value_page_pv"></i>
+  </i>
+</span>
+
+      
+      
+<a href="/2018/01/04/Amdahl/#comments" class="article-comment-link">
+  
+    
+    
+    
+    
+    
+  
+  <i class="fa fa-commt"></i>
+  留言
+</a>
+
+
+    </div>
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p><a target="_blank" rel="noopener" href="http://tutorials.jenkov.com/java-concurrency/amdahls-law.html">原文地址 </a> 作者：<a target="_blank" rel="noopener" href="http://jakob.jenkov.com/">Jakob Jenkov</a>  译者：张坤</p>
+<p>阿姆达尔定律可以用来计算处理器平行运算之后效率提升的能力。阿姆达尔定律因Gene Amdal 在1967年提出这个定律而得名。绝大多数使用并行或并发系统的开发者有一种并发或并行可能会带来提速的感觉，甚至不知道阿姆达尔定律。不管怎样，了解阿姆达尔定律还是有用的。</p>
+<p>我会首先以算术的方式介绍阿姆达尔定律定律，然后再用图表演示一下。</p>
+<span id="more"></span>
+<h2 id="阿姆达尔定律定义"><a href="#阿姆达尔定律定义" class="headerlink" title="阿姆达尔定律定义"></a>阿姆达尔定律定义</h2><p>一个程序（或者一个算法）可以按照是否可以被并行化分为下面两个部分：</p>
+<ul>
+<li><strong>可以被并行化的部分</strong></li>
+<li><strong>不可以被并行化的部分</strong></li>
+</ul>
+<p>假设一个程序处理磁盘上的文件。这个程序的一小部分用来扫描路径和在内存中创建文件目录。做完这些后，每个文件交个一个单独的线程去处理。扫描路径和创建文件目录的部分不可以被并行化，不过处理文件的过程可以。</p>
+<p>程序串行（非并行）执行的总时间我们记为T。时间T包括不可以被并行和可以被并行部分的时间。不可以被并行的部分我们记为B。那么可以被并行的部分就是T-B。下面的列表总结了这些定义：</p>
+<ul>
+<li><strong>T &#x3D; 串行执行的总时间</strong></li>
+<li><strong>B &#x3D; 不可以并行的总时间</strong></li>
+<li><strong>T- B &#x3D; 并行部分的总时间</strong></li>
+</ul>
+<p>从上面可以得出：</p>
+<p>T &#x3D; B + (T – B)</p>
+<p>首先，这个看起来可能有一点奇怪，程序的可并行部分在上面这个公式中并没有自己的标识。然而，由于这个公式中可并行可以用总时间T 和 B（不可并行部分）表示出来，这个公式实际上已经从概念上得到了简化，也即是指以这种方式减少了变量的个数。</p>
+<p>T- B 是可并行化的部分，以并行的方式执行可以提高程序的运行速度。可以提速多少取决于有多少线程或者多少个CPU来执行。线程或者CPU的个数我们记为N。可并行化部分被执行的最快时间可以通过下面的公式计算出来：</p>
+<p>(T – B ) &#x2F; N</p>
+<p>或者通过这种方式</p>
+<p>(1 &#x2F; N) * (T – B)</p>
+<p>维基中使用的是第二种方式。</p>
+<p>根据阿姆达尔定律，当一个程序的可并行部分使用N个线程或CPU执行时，执行的总时间为：</p>
+<p>T(N) &#x3D; B + ( T – B ) &#x2F; N</p>
+<p>T(N)指的是在并行因子为N时的总执行时间。因此，T(1)就执行在并行因子为1时程序的总执行时间。使用T(1)代替T，阿姆达尔定律定律看起来像这样：</p>
+<p>T(N) &#x3D; B + (T(1) – B) &#x2F; N</p>
+<p>表达的意思都是是一样的。</p>
+<h2 id="一个计算例子"><a href="#一个计算例子" class="headerlink" title="一个计算例子"></a>一个计算例子</h2><p>为了更好的理解阿姆达尔定律，让我们来看一个计算的例子。执行一个程序的总时间设为1.程序的不可并行化占40%，按总时间1计算，就是0.4.可并行部分就是1 – 0.4 &#x3D; 0.6.</p>
+<p>在并行因子为2的情况下，程序的执行时间将会是：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">T(2) = 0.4 + ( 1 - 0.4 ) / 2</span><br><span class="line"> = 0.4 + 0.6 / 2</span><br><span class="line"> = 0.4 + 0.3</span><br><span class="line"> = 0.7</span><br></pre></td></tr></table></figure>
+
+<p><code>在并行因子为5的情况下，程序的执行时间将会是：</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>&#96;&#96;</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">T(5) = 0.4 + ( 1 - 0.4 ) / 5</span><br><span class="line"> = 0.4 + 0.6 / 6</span><br><span class="line"> = 0.4 + 0.12</span><br><span class="line"> = 0.52</span><br></pre></td></tr></table></figure>
+
+<h2 id="阿姆达尔定律图示"><a href="#阿姆达尔定律图示" class="headerlink" title="阿姆达尔定律图示"></a>阿姆达尔定律图示</h2><p>为了更好地理解阿姆达尔定律，我会尝试演示这个定定律是如何诞生的。</p>
+<p>首先，一个程序可以被分割为两部分，一部分为不可并行部分B，一部分为可并行部分1 – B。如下图：</p>
+<p><img src="https://camo.githubusercontent.com/f9261b92dd8f8f5e9b8f26c9234f0aec66cfb012/687474703a2f2f7475746f7269616c732e6a656e6b6f762e636f6d2f696d616765732f6a6176612d636f6e63757272656e63792f616d6461686c732d6c61772d312e706e67" alt="amdahl&#39; s law1"></p>
+<p>在顶部被带有分割线的那条直线代表总时间 T(1)。</p>
+<p>下面你可以看到在并行因子为2的情况下的执行时间：</p>
+<p><img src="https://camo.githubusercontent.com/0117abdf5ee0ce2c427d65957c4e3a0479738f98/687474703a2f2f7475746f7269616c732e6a656e6b6f762e636f6d2f696d616765732f6a6176612d636f6e63757272656e63792f616d6461686c732d6c61772d322e706e67" alt="amdahl&#39;s law2"></p>
+<p>并行因子为3的情况：</p>
+<p><img src="https://camo.githubusercontent.com/0e706349ed74c38e39fc719a3364ca634aa12d7e/687474703a2f2f7475746f7269616c732e6a656e6b6f762e636f6d2f696d616765732f6a6176612d636f6e63757272656e63792f616d6461686c732d6c61772d332e706e67" alt="amdahl&#39; s law3"></p>
+<h2 id="优化算法"><a href="#优化算法" class="headerlink" title="优化算法"></a>优化算法</h2><p>从阿姆达尔定律可以看出，程序的可并行化部分可以通过使用更多的硬件（更多的线程或CPU）运行更快。对于不可并行化的部分，只能通过优化代码来达到提速的目的。因此，你可以通过优化不可并行化部分来提高你的程序的运行速度和并行能力。你可以对不可并行化在算法上做一点改动，如果有可能，你也可以把一些移到可并行化放的部分。</p>
+<h5 id="优化串行分量"><a href="#优化串行分量" class="headerlink" title="优化串行分量"></a>优化串行分量</h5><p>如果你优化一个程序的串行化部分，你也可以使用阿姆达尔定律来计算程序优化后的执行时间。如果不可并行部分通过一个因子O来优化，那么阿姆达尔定律看起来就像这样：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">T(O, N) = B / O + (1 - B / O) / N</span><br></pre></td></tr></table></figure>
+
+<p>记住，现在程序的不可并行化部分占了<code>B / O</code>的时间，所以，可并行化部分就占了<code>1 - B / O</code>的时间.</p>
+<p>如果B为0.4，O为2，N为5，计算看起来就像这样：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">T(2,5) = 0.4 / 2 + (1 - 0.4 / 2) / 5</span><br><span class="line">   = 0.2 + (1 - 0.4 / 2) / 5</span><br><span class="line">   = 0.2 + (1 - 0.2) / 5</span><br><span class="line">   = 0.2 + 0.8 / 5</span><br><span class="line">   = 0.2 + 0.16</span><br><span class="line">   = 0.36</span><br></pre></td></tr></table></figure>
+
+<h2 id="运行时间-vs-加速"><a href="#运行时间-vs-加速" class="headerlink" title="运行时间 vs. 加速"></a>运行时间 vs. 加速</h2><p>到目前为止，我们只用阿姆达尔定律计算了一个程序或算法在优化后或者并行化后的执行时间。我们也可以使用阿姆达尔定律计算加速比（speedup），也就是经过优化后或者串行化后的程序或算法比原来快了多少。</p>
+<p>如果旧版本的程序或算法的执行时间为T，那么增速比就是：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Speedup = T / T(O , N);</span><br></pre></td></tr></table></figure>
+
+<p><code>为了计算执行时间，我们常常把T设为1，加速比为原来时间的一个分数。公式大致像下面这样：</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Speedup = 1 / T（O,N)</span><br></pre></td></tr></table></figure>
+
+<p><code>如果我们使用阿姆达尔定律来代替T(O,N)，我们可以得到下面的公式：</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Speedup = 1 / ( B / O + (1 - B / O) / N)</span><br></pre></td></tr></table></figure>
+
+<p><code>如果B = 0.4， O = 2， N = 5， 计算变成下面这样：</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Speedup = 1 / ( 0.4 / 2 + (1 - 0.4 / 2) / 5)</span><br><span class="line">    = 1 / ( 0.2 + (1 - 0.4 / 2) / 5)</span><br><span class="line">    = 1 / ( 0.2 + (1 - 0.2) / 5 )</span><br><span class="line">    = 1 / ( 0.2 + 0.8 / 5 )</span><br><span class="line">    = 1 / ( 0.2 + 0.16 )</span><br><span class="line">    = 1 / 0.36</span><br><span class="line">    = 2.77777 ...</span><br></pre></td></tr></table></figure>
+
+<p><code>上面的计算结果可以看出，如果你通过一个因子2来优化不可并行化部分，一个因子5来并行化可并行化部分，这个程序或算法的最新优化版本最多可以比原来的版本快2.77777倍。</code></p>
+<h2 id="测量，不要仅是计算"><a href="#测量，不要仅是计算" class="headerlink" title="测量，不要仅是计算"></a>测量，不要仅是计算</h2><p>虽然阿姆达尔定律允许你并行化一个算法的理论加速比，但是不要过度依赖这样的计算。在实际场景中，当你优化或并行化一个算法时，可以有很多的因子可以被考虑进来。</p>
+<p>内存的速度，CPU缓存，磁盘，网卡等可能都是一个限制因子。如果一个算法的最新版本是并行化的，但是导致了大量的CPU缓存浪费，你可能不会再使用x N个CPU来获得x N的期望加速。如果你的内存总线（memory bus），磁盘，网卡或者网络连接都处于高负载状态，也是一样的情况。</p>
+<p>我们的建议是，使用阿姆达尔定律定律来指导我们优化程序，而不是用来测量优化带来的实际加速比。记住，有时候一个高度串行化的算法胜过一个并行化的算法，因为串行化版本不需要进行协调管理（上下文切换），而且一个单个的CPU在底层硬件工作（CPU管道、CPU缓存等）上的一致性可能更好。</p>
+<p>转载自<a target="_blank" rel="noopener" href="http://ifeve.com/">并发编程网 – ifeve.com</a><strong>本文链接地址:</strong> <a target="_blank" rel="noopener" href="http://ifeve.com/amdahls-law/">阿姆达尔定律</a></p>
+
+        
+            <div id="toc-article">
+                
+  <div class="widget-wrap" id="toc-wrap">
+    <h3 class="widget-title"><i class="fa fa-toc"></i> 文章目录</h3>
+    <div class="widget">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%98%BF%E5%A7%86%E8%BE%BE%E5%B0%94%E5%AE%9A%E5%BE%8B%E5%AE%9A%E4%B9%89"><span class="toc-text">阿姆达尔定律定义</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E4%B8%AA%E8%AE%A1%E7%AE%97%E4%BE%8B%E5%AD%90"><span class="toc-text">一个计算例子</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%98%BF%E5%A7%86%E8%BE%BE%E5%B0%94%E5%AE%9A%E5%BE%8B%E5%9B%BE%E7%A4%BA"><span class="toc-text">阿姆达尔定律图示</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BC%98%E5%8C%96%E7%AE%97%E6%B3%95"><span class="toc-text">优化算法</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%BC%98%E5%8C%96%E4%B8%B2%E8%A1%8C%E5%88%86%E9%87%8F"><span class="toc-text">优化串行分量</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%90%E8%A1%8C%E6%97%B6%E9%97%B4-vs-%E5%8A%A0%E9%80%9F"><span class="toc-text">运行时间 vs. 加速</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B5%8B%E9%87%8F%EF%BC%8C%E4%B8%8D%E8%A6%81%E4%BB%85%E6%98%AF%E8%AE%A1%E7%AE%97"><span class="toc-text">测量，不要仅是计算</span></a></li></ol>
+    </div>
+  </div>
+
+
+            </div>
+        
+        
+          <blockquote id="copyright">
+              <p>原文链接: <a href="https://dongweizhao.github.io/2018/01/04/Amdahl/">https://dongweizhao.github.io/2018/01/04/Amdahl/</a></p>
+              <p>版权声明: 转载请注明出处.</p>
+          </blockquote>
+        
+      
+    </div>
+    <footer class="article-footer">
+      
+        <div class="article-tag-wrap">
+          
+
+          
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%B9%B6%E5%8F%91/" rel="tag">并发</a></li></ul>
+
+          
+    <div class="social-share">
+      <span>分享到:</span>
+    </div>
+
+
+
+        </div>
+      
+      
+        
+<nav id="article-nav">
+  
+    <a href="/2017/12/30/hashMap%E6%AD%BB%E9%94%81%E5%88%86%E6%9E%90/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">older</strong>
+      <div class="article-nav-title">
+        
+          hashMap死锁分析
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/01/04/%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E5%B8%A6%E6%9D%A5%E7%9A%84%E6%8C%91%E6%88%98/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">newer</strong>
+      <div class="article-nav-title">
+        
+          02 分库分表带来的挑战
+        
+      </div>
+    </a>
+  
+</nav>
+
+      
+      
+        
+
+
+
+
+
+
+
+
+      
+    </footer>
+  </div>
+</article>
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title"><i class="fa fa-posts"></i> 最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2023/11/21/JavaStream/">Java Stream中的API你都用过了吗？</a>
+          </li>
+        
+          <li>
+            <a href="/2020/06/29/%E6%A1%88%E4%BE%8B%E5%88%86%E4%BA%AB/">04 分库分表的案例分享</a>
+          </li>
+        
+          <li>
+            <a href="/2020/06/29/%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E7%9A%84%E4%BA%A7%E7%94%9F%E8%83%8C%E6%99%AF/">01 分库分表的产生背景</a>
+          </li>
+        
+          <li>
+            <a href="/2018/06/30/%20HTTPS%E8%AF%A6%E8%A7%A3-%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95%EF%BC%88%E4%B8%80%EF%BC%89/">HTTPS详解-加密算法（一）</a>
+          </li>
+        
+          <li>
+            <a href="/2018/02/11/%E9%93%BE%E8%A1%A8%E6%95%B0%E6%8D%AE%E7%BF%BB%E8%BD%AC/">链表数据翻转</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title"><i class="fa fa-tag"></i> 标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/HTTP/" style="font-size: 10px;">HTTP</a> <a href="/tags/HTTPS/" style="font-size: 10px;">HTTPS</a> <a href="/tags/Stream/" style="font-size: 10px;">Stream</a> <a href="/tags/java/" style="font-size: 16.67px;">java</a> <a href="/tags/nio/" style="font-size: 10px;">nio</a> <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" style="font-size: 20px;">分布式</a> <a href="/tags/%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E5%8F%8A%E4%BA%8B%E5%8A%A1%E4%B8%80%E8%87%B4%E6%80%A7%E8%AE%BE%E8%AE%A1/" style="font-size: 20px;">分库分表及事务一致性设计</a> <a href="/tags/%E5%90%8E%E7%AB%AF/" style="font-size: 10px;">后端</a> <a href="/tags/%E5%B9%B6%E5%8F%91/" style="font-size: 16.67px;">并发</a> <a href="/tags/%E6%9E%B6%E6%9E%84%E6%88%90%E9%95%BF%E6%8C%87%E5%8D%97/" style="font-size: 10px;">架构成长指南</a> <a href="/tags/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/" style="font-size: 13.33px;">网络通信</a> <a href="/tags/%E9%93%BE%E8%A1%A8/" style="font-size: 13.33px;">链表</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title"><i class="fa fa-classify"></i> 分类</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%90%8E%E7%AB%AF/">后端</a><span class="category-list-count">11</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%AE%97%E6%B3%95/">算法</a><span class="category-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title"><i class="fa fa-archive"></i>公众号</h3>
+    <div class="widget">
+       <img src="/gzh.jpg" style="width:80%; height:80%;" />
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title"><i class="fa fa-tag"></i> 标签</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTP/" rel="tag">HTTP</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTPS/" rel="tag">HTTPS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Stream/" rel="tag">Stream</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/" rel="tag">java</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nio/" rel="tag">nio</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" rel="tag">分布式</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E5%8F%8A%E4%BA%8B%E5%8A%A1%E4%B8%80%E8%87%B4%E6%80%A7%E8%AE%BE%E8%AE%A1/" rel="tag">分库分表及事务一致性设计</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%90%8E%E7%AB%AF/" rel="tag">后端</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%B6%E5%8F%91/" rel="tag">并发</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9E%B6%E6%9E%84%E6%88%90%E9%95%BF%E6%8C%87%E5%8D%97/" rel="tag">架构成长指南</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/" rel="tag">网络通信</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8/" rel="tag">链表</a><span class="tag-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title"><i class="fa fa-link"></i> 友情链接</h3>
+    <div class="widget">
+      <ul>
+      
+        <li>
+          <a target="_blank" rel="noopener" href="http://www.example1.com/">site-name1</a>
+        </li>
+      
+        <li>
+          <a target="_blank" rel="noopener" href="http://www.example2.com/">site-name2</a>
+        </li>
+      
+        <li>
+          <a target="_blank" rel="noopener" href="http://www.example3.com/">site-name3</a>
+        </li>
+      
+      </ul>
+    </div>
+  </div>
+
+
+  
+</aside>
+        
+      </div>
+      <a id="totop" href="#top"></a>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      <p>
+        <a href="/sitemap.xml">网站地图</a>
+        <span> | </span><a href="/atom.xml">订阅本站</a>
+        <span> | </span><a href="/about/">联系博主</a>
+      </p>
+      
+        <p>
+          <i class="fa fa-visitors"></i>
+          <i id="busuanzi_container_site_uv"><i id="busuanzi_value_site_uv"></i></i>
+          ，
+          <i class="fa fa-views"></i>
+          <i id="busuanzi_container_site_pv"><i id="busuanzi_value_site_pv"></i></i>
+        </p>
+      
+      <p>
+        <span>Copyright &copy; 2023 架构成长指南.</span>
+        <span>Theme by <a href="https://github.com/chaooo/hexo-theme-BlueLake/" target="_blank">BlueLake.</a></span>
+        <span>Powered by <a href="https://hexo.io/" target="_blank">Hexo.</a></span>
+      </p>
+    </div>
+  </div>
+</footer>
+
+    </div>
+  </div>
+  
+<script src="/js/jquery-3.4.1.min.js"></script>
+
+
+<script src="/js/search.json.js"></script>
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+
+  
+<script src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+    
+<script src="/localshare/js/social-share.js"></script>
+
+    
+<script src="/localshare/js/qrcode.js"></script>
+
+  
+  
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+
+
+
+
+</body>
+</html>

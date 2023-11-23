@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>HTTPS详解-加密算法（一） | 架构成长指南</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  
+    <meta name="description" content="java技术分享，系统架构剖析，java实践分享，ai相关知识分享，chatGPT,架构成长指南">
+  
+  
+    <meta name="keywords" content="架构成长指南，架构，java，云原生，chatGPT">
+  
+  
+    <link rel="alternate" href="/atom.xml" title="架构成长指南" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/typeface-source-code-pro@0.0.71/index.min.css">
+
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+    
+<link rel="stylesheet" href="/localshare/css/share.css">
+
+  
+  
+  
+<meta name="generator" content="Hexo 7.0.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">架构成长指南</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        
+          <a class="main-nav-link" href="/."><i class="fa fa-home"></i> 首页</a>
+        
+          <a class="main-nav-link" href="/archives/"><i class="fa fa-archive"></i> 归档</a>
+        
+          <a class="main-nav-link" href="/about/"><i class="fa fa-user"></i> 关于</a>
+        
+      </nav>
+    </div>
+    <div id="search-form">
+      <div id="result-mask" class="hide"></div>
+      <label><input id="search-key" type="text" autocomplete="off" placeholder="搜索"></label>
+      <div id="result-wrap" class="hide">
+        <div id="search-result"></div>
+      </div>
+      <div class="hide">
+        <template id="search-tpl">
+          <div class="item">
+            <a href="/{path}" title="{title}">
+              <div class="title">{title}</div>
+              <div class="time">{date}</div>
+              <div class="tags">{tags}</div>
+            </a>
+          </div>
+        </template>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post- HTTPS详解-加密算法（一）" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      HTTPS详解-加密算法（一）
+    </h1>
+  
+
+
+      </header>
+    
+    <div class="article-meta">
+      
+      <span class="article-date">
+  <i class="fa fa-date"></i>
+  <time class="dt-published" datetime="2018-06-30T11:22:46.000Z" itemprop="datePublished">2018年06月30日</time>
+</span>
+      
+  <div class="article-category">
+    <i class="fa fa-classify"></i>
+    <a class="article-category-link" href="/categories/%E5%90%8E%E7%AB%AF/">后端</a>
+  </div>
+
+      
+        <span class="article-views">
+  <i class="fa fa-views"></i>
+  <i id="busuanzi_container_page_pv">
+      <i id="busuanzi_value_page_pv"></i>
+  </i>
+</span>
+
+      
+      
+<a href="/2018/06/30/%20HTTPS%E8%AF%A6%E8%A7%A3-%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95%EF%BC%88%E4%B8%80%EF%BC%89/#comments" class="article-comment-link">
+  
+    
+    
+    
+    
+    
+  
+  <i class="fa fa-commt"></i>
+  留言
+</a>
+
+
+    </div>
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>近两年，Google、Baidu、Facebook 等这样的互联网巨头，不谋而合地开始大力推行 HTTPS， 国内外的大型互联网公司很多也都已经启用了全站 HTTPS，这也是未来互联网发展的趋势。</p>
+<p>为鼓励全球网站的 HTTPS 实现，一些互联网公司都提出了自己的要求：</p>
+<p>1）Google 已调整搜索引擎算法，让采用 HTTPS 的网站在搜索中排名更靠前；</p>
+<p>2）从 2017 年开始，Chrome 浏览器已把采用 HTTP 协议的网站标记为不安全网站；</p>
+<p>3）苹果要求 2017 年 App Store 中的所有应用都必须使用 HTTPS 加密连接；</p>
+<p>4）当前国内炒的很火热的微信小程序也要求必须使用 HTTPS 协议；</p>
+<p>5）新一代的 HTTP&#x2F;2 协议的支持需以 HTTPS 为基础。</p>
+<span id="more"></span>
+<h2 id="https概述"><a href="#https概述" class="headerlink" title="https概述"></a>https概述</h2><p><strong>超文本传输安全协议</strong>（英语：<strong>Hypertext Transfer Protocol Secure</strong>，<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E7%B8%AE%E5%AF%AB">缩写</a>：<strong>HTTPS</strong>，常称为<strong>HTTP over TLS</strong>，<strong>HTTP over SSL</strong>或<strong>HTTP Secure</strong>）是一种通过<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E8%A8%88%E7%AE%97%E6%A9%9F%E7%B6%B2%E7%B5%A1">计算机网络</a>进行安全通信的<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E7%B6%B2%E8%B7%AF%E5%82%B3%E8%BC%B8%E5%8D%94%E5%AE%9A">传输协议</a>。HTTPS经由<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/HTTP">HTTP</a>进行通信，但利用<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E4%BC%A0%E8%BE%93%E5%B1%82%E5%AE%89%E5%85%A8">SSL&#x2F;TLS</a>来加密数据包。HTTPS开发的主要目的，是提供对<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E7%B6%B2%E7%AB%99">网站</a>服务器的<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E8%BA%AB%E4%BB%BD%E9%AA%8C%E8%AF%81">身份认证</a>，保护交换数据的隐私与<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E5%AE%8C%E6%95%B4%E6%80%A7">完整性</a>。这个协议由<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E7%B6%B2%E6%99%AF">网景</a>公司（Netscape）在1994年首次提出，随后扩展到<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E7%B6%B2%E9%9A%9B%E7%B6%B2%E8%B7%AF">互联网</a>上。HTTPS是并非应用层的新协议。只是HTTP通信接口用SSL或TLS协议代替而已。</p>
+<p>HTTP直接和TCP通信。当使用ssl时，则演变为跟ssl通信，然后再由ssl与tcp进行通信。简单的讲就是http的plus版。</p>
+<p><img src="https://ws4.sinaimg.cn/large/006tKfTcgy1fstbnsbm17j31100g8jv7.jpg"> </p>
+<p>在采用ssl后，http就拥有了加密、证书、完整性保护这些功能。</p>
+<p>在讲解ssl时，先讲解下几个关键的知识点。</p>
+<h3 id="加密方法"><a href="#加密方法" class="headerlink" title="加密方法"></a>加密方法</h3><h4 id="对称密钥加密"><a href="#对称密钥加密" class="headerlink" title="对称密钥加密"></a>对称密钥加密</h4><p>又称私钥加密、共享密钥加密。需要对加密和解密使用相同<a target="_blank" rel="noopener" href="https://baike.baidu.com/item/%E5%AF%86%E9%92%A5">密钥</a>的<a target="_blank" rel="noopener" href="https://baike.baidu.com/item/%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95">加密算法</a>。由于其速度快，对称性加密通常在消息发送方需要加密大量数据时使用。对称性加密也称为<a target="_blank" rel="noopener" href="https://baike.baidu.com/item/%E5%AF%86%E9%92%A5%E5%8A%A0%E5%AF%86">密钥加密</a>。</p>
+<p>优点：性能高</p>
+<p>缺点：密钥泄露风险高，因为大家共享一个密钥，假如一方泄露这个密码，就没有安全可言。比如：在前后端调用的过程中使用此种算法，如果前端js中存放密钥，那么就会被窃取，app端也有可能反编译获取。</p>
+<p>常用的算法：DES、3DES、AES、Blowfish、IDEA、RC5、RC6</p>
+<p><img src="https://gss1.bdstatic.com/9vo3dSag_xI4khGkpoWK1HF6hhy/baike/c0%3Dbaike220%2C5%2C5%2C220%2C73/sign=3026813dd21373f0e13267cdc566209e/377adab44aed2e736ab19f6a8401a18b87d6fa18.jpg"></p>
+<h4 id="公开密钥加密"><a href="#公开密钥加密" class="headerlink" title="公开密钥加密"></a>公开密钥加密</h4><p>（英语：public-key cryptography，又译为公开密钥加密）,也称为非对称加密（asymmetric cryptography），在这种密码学方法中，需要一对密钥，一个是私人密钥，另一个则是公开密钥。</p>
+<p>优点：知道了公钥，也无法计算出来密钥。例如：在开发项目时，一般私钥是保存在服务端，公钥保存在前端，只要服务端安全，那么私钥就不会被窃取。</p>
+<p>缺点：计算量大，需要消耗大量的系统资源，性能低。</p>
+<p>常用的算法：<a target="_blank" rel="noopener" href="https://baike.baidu.com/item/RSA">RSA</a>、<a target="_blank" rel="noopener" href="https://baike.baidu.com/item/Elgamal">Elgamal</a>、背包算法、Rabin、D-H、<a target="_blank" rel="noopener" href="https://baike.baidu.com/item/ECC">ECC</a>（椭圆曲线加密算法）。</p>
+<p><img src="https://gss1.bdstatic.com/9vo3dSag_xI4khGkpoWK1HF6hhy/baike/c0%3Dbaike220%2C5%2C5%2C220%2C73/sign=93e6505161d0f703f2bf9d8e69933a58/1b4c510fd9f9d72a79ac165bd72a2834359bbbaf.jpg"></p>
+<h4 id="数字签名"><a href="#数字签名" class="headerlink" title="数字签名"></a>数字签名</h4><p>数字签名主要是有两个作用</p>
+<ul>
+<li><p>身份证明</p>
+</li>
+<li><p>验证信息的内容是否被篡改。</p>
+</li>
+</ul>
+<p>而数字签名因为采用公钥加密技术实现，又叫公钥数字签名。</p>
+<p>示例：taker给maker给了自己的公钥，说以后通过此公钥可以验证自己的身份和信息是否篡改。</p>
+<p><img src="https://ws3.sinaimg.cn/large/006tKfTcly1fstevytb13j316607y3zi.jpg"></p>
+<p>有一天，taker在外遇到了点困难需要钱，想要朝maker借点钱，但是又怕无法证明自己，所以采用数字签名。</p>
+<p>首先他把消息内容，通过hash算法计算出一个摘要，然后在采用自己私钥对摘要进行加密</p>
+<p><img src="https://ws2.sinaimg.cn/large/006tKfTcly1fstf0sp5ipj30xo07e756.jpg"></p>
+<p>然后在把这个加密信息添加到邮件附件中，一同发给maker。</p>
+<p><img src="https://ws3.sinaimg.cn/large/006tKfTcly1fstf2ebm3zj30x20cu3zj.jpg"></p>
+<p>maker收到邮件后，用公钥对加密信息进行解密得到了摘要。</p>
+<p><img src="https://ws4.sinaimg.cn/large/006tKfTcly1fstf44pi3lj30o804ejri.jpg"></p>
+<p>然后在用邮件内容进行hash，生成摘要与公钥解密出来的摘要进行比对，就可以确保此邮件是taker所发，并且内容未被篡改，然后在给taker打钱。</p>
+<p><img src="https://ws1.sinaimg.cn/large/006tKfTcly1fstf5qxu7xj30f2050jro.jpg"></p>
+
+        
+            <div id="toc-article">
+                
+  <div class="widget-wrap" id="toc-wrap">
+    <h3 class="widget-title"><i class="fa fa-toc"></i> 文章目录</h3>
+    <div class="widget">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#https%E6%A6%82%E8%BF%B0"><span class="toc-text">https概述</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8A%A0%E5%AF%86%E6%96%B9%E6%B3%95"><span class="toc-text">加密方法</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AF%B9%E7%A7%B0%E5%AF%86%E9%92%A5%E5%8A%A0%E5%AF%86"><span class="toc-text">对称密钥加密</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%AC%E5%BC%80%E5%AF%86%E9%92%A5%E5%8A%A0%E5%AF%86"><span class="toc-text">公开密钥加密</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%95%B0%E5%AD%97%E7%AD%BE%E5%90%8D"><span class="toc-text">数字签名</span></a></li></ol></li></ol></li></ol>
+    </div>
+  </div>
+
+
+            </div>
+        
+        
+          <blockquote id="copyright">
+              <p>原文链接: <a href="https://dongweizhao.github.io/2018/06/30/ HTTPS详解-加密算法（一）/">https://dongweizhao.github.io/2018/06/30/ HTTPS详解-加密算法（一）/</a></p>
+              <p>版权声明: 转载请注明出处.</p>
+          </blockquote>
+        
+      
+    </div>
+    <footer class="article-footer">
+      
+        <div class="article-tag-wrap">
+          
+
+          
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/HTTPS/" rel="tag">HTTPS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/" rel="tag">网络通信</a></li></ul>
+
+          
+    <div class="social-share">
+      <span>分享到:</span>
+    </div>
+
+
+
+        </div>
+      
+      
+        
+<nav id="article-nav">
+  
+    <a href="/2018/02/11/%E9%93%BE%E8%A1%A8%E6%95%B0%E6%8D%AE%E7%BF%BB%E8%BD%AC/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">older</strong>
+      <div class="article-nav-title">
+        
+          链表数据翻转
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2020/06/29/%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E7%9A%84%E4%BA%A7%E7%94%9F%E8%83%8C%E6%99%AF/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">newer</strong>
+      <div class="article-nav-title">
+        
+          01 分库分表的产生背景
+        
+      </div>
+    </a>
+  
+</nav>
+
+      
+      
+        
+
+
+
+
+
+
+
+
+      
+    </footer>
+  </div>
+</article>
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title"><i class="fa fa-posts"></i> 最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2023/11/21/JavaStream/">Java Stream中的API你都用过了吗？</a>
+          </li>
+        
+          <li>
+            <a href="/2020/06/29/%E6%A1%88%E4%BE%8B%E5%88%86%E4%BA%AB/">04 分库分表的案例分享</a>
+          </li>
+        
+          <li>
+            <a href="/2020/06/29/%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E7%9A%84%E4%BA%A7%E7%94%9F%E8%83%8C%E6%99%AF/">01 分库分表的产生背景</a>
+          </li>
+        
+          <li>
+            <a href="/2018/06/30/%20HTTPS%E8%AF%A6%E8%A7%A3-%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95%EF%BC%88%E4%B8%80%EF%BC%89/">HTTPS详解-加密算法（一）</a>
+          </li>
+        
+          <li>
+            <a href="/2018/02/11/%E9%93%BE%E8%A1%A8%E6%95%B0%E6%8D%AE%E7%BF%BB%E8%BD%AC/">链表数据翻转</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title"><i class="fa fa-tag"></i> 标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/HTTP/" style="font-size: 10px;">HTTP</a> <a href="/tags/HTTPS/" style="font-size: 10px;">HTTPS</a> <a href="/tags/Stream/" style="font-size: 10px;">Stream</a> <a href="/tags/java/" style="font-size: 16.67px;">java</a> <a href="/tags/nio/" style="font-size: 10px;">nio</a> <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" style="font-size: 20px;">分布式</a> <a href="/tags/%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E5%8F%8A%E4%BA%8B%E5%8A%A1%E4%B8%80%E8%87%B4%E6%80%A7%E8%AE%BE%E8%AE%A1/" style="font-size: 20px;">分库分表及事务一致性设计</a> <a href="/tags/%E5%90%8E%E7%AB%AF/" style="font-size: 10px;">后端</a> <a href="/tags/%E5%B9%B6%E5%8F%91/" style="font-size: 16.67px;">并发</a> <a href="/tags/%E6%9E%B6%E6%9E%84%E6%88%90%E9%95%BF%E6%8C%87%E5%8D%97/" style="font-size: 10px;">架构成长指南</a> <a href="/tags/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/" style="font-size: 13.33px;">网络通信</a> <a href="/tags/%E9%93%BE%E8%A1%A8/" style="font-size: 13.33px;">链表</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title"><i class="fa fa-classify"></i> 分类</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%90%8E%E7%AB%AF/">后端</a><span class="category-list-count">11</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%AE%97%E6%B3%95/">算法</a><span class="category-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title"><i class="fa fa-archive"></i>公众号</h3>
+    <div class="widget">
+       <img src="/gzh.jpg" style="width:80%; height:80%;" />
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title"><i class="fa fa-tag"></i> 标签</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTP/" rel="tag">HTTP</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTPS/" rel="tag">HTTPS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Stream/" rel="tag">Stream</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/" rel="tag">java</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nio/" rel="tag">nio</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" rel="tag">分布式</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E5%8F%8A%E4%BA%8B%E5%8A%A1%E4%B8%80%E8%87%B4%E6%80%A7%E8%AE%BE%E8%AE%A1/" rel="tag">分库分表及事务一致性设计</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%90%8E%E7%AB%AF/" rel="tag">后端</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%B6%E5%8F%91/" rel="tag">并发</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9E%B6%E6%9E%84%E6%88%90%E9%95%BF%E6%8C%87%E5%8D%97/" rel="tag">架构成长指南</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/" rel="tag">网络通信</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8/" rel="tag">链表</a><span class="tag-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title"><i class="fa fa-link"></i> 友情链接</h3>
+    <div class="widget">
+      <ul>
+      
+        <li>
+          <a target="_blank" rel="noopener" href="http://www.example1.com/">site-name1</a>
+        </li>
+      
+        <li>
+          <a target="_blank" rel="noopener" href="http://www.example2.com/">site-name2</a>
+        </li>
+      
+        <li>
+          <a target="_blank" rel="noopener" href="http://www.example3.com/">site-name3</a>
+        </li>
+      
+      </ul>
+    </div>
+  </div>
+
+
+  
+</aside>
+        
+      </div>
+      <a id="totop" href="#top"></a>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      <p>
+        <a href="/sitemap.xml">网站地图</a>
+        <span> | </span><a href="/atom.xml">订阅本站</a>
+        <span> | </span><a href="/about/">联系博主</a>
+      </p>
+      
+        <p>
+          <i class="fa fa-visitors"></i>
+          <i id="busuanzi_container_site_uv"><i id="busuanzi_value_site_uv"></i></i>
+          ，
+          <i class="fa fa-views"></i>
+          <i id="busuanzi_container_site_pv"><i id="busuanzi_value_site_pv"></i></i>
+        </p>
+      
+      <p>
+        <span>Copyright &copy; 2023 架构成长指南.</span>
+        <span>Theme by <a href="https://github.com/chaooo/hexo-theme-BlueLake/" target="_blank">BlueLake.</a></span>
+        <span>Powered by <a href="https://hexo.io/" target="_blank">Hexo.</a></span>
+      </p>
+    </div>
+  </div>
+</footer>
+
+    </div>
+  </div>
+  
+<script src="/js/jquery-3.4.1.min.js"></script>
+
+
+<script src="/js/search.json.js"></script>
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+
+  
+<script src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+    
+<script src="/localshare/js/social-share.js"></script>
+
+    
+<script src="/localshare/js/qrcode.js"></script>
+
+  
+  
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+
+
+
+
+</body>
+</html>

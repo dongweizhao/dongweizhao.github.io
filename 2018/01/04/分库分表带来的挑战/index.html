@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>02 分库分表带来的挑战 | 架构成长指南</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  
+    <meta name="description" content="java技术分享，系统架构剖析，java实践分享，ai相关知识分享，chatGPT,架构成长指南">
+  
+  
+    <meta name="keywords" content="架构成长指南，架构，java，云原生，chatGPT">
+  
+  
+    <link rel="alternate" href="/atom.xml" title="架构成长指南" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/typeface-source-code-pro@0.0.71/index.min.css">
+
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+    
+<link rel="stylesheet" href="/localshare/css/share.css">
+
+  
+  
+  
+<meta name="generator" content="Hexo 7.0.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">架构成长指南</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        
+          <a class="main-nav-link" href="/."><i class="fa fa-home"></i> 首页</a>
+        
+          <a class="main-nav-link" href="/archives/"><i class="fa fa-archive"></i> 归档</a>
+        
+          <a class="main-nav-link" href="/about/"><i class="fa fa-user"></i> 关于</a>
+        
+      </nav>
+    </div>
+    <div id="search-form">
+      <div id="result-mask" class="hide"></div>
+      <label><input id="search-key" type="text" autocomplete="off" placeholder="搜索"></label>
+      <div id="result-wrap" class="hide">
+        <div id="search-result"></div>
+      </div>
+      <div class="hide">
+        <template id="search-tpl">
+          <div class="item">
+            <a href="/{path}" title="{title}">
+              <div class="title">{title}</div>
+              <div class="time">{date}</div>
+              <div class="tags">{tags}</div>
+            </a>
+          </div>
+        </template>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-分库分表带来的挑战" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      02 分库分表带来的挑战
+    </h1>
+  
+
+
+      </header>
+    
+    <div class="article-meta">
+      
+      <span class="article-date">
+  <i class="fa fa-date"></i>
+  <time class="dt-published" datetime="2018-01-04T13:55:54.000Z" itemprop="datePublished">2018年01月04日</time>
+</span>
+      
+  <div class="article-category">
+    <i class="fa fa-classify"></i>
+    <a class="article-category-link" href="/categories/%E5%90%8E%E7%AB%AF/">后端</a>
+  </div>
+
+      
+        <span class="article-views">
+  <i class="fa fa-views"></i>
+  <i id="busuanzi_container_page_pv">
+      <i id="busuanzi_value_page_pv"></i>
+  </i>
+</span>
+
+      
+      
+<a href="/2018/01/04/%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E5%B8%A6%E6%9D%A5%E7%9A%84%E6%8C%91%E6%88%98/#comments" class="article-comment-link">
+  
+    
+    
+    
+    
+    
+  
+  <i class="fa fa-commt"></i>
+  留言
+</a>
+
+
+    </div>
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>上一节介绍了分库分表的的产生背景，以及遇到的一些问题，本节对上节遇到问题进行一个总结并给出一些解决方案。</p>
+<h3 id="问题列表"><a href="#问题列表" class="headerlink" title="问题列表"></a>问题列表</h3><h5 id="引入分布式事务的问题"><a href="#引入分布式事务的问题" class="headerlink" title="引入分布式事务的问题"></a>引入分布式事务的问题</h5><h5 id="跨节点join的问题"><a href="#跨节点join的问题" class="headerlink" title="跨节点join的问题"></a>跨节点join的问题</h5><h5 id="跨节点排序分页的问题"><a href="#跨节点排序分页的问题" class="headerlink" title="跨节点排序分页的问题"></a>跨节点排序分页的问题</h5><h5 id="高并发下原子性的问题"><a href="#高并发下原子性的问题" class="headerlink" title="高并发下原子性的问题"></a>高并发下原子性的问题</h5><p>以上是对分库分表遇到一些问题进行了汇总，下面对这些问题以及对应的解决方案一一讲解。</p>
+<h3 id="引入分布式事务的问题-1"><a href="#引入分布式事务的问题-1" class="headerlink" title="引入分布式事务的问题"></a>引入分布式事务的问题</h3><h4 id="同一应用系统-引入分布式事务的问题"><a href="#同一应用系统-引入分布式事务的问题" class="headerlink" title="同一应用系统-引入分布式事务的问题"></a>同一应用系统-引入分布式事务的问题</h4><p><img src="https://note.youdao.com/yws/api/personal/file/WEBc5216cefe8e97f0e416d142205d6f2b3?method=download&shareKey=35331358eadf9a9716d75c7d16b2cc1d" alt="image"></p>
+<p>如图所示，这是一个注册操作步骤，注册服务由两个原子服务组成，分别为：</p>
+<ol>
+<li>登录标识原子服务</li>
+<li>认证信息原子服务。</li>
+</ol>
+<p>其中登录标识对应的登录标识表对应分片键为登录标识，因为为了快速登录，所以不会以用户ID作为分片键。认证信息原子服务对应的分片键为用户ID，那么这种流程，就会引发分布式事务问题，那么针对此类场景是怎么解决。</p>
+<span id="more"></span>
+<h4 id="同一应用系统-分布式事务解决方案"><a href="#同一应用系统-分布式事务解决方案" class="headerlink" title="同一应用系统-分布式事务解决方案"></a>同一应用系统-分布式事务解决方案</h4><p><img src="https://note.youdao.com/yws/api/personal/file/WEB8471b275eb73a625fbfd01dcb4573b64?method=download&shareKey=22d49a7a0bb727224aa06e6a2527308f" alt="image"></p>
+<p>以上为注册服务的注册流程，首先调用登录标识原子服务，如果处理成功，则调用认证信息原子服务，如果失败则返回。</p>
+<p>假如处理成功，并调用了认证信息原子服务，此时成功，则流程注册完成，给前端返回结果。</p>
+<p>如果操作失败，那么就需要调用冲正服务，对第一步登录标识进行删除，一般情况都会成功，如果遇到极端情况，假如数据库down机，这会推送异常消息至监控平台进行报警，从而人为介入解决。</p>
+<h4 id="多系统交互-分布式事务问题"><a href="#多系统交互-分布式事务问题" class="headerlink" title="多系统交互-分布式事务问题"></a>多系统交互-分布式事务问题</h4><p><img src="https://note.youdao.com/yws/api/personal/file/WEB86c7dd83d572cd104f8432de230d364a?method=download&shareKey=564dd16cd65f3dd52f3f42d1bd93a926" alt="image"><br>上图所示，为开户服务操作步骤，涉及到三个系统。</p>
+<p>通过分析，如果采用上篇介绍的方案同步调用，那么会使处理时间拉长，对客户体验不好，同时系统处理能力也会下降。</p>
+<p>如果在调用环节中有一个系统出现问题，就会导致各系统中数据状态不一致，而如果采用上篇介绍的冲正方案，处理时间会更加长，从而导致超时，那么针对此类问题，一般是基于消息最终一致性来解决的。</p>
+<h4 id="分布式事务解决方案-基于消息的最终一致性"><a href="#分布式事务解决方案-基于消息的最终一致性" class="headerlink" title="分布式事务解决方案-基于消息的最终一致性"></a>分布式事务解决方案-基于消息的最终一致性</h4><p>我们知道分布式系统中的CAP理论，分别为</p>
+<ol>
+<li>Consistency(一致性), 数据一致更新，所有数据变动都是同步的</li>
+<li>Availability(可用性), 好的响应性能</li>
+<li>Partition tolerance(分区容错性) 可靠性</li>
+</ol>
+<p>任何分布式系统只可同时满足二点，没法三者兼顾。<br>如果满足一致性，那么就需要在可用性和分区容错性，做出选择。</p>
+<p>如果选择可用性，也就需要避免分区容错性的发生，那么需要将所有事务相关的东西都放在一台机器上，也就说把开户设计的表全部放在一个库中，由一个系统完成。这种情况下虽然分区容错性的可以避免，但是我们系统从分布式系统退化成了单机系统，从根本上失去了扩展性。</p>
+<p>如果选择分区容错，一旦遇到分区事件，受影响的服务需要等待数据一致，因此等待期间，无法对外提供服务。而一个系统如果对外提供不了服务，是非常重大的事故，所以是不能接受的。</p>
+<p>那么有什么方法，能解决这些问题呢，eBay架构师源于对大规模分布式系统的实践总结，在ACM上发表了BASE理论，<br>BASE理论是指</p>
+<ol>
+<li>Basically Available（基本可用）</li>
+<li>Soft state（软状态）</li>
+<li>Eventually consistent（最终一致性）</li>
+</ol>
+<p>BASE理论是对CAP的延伸，核心思想是即使无法做到强一致性，但应用可以采取适当的方式来达到最终一致性。</p>
+<p>我们这里分享的基于消息中间件的处理方式，就是最终一致性的体现。<br><img src="https://note.youdao.com/yws/api/personal/file/WEB7a1034b1605e42a37f8169afb2123da7?method=download&shareKey=ae9dc2e013e09ef27ebd46f9746eca30" alt="image"><br>如图所示，假如这里A系统为电子账户系统，B系统为客户信息系统，A系统开立电子账户后，保存需要发送消息的数据至消息发送表中，并提交事务后发送至MQ，本次交易就完成了。</p>
+<p>剩下的操作由MQ推送至客户信息系统或者客户合约系统，这里以客户信息系统为例，系统拿到消息后，进行数据保存，保存成功，并调用MQ的签收操作，同时拿到此消息进行客户等级升级操作，如果操作失败，那么会有定时检查任务，检查消息消费状态，并进行调起，再次进行升级操作。</p>
+<p>因为这种方式是有一定延时，所以业务上要多做一些考量，从而不影响客户体验。</p>
+<h4 id="跨节点Join的问题1-解决方案"><a href="#跨节点Join的问题1-解决方案" class="headerlink" title="跨节点Join的问题1-解决方案"></a>跨节点Join的问题1-解决方案</h4><p><img src="https://note.youdao.com/yws/api/personal/file/WEB5dce344453406444e289254a2f98db60?method=download&shareKey=05446f52f0d68bdbb6c9e1c18239dc00" alt="image"></p>
+<p>以上是一个联表查询中，以一张关联表的分片键做为查询条件的场景，那么针对此类场景解决方案，就是拆分为多步。</p>
+<ol>
+<li>根据分片键获取到对应另一张表的分片键。</li>
+<li>根据返回分片键查询另一张表的数据。</li>
+<li>对多张表的结果进行聚合。</li>
+</ol>
+<p>这样跨节点join的问题就解决了。</p>
+<h4 id="跨节点Join的问题2-解决方案"><a href="#跨节点Join的问题2-解决方案" class="headerlink" title="跨节点Join的问题2-解决方案"></a>跨节点Join的问题2-解决方案</h4><p><img src="https://note.youdao.com/yws/api/personal/file/WEB8658240672c5e0d92d894bef99a5346e?method=download&shareKey=4d7d7c436377e9d4621c742399c95bcd" alt="image"></p>
+<p>以上是一个联表查询中，是没有分片键做为查询条件的场景，那么针对此类场景解决方案，也是拆分为单表的查询语句，并进行并行调用，同时从多个节点进行获取，然后在进行聚合。</p>
+<p><strong>注意，如果关联的表比较多，不建议所有的表都进行并行调用，因为这样很占数据库的连接数，可以采用以下方式操作，例如：首先拆分多个表语句，然后第一条语句并行访问，获取结果，并根据结果获取到关联表的分片键，在进行数据获取，最后在进行多张表的结果聚合</strong></p>
+<h4 id="跨节点排序分页的问题-1"><a href="#跨节点排序分页的问题-1" class="headerlink" title="跨节点排序分页的问题"></a>跨节点排序分页的问题</h4><p><img src="https://note.youdao.com/yws/api/personal/file/WEB6c9ab90e55288f701393af893d0b0818?method=download&shareKey=9860c37970b7446aafab851d1e0239c1" alt="image"></p>
+<p> test表有数据[1,2,3,4,5,6,7,8]，在单库的时候，查询第2页数据并且显示2条，语句是这样的</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select * from test  order by id limit 2,2;</span><br></pre></td></tr></table></figure>
+
+<p> 数据返回[3,4],但是数据切分以后，如果要查询，这样语句就可能就会有问题，例如：在节点1执行此语句，返回[5,7],节点2返回[6,8],然后在进行排序，返回了[5,6],所以结果就不准确了，所以应该对sql语句改写为:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select * from test  order by id limit 0,4;</span><br></pre></td></tr></table></figure>
+<p> 然后在根据各节点返回的数据，在进行排序，筛选出第2页的2条。<br> 这种有什么问题呢，</p>
+<ul>
+<li>每个节点返回更多的数据，增大了网络传输量</li>
+<li>服务层还需要进行二次排序，增大了服务层的计算量</li>
+<li>随着页码的增大，性能会急剧下降<br>  所以开发时，应尽量避免这种需求，以其它的方式来满足，如果非要实现，可以采用业务折中的方式，如静止跳页</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select * from test where id&gt;0 limit 2;</span><br></pre></td></tr></table></figure>
+<p>根据id值进行排序，返回对应的条数，在内存中对各个节点返回的数据进行排序，得到需要的数据，相比以前的方案，貌似跟以前处理流程一样，<br>但是在查询第二页时，根据上一页的id的最大值id_max,作为第二页的最小值，会将</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select * from test  order by id limit 2,2;</span><br></pre></td></tr></table></figure>
+<p>改写成：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select * from test order by id&gt; $id_max limit 2</span><br></pre></td></tr></table></figure>
+<p>这样每个节点不用返回4页数据了，只需要返回跟第一页一样页数的数据，可以看到通过对业务的折中，性能得到大大的提升。</p>
+<h4 id="高并发下多节点原子性问题"><a href="#高并发下多节点原子性问题" class="headerlink" title="高并发下多节点原子性问题"></a>高并发下多节点原子性问题</h4><p><img src="https://note.youdao.com/yws/api/personal/file/WEBe3bfa5bfaa7a300e882cf1ab45aaa2c2?method=download&shareKey=b095e0629cf711a6bd27b9b6032ac73a" alt="image"><br>如上图所以，这种一个实名认证的交易场景，实名认证成功则插入到对应的客户表中，客户表分片键为用户ID,身份证是唯一索引，但是它只能保证在单个节点的唯一性，不能保证多个节点的唯一性，所以以上场景有可能会插入两条重复的数据。</p>
+<p>为了解决保证多个节点的数据的唯一性，可以通过分布式锁来解决，redis、zookeeper都有提供分布式锁的功能<br><img src="https://note.youdao.com/yws/api/personal/file/WEBa1440e15a1bf458717646fbe027ea036?method=download&shareKey=6b16c453ecb5e57d49a04bee265e5ba7" alt="image"><br>如上图，在进行认证时，首先登记身份证号至redis,如果缓存中没有此身份证则登记成功，在进行下一步操作，否则失败。</p>
+
+        
+            <div id="toc-article">
+                
+  <div class="widget-wrap" id="toc-wrap">
+    <h3 class="widget-title"><i class="fa fa-toc"></i> 文章目录</h3>
+    <div class="widget">
+      <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%E5%88%97%E8%A1%A8"><span class="toc-text">问题列表</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%BC%95%E5%85%A5%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-text">引入分布式事务的问题</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E8%B7%A8%E8%8A%82%E7%82%B9join%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-text">跨节点join的问题</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E8%B7%A8%E8%8A%82%E7%82%B9%E6%8E%92%E5%BA%8F%E5%88%86%E9%A1%B5%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-text">跨节点排序分页的问题</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E9%AB%98%E5%B9%B6%E5%8F%91%E4%B8%8B%E5%8E%9F%E5%AD%90%E6%80%A7%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-text">高并发下原子性的问题</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%95%E5%85%A5%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1%E7%9A%84%E9%97%AE%E9%A2%98-1"><span class="toc-text">引入分布式事务的问题</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%90%8C%E4%B8%80%E5%BA%94%E7%94%A8%E7%B3%BB%E7%BB%9F-%E5%BC%95%E5%85%A5%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-text">同一应用系统-引入分布式事务的问题</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%90%8C%E4%B8%80%E5%BA%94%E7%94%A8%E7%B3%BB%E7%BB%9F-%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="toc-text">同一应用系统-分布式事务解决方案</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A4%9A%E7%B3%BB%E7%BB%9F%E4%BA%A4%E4%BA%92-%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1%E9%97%AE%E9%A2%98"><span class="toc-text">多系统交互-分布式事务问题</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88-%E5%9F%BA%E4%BA%8E%E6%B6%88%E6%81%AF%E7%9A%84%E6%9C%80%E7%BB%88%E4%B8%80%E8%87%B4%E6%80%A7"><span class="toc-text">分布式事务解决方案-基于消息的最终一致性</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%B7%A8%E8%8A%82%E7%82%B9Join%E7%9A%84%E9%97%AE%E9%A2%981-%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="toc-text">跨节点Join的问题1-解决方案</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%B7%A8%E8%8A%82%E7%82%B9Join%E7%9A%84%E9%97%AE%E9%A2%982-%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="toc-text">跨节点Join的问题2-解决方案</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%B7%A8%E8%8A%82%E7%82%B9%E6%8E%92%E5%BA%8F%E5%88%86%E9%A1%B5%E7%9A%84%E9%97%AE%E9%A2%98-1"><span class="toc-text">跨节点排序分页的问题</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%AB%98%E5%B9%B6%E5%8F%91%E4%B8%8B%E5%A4%9A%E8%8A%82%E7%82%B9%E5%8E%9F%E5%AD%90%E6%80%A7%E9%97%AE%E9%A2%98"><span class="toc-text">高并发下多节点原子性问题</span></a></li></ol></li></ol>
+    </div>
+  </div>
+
+
+            </div>
+        
+        
+          <blockquote id="copyright">
+              <p>原文链接: <a href="https://dongweizhao.github.io/2018/01/04/分库分表带来的挑战/">https://dongweizhao.github.io/2018/01/04/分库分表带来的挑战/</a></p>
+              <p>版权声明: 转载请注明出处.</p>
+          </blockquote>
+        
+      
+    </div>
+    <footer class="article-footer">
+      
+        <div class="article-tag-wrap">
+          
+
+          
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" rel="tag">分布式</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E5%8F%8A%E4%BA%8B%E5%8A%A1%E4%B8%80%E8%87%B4%E6%80%A7%E8%AE%BE%E8%AE%A1/" rel="tag">分库分表及事务一致性设计</a></li></ul>
+
+          
+    <div class="social-share">
+      <span>分享到:</span>
+    </div>
+
+
+
+        </div>
+      
+      
+        
+<nav id="article-nav">
+  
+    <a href="/2018/01/04/Amdahl/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">older</strong>
+      <div class="article-nav-title">
+        
+          阿姆达尔定律
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/01/04/%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8%E4%B8%8E%E5%88%92%E5%88%86%E5%8E%9F%E5%88%99/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">newer</strong>
+      <div class="article-nav-title">
+        
+          03 数据存储与划分原则
+        
+      </div>
+    </a>
+  
+</nav>
+
+      
+      
+        
+
+
+
+
+
+
+
+
+      
+    </footer>
+  </div>
+</article>
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title"><i class="fa fa-posts"></i> 最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2023/11/21/JavaStream/">Java Stream中的API你都用过了吗？</a>
+          </li>
+        
+          <li>
+            <a href="/2020/06/29/%E6%A1%88%E4%BE%8B%E5%88%86%E4%BA%AB/">04 分库分表的案例分享</a>
+          </li>
+        
+          <li>
+            <a href="/2020/06/29/%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E7%9A%84%E4%BA%A7%E7%94%9F%E8%83%8C%E6%99%AF/">01 分库分表的产生背景</a>
+          </li>
+        
+          <li>
+            <a href="/2018/06/30/%20HTTPS%E8%AF%A6%E8%A7%A3-%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95%EF%BC%88%E4%B8%80%EF%BC%89/">HTTPS详解-加密算法（一）</a>
+          </li>
+        
+          <li>
+            <a href="/2018/02/11/%E9%93%BE%E8%A1%A8%E6%95%B0%E6%8D%AE%E7%BF%BB%E8%BD%AC/">链表数据翻转</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title"><i class="fa fa-tag"></i> 标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/HTTP/" style="font-size: 10px;">HTTP</a> <a href="/tags/HTTPS/" style="font-size: 10px;">HTTPS</a> <a href="/tags/Stream/" style="font-size: 10px;">Stream</a> <a href="/tags/java/" style="font-size: 16.67px;">java</a> <a href="/tags/nio/" style="font-size: 10px;">nio</a> <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" style="font-size: 20px;">分布式</a> <a href="/tags/%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E5%8F%8A%E4%BA%8B%E5%8A%A1%E4%B8%80%E8%87%B4%E6%80%A7%E8%AE%BE%E8%AE%A1/" style="font-size: 20px;">分库分表及事务一致性设计</a> <a href="/tags/%E5%90%8E%E7%AB%AF/" style="font-size: 10px;">后端</a> <a href="/tags/%E5%B9%B6%E5%8F%91/" style="font-size: 16.67px;">并发</a> <a href="/tags/%E6%9E%B6%E6%9E%84%E6%88%90%E9%95%BF%E6%8C%87%E5%8D%97/" style="font-size: 10px;">架构成长指南</a> <a href="/tags/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/" style="font-size: 13.33px;">网络通信</a> <a href="/tags/%E9%93%BE%E8%A1%A8/" style="font-size: 13.33px;">链表</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title"><i class="fa fa-classify"></i> 分类</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%90%8E%E7%AB%AF/">后端</a><span class="category-list-count">11</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%AE%97%E6%B3%95/">算法</a><span class="category-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title"><i class="fa fa-archive"></i>公众号</h3>
+    <div class="widget">
+       <img src="/gzh.jpg" style="width:80%; height:80%;" />
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title"><i class="fa fa-tag"></i> 标签</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTP/" rel="tag">HTTP</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTPS/" rel="tag">HTTPS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Stream/" rel="tag">Stream</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/" rel="tag">java</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nio/" rel="tag">nio</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" rel="tag">分布式</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E5%8F%8A%E4%BA%8B%E5%8A%A1%E4%B8%80%E8%87%B4%E6%80%A7%E8%AE%BE%E8%AE%A1/" rel="tag">分库分表及事务一致性设计</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%90%8E%E7%AB%AF/" rel="tag">后端</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%B6%E5%8F%91/" rel="tag">并发</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9E%B6%E6%9E%84%E6%88%90%E9%95%BF%E6%8C%87%E5%8D%97/" rel="tag">架构成长指南</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/" rel="tag">网络通信</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8/" rel="tag">链表</a><span class="tag-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title"><i class="fa fa-link"></i> 友情链接</h3>
+    <div class="widget">
+      <ul>
+      
+        <li>
+          <a target="_blank" rel="noopener" href="http://www.example1.com/">site-name1</a>
+        </li>
+      
+        <li>
+          <a target="_blank" rel="noopener" href="http://www.example2.com/">site-name2</a>
+        </li>
+      
+        <li>
+          <a target="_blank" rel="noopener" href="http://www.example3.com/">site-name3</a>
+        </li>
+      
+      </ul>
+    </div>
+  </div>
+
+
+  
+</aside>
+        
+      </div>
+      <a id="totop" href="#top"></a>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      <p>
+        <a href="/sitemap.xml">网站地图</a>
+        <span> | </span><a href="/atom.xml">订阅本站</a>
+        <span> | </span><a href="/about/">联系博主</a>
+      </p>
+      
+        <p>
+          <i class="fa fa-visitors"></i>
+          <i id="busuanzi_container_site_uv"><i id="busuanzi_value_site_uv"></i></i>
+          ，
+          <i class="fa fa-views"></i>
+          <i id="busuanzi_container_site_pv"><i id="busuanzi_value_site_pv"></i></i>
+        </p>
+      
+      <p>
+        <span>Copyright &copy; 2023 架构成长指南.</span>
+        <span>Theme by <a href="https://github.com/chaooo/hexo-theme-BlueLake/" target="_blank">BlueLake.</a></span>
+        <span>Powered by <a href="https://hexo.io/" target="_blank">Hexo.</a></span>
+      </p>
+    </div>
+  </div>
+</footer>
+
+    </div>
+  </div>
+  
+<script src="/js/jquery-3.4.1.min.js"></script>
+
+
+<script src="/js/search.json.js"></script>
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+
+  
+<script src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+    
+<script src="/localshare/js/social-share.js"></script>
+
+    
+<script src="/localshare/js/qrcode.js"></script>
+
+  
+  
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+
+
+
+
+</body>
+</html>
