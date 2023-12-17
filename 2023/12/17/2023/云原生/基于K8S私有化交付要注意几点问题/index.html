@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>基于K8S私有化交付要注意几点问题 | 架构成长指南</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  
+    <meta name="description" content="java技术分享，系统架构剖析，java实践分享，ai相关知识分享，chatGPT,架构成长指南">
+  
+  
+    <meta name="keywords" content="架构成长指南，架构，java，云原生，chatGPT">
+  
+  
+    <link rel="alternate" href="/atom.xml" title="架构成长指南" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/typeface-source-code-pro@0.0.71/index.min.css">
+
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+    
+<link rel="stylesheet" href="/localshare/css/share.css">
+
+  
+  
+  
+<meta name="generator" content="Hexo 7.0.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">架构成长指南</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        
+          <a class="main-nav-link" href="/."><i class="fa fa-home"></i> 首页</a>
+        
+          <a class="main-nav-link" href="/archives/"><i class="fa fa-archive"></i> 归档</a>
+        
+          <a class="main-nav-link" href="/about/"><i class="fa fa-user"></i> 关于</a>
+        
+      </nav>
+    </div>
+    <div id="search-form">
+      <div id="result-mask" class="hide"></div>
+      <label><input id="search-key" type="text" autocomplete="off" placeholder="搜索"></label>
+      <div id="result-wrap" class="hide">
+        <div id="search-result"></div>
+      </div>
+      <div class="hide">
+        <template id="search-tpl">
+          <div class="item">
+            <a href="/{path}" title="{title}">
+              <div class="title">{title}</div>
+              <div class="time">{date}</div>
+              <div class="tags">{tags}</div>
+            </a>
+          </div>
+        </template>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-2023/云原生/基于K8S私有化交付要注意几点问题" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      基于K8S私有化交付要注意几点问题
+    </h1>
+  
+
+
+      </header>
+    
+    <div class="article-meta">
+      
+        <span class='article-top'>【置顶】</span>
+      
+      <span class="article-date">
+  <i class="fa fa-date"></i>
+  <time class="dt-published" datetime="2023-12-17T05:16:20.905Z" itemprop="datePublished">2023年12月17日</time>
+</span>
+      
+  <div class="article-category">
+    <i class="fa fa-classify"></i>
+    <a class="article-category-link" href="/categories/%E4%BA%91%E5%8E%9F%E7%94%9F/">云原生</a>
+  </div>
+
+      
+        <span class="article-views">
+  <i class="fa fa-views"></i>
+  <i id="busuanzi_container_page_pv">
+      <i id="busuanzi_value_page_pv"></i>
+  </i>
+</span>
+
+      
+      
+<a href="/2023/12/17/2023/%E4%BA%91%E5%8E%9F%E7%94%9F/%E5%9F%BA%E4%BA%8EK8S%E7%A7%81%E6%9C%89%E5%8C%96%E4%BA%A4%E4%BB%98%E8%A6%81%E6%B3%A8%E6%84%8F%E5%87%A0%E7%82%B9%E9%97%AE%E9%A2%98/#comments" class="article-comment-link">
+  
+    
+    
+    
+    
+    
+  
+  <i class="fa fa-commt"></i>
+  留言
+</a>
+
+
+    </div>
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <blockquote>
+<p>公众号「架构成长指南」，专注于生产实践、云原生、分布式系统、大数据技术分享</p>
+</blockquote>
+<p>在使用 k8s 进行项目私有化部署时，会遇到很多问题，以下把作者经常遇到的一些问题以及需要注意的点分享给各位。</p>
+<h4 id="资源依赖问题"><a href="#资源依赖问题" class="headerlink" title="资源依赖问题"></a>资源依赖问题</h4><p>在进行私有化部署时，我们的系统会依赖很多外部资源与服务，比如：</p>
+<ul>
+<li>服务器资源</li>
+<li>外部服务</li>
+<li>网络资源</li>
+</ul>
+<span id="more"></span>
+
+<h5 id="服务器资源申请"><a href="#服务器资源申请" class="headerlink" title="服务器资源申请"></a>服务器资源申请</h5><p>需要提前根据客户提供的业务数据，以及结合自身系统微服务数量等维度，梳理出一个服务器资源配置清单，提前申请资源。</p>
+<p><strong>示例</strong></p>
+<table>
+<thead>
+<tr>
+<th><strong>名称</strong></th>
+<th><strong>类型</strong></th>
+<th><strong>操作系统版本</strong></th>
+<th>CPU</th>
+<th><strong>磁盘</strong></th>
+<th><strong>内存</strong></th>
+<th><strong>数量</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>中间件服务器</td>
+<td>ECS</td>
+<td>CentOS 7.9</td>
+<td>8</td>
+<td>500</td>
+<td>16</td>
+<td>5</td>
+</tr>
+<tr>
+<td>应用服务器</td>
+<td>ECS</td>
+<td></td>
+<td>16</td>
+<td>500</td>
+<td>32</td>
+<td>20</td>
+</tr>
+<tr>
+<td>K8S Master</td>
+<td>云服务</td>
+<td></td>
+<td>1</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>NAS</td>
+<td>云服务</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<h5 id="外部服务"><a href="#外部服务" class="headerlink" title="外部服务"></a>外部服务</h5><p>结合业务需求，梳理依赖的外部服务清单，比如短信服务、地图Api、公众号、小程序等，需提前申请，以免影响项目交付。</p>
+<h5 id="网络相关资源"><a href="#网络相关资源" class="headerlink" title="网络相关资源"></a>网络相关资源</h5><ol>
+<li>SSL证书，如果系统开放到外网必须要有 SSL证书，建议申请通配符证书，这种没有域名数量限制问题，如下图，只要属于 feishu.cn 下的二级域名，都可以用此证书。</li>
+</ol>
+<p><img src="https://wz-blogimg.oss-cn-beijing.aliyuncs.com/img/image-20231217131655109.png" alt="image-20231217131655109"></p>
+<ol start="2">
+<li>公网443&#x2F;80 端口备案，部分应用强制依赖这些端口，比如小程序，需要提前进行备案，而且周期较长。</li>
+</ol>
+<h4 id="负载均衡器选择"><a href="#负载均衡器选择" class="headerlink" title="负载均衡器选择"></a>负载均衡器选择</h4><p>在未使用k8s时，常用Nginx进行SLB和前端资源部署，类似如下图<br><img src="https://wz-blogimg.oss-cn-beijing.aliyuncs.com/img/image-20231217131708852.png" alt="image-20231217131708852"><br>而使用k8s以后，Nginx功能被削弱了很多，比如转发规则，可以放在Ingress 进行配置，前端资源也部署k8s 中</p>
+<p><img src="https://wz-blogimg.oss-cn-beijing.aliyuncs.com/img/image-20231217131719798.png" alt="image-20231217131719798"><img src="/" alt="image.png"><br>而Nginx只充当 SLB的作用，例如把前端请求转发到Ingress 中，功能很单一，而不管是公有云或私有云，厂商都提供了SLB，因此就不需要Nginx这一层，由厂商提供的SLB 直接转发请求至Ingress 即可。<br><img src="https://wz-blogimg.oss-cn-beijing.aliyuncs.com/img/image-20231217131730366.png" alt="image-20231217131730366"></p>
+<h4 id="SSL证书挂载"><a href="#SSL证书挂载" class="headerlink" title="SSL证书挂载"></a>SSL证书挂载</h4><p>有了厂商提供的SLB，那么 SSL证书也没必要挂载在k8s 的 Ingress上，直接挂载SLB即可，如下图，经过负载均衡器的请求都进行了证书剥离，转换成了 http<br><img src="https://wz-blogimg.oss-cn-beijing.aliyuncs.com/img/image-20231217131748175.png" alt="image-20231217131748175"></p>
+<h4 id="系统开放策略整理"><a href="#系统开放策略整理" class="headerlink" title="系统开放策略整理"></a>系统开放策略整理</h4><p>根据业务需求，提前整理系统网络开放策略清单，交由相关人员进行配置，比如系统 A 内网访问，系统 B外网访问，如下图</p>
+<table>
+<thead>
+<tr>
+<th><strong>名称</strong></th>
+<th><strong>域名</strong></th>
+<th><strong>是否对外</strong></th>
+<th><strong>协议</strong></th>
+<th><strong>外网映射端口</strong></th>
+<th><strong>DNS 解析 IP</strong></th>
+<th><strong>SLBIP</strong></th>
+<th>目标 IP</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>系统 A</td>
+<td>a.feishu.com</td>
+<td>是</td>
+<td>https</td>
+<td>443</td>
+<td>公网 IP</td>
+<td>172.18.xx.xx</td>
+<td>xxx</td>
+</tr>
+<tr>
+<td>系统 b</td>
+<td>b.feishu.com</td>
+<td>否</td>
+<td>http</td>
+<td>无</td>
+<td>SLB IP</td>
+<td>172.18.xx.xx</td>
+<td>xxx</td>
+</tr>
+</tbody></table>
+<h4 id="产品分支与镜像管理"><a href="#产品分支与镜像管理" class="headerlink" title="产品分支与镜像管理"></a>产品分支与镜像管理</h4><p><strong>分支管理</strong></p>
+<p>由于私有化部署，有些需求是个性化的，这部分需求与通用版本分支是无法兼容的，那么需要从代码分支上进行区分，比如项目有对应项目的分支，通用分支有通用分支，如果一个需求的功能是通用需求，建议在通用分支上改造，测试完在合并至项目分支，其实不管用那种方式，要保证兼容性，可追溯。<br><img src="https://wz-blogimg.oss-cn-beijing.aliyuncs.com/img/image-20231217131759949.png" alt="image-20231217131759949"></p>
+<table>
+<thead>
+<tr>
+<th><strong>分支类型</strong></th>
+<th><strong>规则</strong></th>
+<th><strong>示例</strong></th>
+<th><strong>说明</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>项目开发分支</td>
+<td>作者-项目简称-需求名称</td>
+<td>zs-xs-需求名称</td>
+<td></td>
+</tr>
+<tr>
+<td>项目测试分支</td>
+<td>项目名称-demo</td>
+<td>项目名称-demo</td>
+<td></td>
+</tr>
+<tr>
+<td>项目测试生产分支</td>
+<td>项目名称-master</td>
+<td>xs-master</td>
+<td>项目代码发布打tag，版本包括三类：大版本(x.0.0) 、小版本(x.x.0) 、补丁(x.x.x)</td>
+</tr>
+</tbody></table>
+<p><strong>镜像TAG管理</strong></p>
+<p>镜像的tag要与代码 tag相互联系起来，比如代码 tag 是：realse-1.0.0，那么镜像 tag也建议是这个名称，这样如果出问题，可以根据镜像 tag快速找到对应代码。</p>
+<p><img src="https://wz-blogimg.oss-cn-beijing.aliyuncs.com/img/image-20231217131816219.png" alt="image-20231217131816219"></p>
+
+        
+            <div id="toc-article">
+                
+  <div class="widget-wrap" id="toc-wrap">
+    <h3 class="widget-title"><i class="fa fa-toc"></i> 文章目录</h3>
+    <div class="widget">
+      <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%B5%84%E6%BA%90%E4%BE%9D%E8%B5%96%E9%97%AE%E9%A2%98"><span class="toc-text">资源依赖问题</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%B5%84%E6%BA%90%E7%94%B3%E8%AF%B7"><span class="toc-text">服务器资源申请</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%A4%96%E9%83%A8%E6%9C%8D%E5%8A%A1"><span class="toc-text">外部服务</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%BD%91%E7%BB%9C%E7%9B%B8%E5%85%B3%E8%B5%84%E6%BA%90"><span class="toc-text">网络相关资源</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E5%99%A8%E9%80%89%E6%8B%A9"><span class="toc-text">负载均衡器选择</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#SSL%E8%AF%81%E4%B9%A6%E6%8C%82%E8%BD%BD"><span class="toc-text">SSL证书挂载</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%B3%BB%E7%BB%9F%E5%BC%80%E6%94%BE%E7%AD%96%E7%95%A5%E6%95%B4%E7%90%86"><span class="toc-text">系统开放策略整理</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BA%A7%E5%93%81%E5%88%86%E6%94%AF%E4%B8%8E%E9%95%9C%E5%83%8F%E7%AE%A1%E7%90%86"><span class="toc-text">产品分支与镜像管理</span></a></li></ol>
+    </div>
+  </div>
+
+
+            </div>
+        
+        
+          <blockquote id="copyright">
+              <p>原文链接: <a href="https://dongweizhao.github.io/2023/12/17/2023/云原生/基于K8S私有化交付要注意几点问题/">https://dongweizhao.github.io/2023/12/17/2023/云原生/基于K8S私有化交付要注意几点问题/</a></p>
+              <p>版权声明: 转载请注明出处.</p>
+          </blockquote>
+        
+      
+    </div>
+    <footer class="article-footer">
+      
+        <div class="article-tag-wrap">
+          
+
+          
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Kubernetes/" rel="tag">Kubernetes</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%9E%B6%E6%9E%84%E6%88%90%E9%95%BF%E6%8C%87%E5%8D%97/" rel="tag">架构成长指南</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%A7%81%E6%9C%89%E5%8C%96%E4%BA%A4%E4%BB%98/" rel="tag">私有化交付</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%A7%81%E6%9C%89%E5%8C%96%E9%83%A8%E7%BD%B2/" rel="tag">私有化部署</a></li></ul>
+
+          
+    <div class="social-share">
+      <span>分享到:</span>
+    </div>
+
+
+
+        </div>
+      
+      
+        
+<nav id="article-nav">
+  
+    <a href="/2023/12/17/2023/%E4%BA%91%E5%8E%9F%E7%94%9F/%E4%BB%8E%E7%89%A9%E7%90%86%E6%9C%BA%E5%88%B0K8S%EF%BC%9A%E5%BA%94%E7%94%A8%E7%B3%BB%E7%BB%9F%E9%83%A8%E7%BD%B2%E6%96%B9%E5%BC%8F%E7%9A%84%E6%BC%94%E8%BF%9B%E5%8F%8A%E5%85%B6%E5%BD%B1%E5%93%8D/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">older</strong>
+      <div class="article-nav-title">
+        
+          从物理机到K8S：应用系统部署方式的演进及其影响
+        
+      </div>
+    </a>
+  
+  
+</nav>
+
+      
+      
+        
+
+
+
+
+
+
+
+
+      
+    </footer>
+  </div>
+</article>
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title"><i class="fa fa-posts"></i> 最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2023/12/17/2023/%E4%BA%91%E5%8E%9F%E7%94%9F/%E5%9F%BA%E4%BA%8EK8S%E7%A7%81%E6%9C%89%E5%8C%96%E4%BA%A4%E4%BB%98%E8%A6%81%E6%B3%A8%E6%84%8F%E5%87%A0%E7%82%B9%E9%97%AE%E9%A2%98/">基于K8S私有化交付要注意几点问题</a>
+          </li>
+        
+          <li>
+            <a href="/2023/12/17/2023/%E4%BA%91%E5%8E%9F%E7%94%9F/%E4%BB%8E%E7%89%A9%E7%90%86%E6%9C%BA%E5%88%B0K8S%EF%BC%9A%E5%BA%94%E7%94%A8%E7%B3%BB%E7%BB%9F%E9%83%A8%E7%BD%B2%E6%96%B9%E5%BC%8F%E7%9A%84%E6%BC%94%E8%BF%9B%E5%8F%8A%E5%85%B6%E5%BD%B1%E5%93%8D/">从物理机到K8S：应用系统部署方式的演进及其影响</a>
+          </li>
+        
+          <li>
+            <a href="/2023/12/17/2023/%E4%BA%91%E5%8E%9F%E7%94%9F/%E4%BB%80%E4%B9%88%E6%98%AF%E9%9D%A9%E5%91%BD%E6%80%A7%E6%8A%80%E6%9C%AFeBPF%EF%BC%9F%E4%B8%BA%E4%BB%80%E4%B9%88%E5%8F%AF%E8%A7%82%E6%B5%8B%E6%80%A7%E9%A2%86%E5%9F%9F%E9%83%BD%E5%BE%97%E7%94%A8%E5%AE%83/">什么是革命性技术eBPF？为什么可观测性领域都得用它</a>
+          </li>
+        
+          <li>
+            <a href="/2023/12/17/2023/%E4%BA%91%E5%8E%9F%E7%94%9F/%E5%A6%82%E4%BD%95%E5%9F%BA%E4%BA%8E%20k8s%E5%81%9A%E7%A7%81%E6%9C%89%E5%8C%96%E9%83%A8%E7%BD%B2/">如何基于 k8s做私有化部署</a>
+          </li>
+        
+          <li>
+            <a href="/2023/12/17/2023/%E4%BA%91%E5%8E%9F%E7%94%9F/10%E4%B8%AA%E5%B8%B8%E8%A7%81%E7%9A%84%20Kubernetes%20%E9%99%B7%E9%98%B1%E5%92%8C%E6%8C%91%E6%88%98/">10个常见的 Kubernetes 陷阱和挑战</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title"><i class="fa fa-tag"></i> 标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/AI/" style="font-size: 10px;">AI</a> <a href="/tags/AIGC/" style="font-size: 10px;">AIGC</a> <a href="/tags/Kubernetes/" style="font-size: 17.5px;">Kubernetes</a> <a href="/tags/Stream/" style="font-size: 10px;">Stream</a> <a href="/tags/chatGPT/" style="font-size: 10px;">chatGPT</a> <a href="/tags/eBPF/" style="font-size: 10px;">eBPF</a> <a href="/tags/java/" style="font-size: 15px;">java</a> <a href="/tags/k8s/" style="font-size: 12.5px;">k8s</a> <a href="/tags/k8s10-%E4%B8%AA%E5%B8%B8%E8%A7%81%E6%8C%91%E6%88%98%E5%92%8C%E9%99%B7%E9%98%B1/" style="font-size: 10px;">k8s10 个常见挑战和陷阱</a> <a href="/tags/nio/" style="font-size: 10px;">nio</a> <a href="/tags/%E4%BB%80%E4%B9%88%E6%98%AFeBPF/" style="font-size: 10px;">什么是eBPF</a> <a href="/tags/%E4%BB%8Edocker%E5%88%B0k8s/" style="font-size: 10px;">从docker到k8s</a> <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" style="font-size: 17.5px;">分布式</a> <a href="/tags/%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E5%8F%8A%E4%BA%8B%E5%8A%A1%E4%B8%80%E8%87%B4%E6%80%A7%E8%AE%BE%E8%AE%A1/" style="font-size: 17.5px;">分库分表及事务一致性设计</a> <a href="/tags/%E5%8F%AF%E8%A7%82%E6%B5%8B%E9%A2%86%E5%9F%9F%E5%BA%95%E5%B1%82%E6%8A%80%E6%9C%AF/" style="font-size: 10px;">可观测领域底层技术</a> <a href="/tags/%E5%90%8E%E7%AB%AF/" style="font-size: 10px;">后端</a> <a href="/tags/%E5%A6%82%E4%BD%95%E5%9F%BA%E4%BA%8E-k8s%E5%81%9A%E7%A7%81%E6%9C%89%E5%8C%96%E9%83%A8%E7%BD%B2/" style="font-size: 10px;">如何基于 k8s做私有化部署</a> <a href="/tags/%E5%B9%B6%E5%8F%91/" style="font-size: 15px;">并发</a> <a href="/tags/%E6%9E%B6%E6%9E%84%E6%88%90%E9%95%BF%E6%8C%87%E5%8D%97/" style="font-size: 20px;">架构成长指南</a> <a href="/tags/%E7%A7%81%E6%9C%89%E5%8C%96%E4%BA%A4%E4%BB%98/" style="font-size: 10px;">私有化交付</a> <a href="/tags/%E7%A7%81%E6%9C%89%E5%8C%96%E9%83%A8%E7%BD%B2/" style="font-size: 12.5px;">私有化部署</a> <a href="/tags/%E7%B3%BB%E7%BB%9F%E9%83%A8%E7%BD%B2%E6%9E%B6%E6%9E%84%E6%BC%94%E8%BF%9B/" style="font-size: 10px;">系统部署架构演进</a> <a href="/tags/%E9%93%BE%E8%A1%A8/" style="font-size: 12.5px;">链表</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title"><i class="fa fa-classify"></i> 分类</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E4%BA%91%E5%8E%9F%E7%94%9F/">云原生</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%90%8E%E7%AB%AF/">后端</a><span class="category-list-count">9</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%B7%A5%E5%85%B7/">工具</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%B7%A5%E5%85%B7/AI/">AI</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%AE%97%E6%B3%95/">算法</a><span class="category-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title"><i class="fa fa-archive"></i>公众号</h3>
+    <div class="widget">
+       <img src="/gzh.jpg" style="width:80%; height:80%;" />
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title"><i class="fa fa-tag"></i> 标签</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AI/" rel="tag">AI</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/AIGC/" rel="tag">AIGC</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kubernetes/" rel="tag">Kubernetes</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Stream/" rel="tag">Stream</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/chatGPT/" rel="tag">chatGPT</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/eBPF/" rel="tag">eBPF</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/" rel="tag">java</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s/" rel="tag">k8s</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s10-%E4%B8%AA%E5%B8%B8%E8%A7%81%E6%8C%91%E6%88%98%E5%92%8C%E9%99%B7%E9%98%B1/" rel="tag">k8s10 个常见挑战和陷阱</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nio/" rel="tag">nio</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BB%80%E4%B9%88%E6%98%AFeBPF/" rel="tag">什么是eBPF</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BB%8Edocker%E5%88%B0k8s/" rel="tag">从docker到k8s</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" rel="tag">分布式</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E5%8F%8A%E4%BA%8B%E5%8A%A1%E4%B8%80%E8%87%B4%E6%80%A7%E8%AE%BE%E8%AE%A1/" rel="tag">分库分表及事务一致性设计</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8F%AF%E8%A7%82%E6%B5%8B%E9%A2%86%E5%9F%9F%E5%BA%95%E5%B1%82%E6%8A%80%E6%9C%AF/" rel="tag">可观测领域底层技术</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%90%8E%E7%AB%AF/" rel="tag">后端</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%A6%82%E4%BD%95%E5%9F%BA%E4%BA%8E-k8s%E5%81%9A%E7%A7%81%E6%9C%89%E5%8C%96%E9%83%A8%E7%BD%B2/" rel="tag">如何基于 k8s做私有化部署</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%B6%E5%8F%91/" rel="tag">并发</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9E%B6%E6%9E%84%E6%88%90%E9%95%BF%E6%8C%87%E5%8D%97/" rel="tag">架构成长指南</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%A7%81%E6%9C%89%E5%8C%96%E4%BA%A4%E4%BB%98/" rel="tag">私有化交付</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%A7%81%E6%9C%89%E5%8C%96%E9%83%A8%E7%BD%B2/" rel="tag">私有化部署</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%B3%BB%E7%BB%9F%E9%83%A8%E7%BD%B2%E6%9E%B6%E6%9E%84%E6%BC%94%E8%BF%9B/" rel="tag">系统部署架构演进</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8/" rel="tag">链表</a><span class="tag-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title"><i class="fa fa-link"></i> 友情链接</h3>
+    <div class="widget">
+      <ul>
+      
+        <li>
+          <a target="_blank" rel="noopener" href="http://www.example1.com/">site-name1</a>
+        </li>
+      
+        <li>
+          <a target="_blank" rel="noopener" href="http://www.example2.com/">site-name2</a>
+        </li>
+      
+        <li>
+          <a target="_blank" rel="noopener" href="http://www.example3.com/">site-name3</a>
+        </li>
+      
+      </ul>
+    </div>
+  </div>
+
+
+  
+</aside>
+        
+      </div>
+      <a id="totop" href="#top"></a>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      <p>
+        <a href="/sitemap.xml">网站地图</a>
+        <span> | </span><a href="/atom.xml">订阅本站</a>
+        <span> | </span><a href="/about/">联系博主</a>
+      </p>
+      
+        <p>
+          <i class="fa fa-visitors"></i>
+          <i id="busuanzi_container_site_uv"><i id="busuanzi_value_site_uv"></i></i>
+          ，
+          <i class="fa fa-views"></i>
+          <i id="busuanzi_container_site_pv"><i id="busuanzi_value_site_pv"></i></i>
+        </p>
+      
+      <p>
+        <span>Copyright &copy; 2023 架构成长指南.</span>
+        <span>Theme by <a href="https://github.com/chaooo/hexo-theme-BlueLake/" target="_blank">BlueLake.</a></span>
+        <span>Powered by <a href="https://hexo.io/" target="_blank">Hexo.</a></span>
+      </p>
+    </div>
+  </div>
+</footer>
+
+    </div>
+  </div>
+  
+<script src="/js/jquery-3.4.1.min.js"></script>
+
+
+<script src="/js/search.json.js"></script>
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+
+  
+<script src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+    
+<script src="/localshare/js/social-share.js"></script>
+
+    
+<script src="/localshare/js/qrcode.js"></script>
+
+  
+  
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+
+
+
+
+</body>
+</html>
