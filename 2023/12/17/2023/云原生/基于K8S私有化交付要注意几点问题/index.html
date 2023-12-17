@@ -206,13 +206,13 @@
 <h5 id="网络相关资源"><a href="#网络相关资源" class="headerlink" title="网络相关资源"></a>网络相关资源</h5><ol>
 <li>SSL证书，如果系统开放到外网必须要有 SSL证书，建议申请通配符证书，这种没有域名数量限制问题，如下图，只要属于 feishu.cn 下的二级域名，都可以用此证书。</li>
 </ol>
-<p><img src="https://wz-blogimg.oss-cn-beijing.aliyuncs.com/img/image-20231217131655109.png" alt="image-20231217131655109"></p>
+<p><img src="https://wz-blogimg.oss-cn-beijing.aliyuncs.com/img/image-20231217131655109.png"></p>
 <ol start="2">
 <li>公网443&#x2F;80 端口备案，部分应用强制依赖这些端口，比如小程序，需要提前进行备案，而且周期较长。</li>
 </ol>
-<h4 id="负载均衡器选择"><a href="#负载均衡器选择" class="headerlink" title="负载均衡器选择"></a>负载均衡器选择</h4><p>在未使用k8s时，常用Nginx进行SLB和前端资源部署，类似如下图<br><img src="https://wz-blogimg.oss-cn-beijing.aliyuncs.com/img/image-20231217131708852.png" alt="image-20231217131708852"><br>而使用k8s以后，Nginx功能被削弱了很多，比如转发规则，可以放在Ingress 进行配置，前端资源也部署k8s 中</p>
-<p><img src="https://wz-blogimg.oss-cn-beijing.aliyuncs.com/img/image-20231217131719798.png" alt="image-20231217131719798"><img src="/" alt="image.png"><br>而Nginx只充当 SLB的作用，例如把前端请求转发到Ingress 中，功能很单一，而不管是公有云或私有云，厂商都提供了SLB，因此就不需要Nginx这一层，由厂商提供的SLB 直接转发请求至Ingress 即可。<br><img src="https://wz-blogimg.oss-cn-beijing.aliyuncs.com/img/image-20231217131730366.png" alt="image-20231217131730366"></p>
-<h4 id="SSL证书挂载"><a href="#SSL证书挂载" class="headerlink" title="SSL证书挂载"></a>SSL证书挂载</h4><p>有了厂商提供的SLB，那么 SSL证书也没必要挂载在k8s 的 Ingress上，直接挂载SLB即可，如下图，经过负载均衡器的请求都进行了证书剥离，转换成了 http<br><img src="https://wz-blogimg.oss-cn-beijing.aliyuncs.com/img/image-20231217131748175.png" alt="image-20231217131748175"></p>
+<h4 id="负载均衡器选择"><a href="#负载均衡器选择" class="headerlink" title="负载均衡器选择"></a>负载均衡器选择</h4><p>在未使用k8s时，常用Nginx进行SLB和前端资源部署，类似如下图<br><img src="https://wz-blogimg.oss-cn-beijing.aliyuncs.com/img/image-20231217131708852.png"><br>而使用k8s以后，Nginx功能被削弱了很多，比如转发规则，可以放在Ingress 进行配置，前端资源也部署k8s 中</p>
+<p><img src="https://wz-blogimg.oss-cn-beijing.aliyuncs.com/img/image-20231217131719798.png"><br>而Nginx只充当 SLB的作用，例如把前端请求转发到Ingress 中，功能很单一，而不管是公有云或私有云，厂商都提供了SLB，因此就不需要Nginx这一层，由厂商提供的SLB 直接转发请求至Ingress 即可。<br><img src="https://wz-blogimg.oss-cn-beijing.aliyuncs.com/img/image-20231217131730366.png" alt="image-20231217131730366"></p>
+<h4 id="SSL证书挂载"><a href="#SSL证书挂载" class="headerlink" title="SSL证书挂载"></a>SSL证书挂载</h4><p>有了厂商提供的SLB，那么 SSL证书也没必要挂载在k8s 的 Ingress上，直接挂载SLB即可，如下图，经过负载均衡器的请求都进行了证书剥离，转换成了 http<br><img src="https://wz-blogimg.oss-cn-beijing.aliyuncs.com/img/image-20231217131748175.png"></p>
 <h4 id="系统开放策略整理"><a href="#系统开放策略整理" class="headerlink" title="系统开放策略整理"></a>系统开放策略整理</h4><p>根据业务需求，提前整理系统网络开放策略清单，交由相关人员进行配置，比如系统 A 内网访问，系统 B外网访问，如下图</p>
 <table>
 <thead>
@@ -249,7 +249,7 @@
 </tr>
 </tbody></table>
 <h4 id="产品分支与镜像管理"><a href="#产品分支与镜像管理" class="headerlink" title="产品分支与镜像管理"></a>产品分支与镜像管理</h4><p><strong>分支管理</strong></p>
-<p>由于私有化部署，有些需求是个性化的，这部分需求与通用版本分支是无法兼容的，那么需要从代码分支上进行区分，比如项目有对应项目的分支，通用分支有通用分支，如果一个需求的功能是通用需求，建议在通用分支上改造，测试完在合并至项目分支，其实不管用那种方式，要保证兼容性，可追溯。<br><img src="https://wz-blogimg.oss-cn-beijing.aliyuncs.com/img/image-20231217131759949.png" alt="image-20231217131759949"></p>
+<p>由于私有化部署，有些需求是个性化的，这部分需求与通用版本分支是无法兼容的，那么需要从代码分支上进行区分，比如项目有对应项目的分支，通用分支有通用分支，如果一个需求的功能是通用需求，建议在通用分支上改造，测试完在合并至项目分支，其实不管用那种方式，要保证兼容性，可追溯。<br><img src="https://wz-blogimg.oss-cn-beijing.aliyuncs.com/img/image-20231217131759949.png"></p>
 <table>
 <thead>
 <tr>
@@ -280,7 +280,7 @@
 </tbody></table>
 <p><strong>镜像TAG管理</strong></p>
 <p>镜像的tag要与代码 tag相互联系起来，比如代码 tag 是：realse-1.0.0，那么镜像 tag也建议是这个名称，这样如果出问题，可以根据镜像 tag快速找到对应代码。</p>
-<p><img src="https://wz-blogimg.oss-cn-beijing.aliyuncs.com/img/image-20231217131816219.png" alt="image-20231217131816219"></p>
+<p><img src="https://wz-blogimg.oss-cn-beijing.aliyuncs.com/img/image-20231217131816219.png"></p>
 
         
             <div id="toc-article">
