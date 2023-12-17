@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   
   
-  <title>04 分库分表的案例分享 | 架构成长指南</title>
+  <title>Prometheus如何使用 Push 方式采集目标服务器数据 | 架构成长指南</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   
     <meta name="description" content="云原生k8s相关技术分享、分布式系统技术分享、系统架构剖析，java实践分享、ai相关知识分享、chatGPT,架构成长指南">
@@ -88,7 +88,7 @@
 </header>
 
       <div class="outer">
-        <section id="main"><article id="post-2022/数据库中间件/案例分享" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+        <section id="main"><article id="post-2023/云原生/Prometheus如何使用 Push 方式采集目标服务器数据" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-inner">
     
     
@@ -96,7 +96,7 @@
         
   
     <h1 class="p-name article-title" itemprop="headline name">
-      04 分库分表的案例分享
+      Prometheus如何使用 Push 方式采集目标服务器数据
     </h1>
   
 
@@ -105,14 +105,16 @@
     
     <div class="article-meta">
       
+        <span class='article-top'>【置顶】</span>
+      
       <span class="article-date">
   <i class="fa fa-date"></i>
-  <time class="dt-published" datetime="2020-06-29T03:26:34.000Z" itemprop="datePublished">2020年06月29日</time>
+  <time class="dt-published" datetime="2023-12-17T12:21:31.180Z" itemprop="datePublished">2023年12月17日</time>
 </span>
       
   <div class="article-category">
     <i class="fa fa-classify"></i>
-    <a class="article-category-link" href="/categories/%E5%90%8E%E7%AB%AF/">后端</a>
+    <a class="article-category-link" href="/categories/Prometheus/">Prometheus</a>
   </div>
 
       
@@ -125,7 +127,7 @@
 
       
       
-<a href="/2020/06/29/2022/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%B8%AD%E9%97%B4%E4%BB%B6/%E6%A1%88%E4%BE%8B%E5%88%86%E4%BA%AB/#comments" class="article-comment-link">
+<a href="/2023/12/17/2023/%E4%BA%91%E5%8E%9F%E7%94%9F/Prometheus%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8%20Push%20%E6%96%B9%E5%BC%8F%E9%87%87%E9%9B%86%E7%9B%AE%E6%A0%87%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%95%B0%E6%8D%AE/#comments" class="article-comment-link">
   
     
     
@@ -141,17 +143,73 @@
     </div>
     <div class="e-content article-entry" itemprop="articleBody">
       
-        <p>本节对在其它银行实施的案例，进行一个分享</p>
-<h4 id="业务分析"><a href="#业务分析" class="headerlink" title="业务分析"></a>业务分析</h4><p><img src="https://wz-blogimg.oss-cn-beijing.aliyuncs.com/img/WEB2b4fad25fd719cc96f41a3e0e8c5a21d.png" alt="image"><br>本次分享的系统是一个客户信息系统，首先分析行内现有用户数据量大概为1千万，业务需求都是以用户的维度出发所以用户ID作为分片键比较合适,考虑后续数据迁移的问题，分片规则采用一致性hash。</p>
-<p>基于以上原则，对数据库表进行设计，表分为两类：分别为参数类表、业务类表，所以先进行垂直切分，其中业务类是需要分片的，所以在进行水平切分。</p>
-<span id="more"></span>
+        <blockquote>
+<p>公众号「架构成长指南」，专注于生产实践、云原生、分布式系统、大数据技术分享</p>
+</blockquote>
+<p><img src="https://wz-blogimg.oss-cn-beijing.aliyuncs.com/img/132ada1d-ad82-4099-9d16-bf413e3b86f0.png"></p>
+<p>在上篇主要介绍了从零开始：<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzkwNTI0Nzk1OA==&mid=2247486431&idx=1&sn=2a836ef98c8052309f08b44f75710404&chksm=c0fbe666f78c6f700eaa6bbea51c97f4dfb94284289a34d6a21ce7a021afa747099941356564&token=966077855&lang=zh_CN#rd">使用Prometheus与Grafana搭建监控系统</a>，我们了解了Prometheus采集数据主要是采用Pull模式，即主动拉取模式，这种方式虽然简单，但是有一定限制，比如服务器A部署在边缘端与Prometheus部署在云端，两者网络不通，因此不能采用Pull模式。</p>
+<p><img src="https://wz-blogimg.oss-cn-beijing.aliyuncs.com/img/d56be73c-3869-42b2-81d0-cd1aebb14258.png"></p>
+<p>那么如何获取服务器 A 的指标？答案就是采用<code>Pushgateway</code>，这里Pushgateway充当了一个桥接的作用，把Pushgateway服务暴漏一个公网地址，然后服务器 A 与Prometheus都能连接即可。服务器 把数据 Push到Pushgateway，然后 Prometheus 去 Pushgateway 上定时 pull数据即可。</p>
+<p><img src="https://wz-blogimg.oss-cn-beijing.aliyuncs.com/img/f3feb19b-c7f3-4a15-9a74-9c9f07731e79.png"></p>
+<p>下面分享一下如何使用Pushgateway如何采集远程节点数据指标。</p>
+<h4 id="下载"><a href="#下载" class="headerlink" title="下载"></a>下载</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull prom/pushgateway:v1.5.1</span><br></pre></td></tr></table></figure>
 
-<h4 id="预设分片"><a href="#预设分片" class="headerlink" title="预设分片"></a>预设分片</h4><p><img src="https://wz-blogimg.oss-cn-beijing.aliyuncs.com/img/WEB7ea8d135748a986821df4853fae2ee39.png" alt="image"></p>
+<h4 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run --name pushgateway -d -p 9091:9091 prom/pushgateway:v1.5.1</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://wz-blogimg.oss-cn-beijing.aliyuncs.com/img/image-20230331102922150.png"></p>
+<p>访问<code>http://localhost:9091/metrics</code>查看是否启动成功，可以看到Pushgateway自身也带了一些指标</p>
+<p><img src="https://wz-blogimg.oss-cn-beijing.aliyuncs.com/img/image-20230331103026132.png"></p>
+<h4 id="边缘服务器配置"><a href="#边缘服务器配置" class="headerlink" title="边缘服务器配置"></a>边缘服务器配置</h4><h5 id="下载node-exporter"><a href="#下载node-exporter" class="headerlink" title="下载node-exporter"></a>下载node-exporter</h5><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget https://github.com/prometheus/node_exporter/releases/download/v1.5.0/node_exporter-1.5.0.linux-arm64.tar.gz</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://wz-blogimg.oss-cn-beijing.aliyuncs.com/img/image-20230331104159193.png"></p>
+<p>下载完成以后执行<code>tar -xvf node_exporter-1.5.0.linux-arm64.tar.gz &amp;&amp; cd node_exporter-1.5.0.linux-arm64</code>进行解压</p>
+<p><img src="https://wz-blogimg.oss-cn-beijing.aliyuncs.com/img/image-20230331104558522-20231217202601696.png"></p>
+<p>解压完成以后，执行<code>./node_exporter</code>进行简单验证，</p>
+<p><img src="https://wz-blogimg.oss-cn-beijing.aliyuncs.com/img/image-20230331104641480.png"></p>
+<p>看到以上信息则启动成功，通过浏览器进行访问<code>http://ip:9100/metrics</code>，可以看到以下指标</p>
+<p><img src="https://wz-blogimg.oss-cn-beijing.aliyuncs.com/img/image-20230331104746188.png"></p>
+<h5 id="安装node-exporter"><a href="#安装node-exporter" class="headerlink" title="安装node-exporter"></a>安装node-exporter</h5><p>由于直接启动<code>node-exporter</code>关闭窗口此进程就会挂掉，因此可以采用systemctl方式进行配置</p>
 <ol>
-<li>考虑未来5年的客户数据量增长到6千万—8千万，单表按1000万的数据量上限来考虑，需要预设8个分片，考虑到未来比较大的数据增量，预设32个分片；</li>
-<li>考虑到前期上线后2-3年内大约2000万的数据量（包括近1000万的存量数据），系统上线初期配置2个物理节点，每个节点16个分片（SCHEMA），每个分片（SCHEMA）单表大约62.5万的数据记录数，其中默认节点放在其中一台物理节点中。</li>
-<li>未来根据客户量的增长情况进行扩容处理，按预设32个分片未来最多可扩展到32个物理节点，最优可支持扩容到3.2亿的用户数；</li>
+<li>执行<code>mv node_exporter //usr/local/</code>移动node_exporter文件 </li>
+<li>在<code>/usr/lib/systemd/system/</code>目录，创建<code>node_exporter.service</code>文件，内容如下，ExecStart指向的就是<code>node_exporter</code>执行文件 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">cat &lt;&lt;EOF &gt; /usr/lib/systemd/system/node_exporter.service</span><br><span class="line">[Unit]</span><br><span class="line">Description=Node Exporter</span><br><span class="line"></span><br><span class="line">[Service]</span><br><span class="line">ExecStart=/usr/local/node_exporter</span><br><span class="line">Restart=on-failure</span><br><span class="line">[Install]</span><br><span class="line">WantedBy=multi-user.target</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure></li>
 </ol>
+<p><img src="https://wz-blogimg.oss-cn-beijing.aliyuncs.com/img/image-20230331105150444.png"> </p>
+<ol start="3">
+<li>执行<code>systemctl daemon-reload</code> </li>
+<li>执行<code>systemctl start node_exporter</code>启动node_exporter </li>
+<li>执行<code>netstat -aon|grep 9100</code>查看9100是否启动成功<br><img src="https://wz-blogimg.oss-cn-beijing.aliyuncs.com/img/image-20230331105253985.png"></li>
+</ol>
+<h5 id="边缘端指标上报"><a href="#边缘端指标上报" class="headerlink" title="边缘端指标上报"></a>边缘端指标上报</h5><p>由于node-exporter只提供的数据，默认是由prometheus进行pull的方式来获取指标数据，而我们需要主动push数据到Pushgateway，所以这里需要增加shell脚本，先获取node-exporter数据，然后在调用Pushgateway接口进行push，以下为推送语句</p>
+<ul>
+<li>PushgatewayIP: 10.211.55.2</li>
+<li>边缘服务器IP:10.211.55.6</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl 10.211.55.6:9100/metrics|curl --data-binary @- http://10.211.55.2:9091/metrics/job/agent-server/instance/10.211.55.6/hostname/边缘服务器</span><br></pre></td></tr></table></figure>
+
+<p>手动执行以下脚本，并访问Pushgateway查看是否有对应数据</p>
+<p><img src="https://wz-blogimg.oss-cn-beijing.aliyuncs.com/img/image-20230331110257299.png"></p>
+<p>可以看到数据已上传</p>
+<p><img src="https://wz-blogimg.oss-cn-beijing.aliyuncs.com/img/image-20230331151959242.png"></p>
+<p>虽然以上脚本没问题，但是还需要定时执行才行，所以需要编写shell脚本，并通过crontab进行调用</p>
+<p>创建shell脚本 </p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">cat &lt;&lt;EOF &gt; /etc/cron.d/propushgateway.sh</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">!/bin/bash</span></span><br><span class="line">curl 10.211.55.6:9100/metrics|curl --data-binary @- http://10.211.55.2:9091/metrics/job/agent-server/instance/hostname/10.211.55.6</span><br><span class="line"><span class="meta prompt_">date&gt;</span><span class="language-bash">&gt; /tmp/date.txt</span></span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+
+<p>分配文件执行权限 </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod 777 /etc/cron.d/propushgateway.sh</span><br></pre></td></tr></table></figure>
+
+<p>配置crontab任务，10s执行一次，由于crontab只支持到分，所以采用采用以下方式配置 </p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">crontab -e</span><br><span class="line"></span><br><span class="line">* * * * * /etc/cron.d/propushgateway.sh</span><br><span class="line">* * * * * sleep 10; /etc/cron.d/propushgateway.sh</span><br><span class="line">* * * * * sleep 20; /etc/cron.d/propushgateway.sh</span><br><span class="line">* * * * * sleep 30; /etc/cron.d/propushgateway.sh</span><br><span class="line">* * * * * sleep 40; /etc/cron.d/propushgateway.sh</span><br><span class="line">* * * * * sleep 50; /etc/cron.d/propushgateway.sh</span><br></pre></td></tr></table></figure>
+
+<p>查看执行日志<code>tail -f /var/log/cron</code>，可以看到10s执行一次<br><img src="https://wz-blogimg.oss-cn-beijing.aliyuncs.com/img/image-20230331113545820.png"> </p>
+<h5 id="修改prometheus配置文件"><a href="#修改prometheus配置文件" class="headerlink" title="修改prometheus配置文件"></a>修改prometheus配置文件</h5><p>在prometheus.yml文件中增加如下配置</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="bullet">-</span> <span class="attr">job_name:</span> <span class="string">&#x27;AgentServer&#x27;</span></span><br><span class="line">  <span class="comment"># Override the global default and scrape targets from this job every 5 seconds.</span></span><br><span class="line">  <span class="attr">honor_labels:</span> <span class="literal">false</span></span><br><span class="line">  <span class="attr">static_configs:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">targets:</span> [<span class="string">&#x27;10.211.55.2:9091&#x27;</span>] </span><br><span class="line">      <span class="attr">labels:</span></span><br><span class="line">        <span class="attr">pushgateway_instance:</span> <span class="string">agent-server</span>  <span class="comment">##这里必须加这边标签过滤，不然采集的是pushGateway数据</span></span><br></pre></td></tr></table></figure>
+
+<p>增加完成以后重启prometheus</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker restart prometheus</span><br></pre></td></tr></table></figure>
+
+<p>启动完成以后访问prometheus地址，查看Pushgateway的target已经生效</p>
+<p><img src="https://wz-blogimg.oss-cn-beijing.aliyuncs.com/img/image-20230331151237880.png"></p>
+<h4 id="通过Grafana查看数据"><a href="#通过Grafana查看数据" class="headerlink" title="通过Grafana查看数据"></a>通过Grafana查看数据</h4><p><img src="https://wz-blogimg.oss-cn-beijing.aliyuncs.com/img/image-20230331152919905.png"></p>
 
         
             <div id="toc-article">
@@ -159,7 +217,7 @@
   <div class="widget-wrap" id="toc-wrap">
     <h3 class="widget-title"><i class="fa fa-toc"></i> 文章目录</h3>
     <div class="widget">
-      <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%9A%E5%8A%A1%E5%88%86%E6%9E%90"><span class="toc-text">业务分析</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%A2%84%E8%AE%BE%E5%88%86%E7%89%87"><span class="toc-text">预设分片</span></a></li></ol>
+      <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%8B%E8%BD%BD"><span class="toc-text">下载</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%90%AF%E5%8A%A8"><span class="toc-text">启动</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%BE%B9%E7%BC%98%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%85%8D%E7%BD%AE"><span class="toc-text">边缘服务器配置</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%B8%8B%E8%BD%BDnode-exporter"><span class="toc-text">下载node-exporter</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%AE%89%E8%A3%85node-exporter"><span class="toc-text">安装node-exporter</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E8%BE%B9%E7%BC%98%E7%AB%AF%E6%8C%87%E6%A0%87%E4%B8%8A%E6%8A%A5"><span class="toc-text">边缘端指标上报</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%BF%AE%E6%94%B9prometheus%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="toc-text">修改prometheus配置文件</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%80%9A%E8%BF%87Grafana%E6%9F%A5%E7%9C%8B%E6%95%B0%E6%8D%AE"><span class="toc-text">通过Grafana查看数据</span></a></li></ol>
     </div>
   </div>
 
@@ -168,7 +226,7 @@
         
         
           <blockquote id="copyright">
-              <p>原文链接: <a href="https://dongweizhao.github.io/2020/06/29/2022/数据库中间件/案例分享/">https://dongweizhao.github.io/2020/06/29/2022/数据库中间件/案例分享/</a></p>
+              <p>原文链接: <a href="https://dongweizhao.github.io/2023/12/17/2023/云原生/Prometheus如何使用 Push 方式采集目标服务器数据/">https://dongweizhao.github.io/2023/12/17/2023/云原生/Prometheus如何使用 Push 方式采集目标服务器数据/</a></p>
               <p>版权声明: 转载请注明出处.</p>
           </blockquote>
         
@@ -180,7 +238,7 @@
           
 
           
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" rel="tag">分布式</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E5%8F%8A%E4%BA%8B%E5%8A%A1%E4%B8%80%E8%87%B4%E6%80%A7%E8%AE%BE%E8%AE%A1/" rel="tag">分库分表及事务一致性设计</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Prometheus/" rel="tag">Prometheus</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%9B%91%E6%8E%A7%E5%91%8A%E8%AD%A6/" rel="tag">监控告警</a></li></ul>
 
           
     <div class="social-share">
@@ -195,24 +253,15 @@
         
 <nav id="article-nav">
   
-    <a href="/2020/06/29/2022/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%B8%AD%E9%97%B4%E4%BB%B6/%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E7%9A%84%E4%BA%A7%E7%94%9F%E8%83%8C%E6%99%AF/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2023/12/17/2023/%E4%BA%91%E5%8E%9F%E7%94%9F/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%EF%BC%9A%E4%BD%BF%E7%94%A8Prometheus%E4%B8%8EGrafana%E6%90%AD%E5%BB%BA%E7%9B%91%E6%8E%A7%E7%B3%BB%E7%BB%9F/" id="article-nav-older" class="article-nav-link-wrap">
       <strong class="article-nav-caption">older</strong>
       <div class="article-nav-title">
         
-          01 分库分表的产生背景
+          从零开始：使用Prometheus与Grafana搭建监控系统
         
       </div>
     </a>
   
-  
-    <a href="/2023/11/21/2023/java/JavaStream/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">newer</strong>
-      <div class="article-nav-title">
-        
-          Java Stream中的API你都用过了吗？
-        
-      </div>
-    </a>
   
 </nav>
 
