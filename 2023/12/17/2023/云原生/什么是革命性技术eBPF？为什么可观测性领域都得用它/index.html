@@ -147,9 +147,9 @@
 <p>公众号「架构成长指南」，专注于生产实践、云原生、分布式系统、大数据技术分享。</p>
 </blockquote>
 <p>如果有一种技术可以监控和采集任何应用信息，支持任何语言，并且应用完全无感知，零侵入，想想是不是很激动，那么这个技术是什么呢？就是eBPF，它应该是最近一两年非常热门的技术名词，我相信你或多或少都看到过，但可能不知道它能做什么，今天我们来讲讲这个革命性的技术eBPF，以及它在可观测领域的应用eBPF是什么？</p>
-<h4 id="eBPF-是什么？"><a href="#eBPF-是什么？" class="headerlink" title="eBPF 是什么？"></a>eBPF 是什么？</h4><p><img src="https://wz-blogimg.oss-cn-beijing.aliyuncs.com/img/01674334-5464-4f34-bcba-96d8f728d96b.png"></p>
 <span id="more"></span>
 
+<h4 id="eBPF-是什么？"><a href="#eBPF-是什么？" class="headerlink" title="eBPF 是什么？"></a>eBPF 是什么？</h4><p><img src="https://wz-blogimg.oss-cn-beijing.aliyuncs.com/img/01674334-5464-4f34-bcba-96d8f728d96b.png"></p>
 <p><code>eBPF</code>（extended Berkeley Packet Filter）是在 Linux 内核中运行的虚拟机技术，2014 年它首次出现在 Linux 内核中，并经过这几年迭代，目前已经成熟。它提供了一种灵活并且安全的方式来扩展内核功能。eBPF 最初是为网络数据包过滤而设计的，但现在已经扩展到其它领域，如安全监控、性能分析和系统跟踪等。</p>
 <p><code>eBPF</code>允许用户在不修改内核源代码的情况下，通过加载和执行自定义的<code>eBPF</code>程序来扩展内核功能。这些<code>eBPF</code>程序通过<strong>Hook 机制</strong>与内核交互，它们可以对进入和离开内核的事件进行过滤和处理，以实现网络数据包的监控、性能统计和安全审计等功能。</p>
 <p>如下图，<code>eBPF</code>可以在文件写入和读取进行拦截处理，网络的发送和接受进行拦截处理<br><img src="https://wz-blogimg.oss-cn-beijing.aliyuncs.com/img/8c542487-f9c1-4a00-ac3b-2d98603d1de2.png"></p>

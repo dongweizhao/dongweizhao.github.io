@@ -263,108 +263,16 @@
 <p>公众号「架构成长指南」，专注于生产实践、云原生、分布式系统、大数据技术分享</p>
 </blockquote>
 <h4 id="Prometheus介绍"><a href="#Prometheus介绍" class="headerlink" title="Prometheus介绍"></a>Prometheus介绍</h4><p><img src="https://wz-blogimg.oss-cn-beijing.aliyuncs.com/img/image-20230331095757061.png"><br>Prometheus是一款开源的监控系统，主要用于收集、存储和查询时间序列数据，以便于对系统进行监控和分析。</p>
-<p>Prometheus的架构由四个主要组件组成：</p>
-<ol>
-<li><strong>Prometheus Server</strong> ：Prometheus Server是Prometheus的核心组件，主要负责从各个目标（target）中收集指标（metrics）数据，并对这些数据进行存储、聚合和查询。</li>
-<li><strong>Client Libraries</strong> ：Prometheus提供了多种客户端库，用于在应用程序中嵌入Prometheus的指标收集功能。</li>
-<li><strong>Exporters</strong> ：Exporters是用于将第三方系统的监控数据导出为Prometheus格式的组件。Prometheus支持多种Exporters，例如Node Exporter、MySQL Exporter、HAProxy Exporter等。</li>
-<li><strong>Alertmanager</strong>：Alertmanager是Prometheus的告警组件，用于根据用户定义的规则对监控数据进行告警。</li>
-</ol>
-<p>同时Prometheus有以下优点</p>
-<ol>
-<li>灵活的数据模型：Prometheus采用的是key-value对的形式存储指标数据，每个指标都可以包含多个标签（labels），这样可以更加灵活地描述指标数据</li>
-<li>高效的存储和查询：Prometheus使用自己的时间序列数据库，可以高效地存储和查询大量的指标数据。</li>
-<li>强大的可视化和告警功能：Prometheus提供了Web界面和API，可以方便地展示和查询监控数据。</li>
-<li>可扩展性强：Prometheus的架构非常灵活，可以根据需要选择合适的组件进行配置。</li>
-<li>CNCF的成员项目：Prometheus作为CNCF的项目之一，得到了广泛的关注和支持，并且得到了来自全球各地的贡献者的积极参与和开发。</li>
-</ol>
-<h4 id="Prometheus介绍-1"><a href="#Prometheus介绍-1" class="headerlink" title="Prometheus介绍"></a>Prometheus介绍</h4><p>下面就Prometheus基于本地环境进行监控报警进行讲解</p>
-<h6 id="下载"><a href="#下载" class="headerlink" title="下载"></a>下载</h6><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull prom/prometheus:v2.43.0</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://wz-blogimg.oss-cn-beijing.aliyuncs.com/img/image-20230329170341774.png"></p>
-<h6 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h6><p>创建文件夹<code>data</code></p>
-<p><img src="https://wz-blogimg.oss-cn-beijing.aliyuncs.com/img/image-20230329170516593.png"></p>
-<p>创建配置文件<code>prometheus.yml</code>，可以根据需要进行配置</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">global:</span></span><br><span class="line">  <span class="attr">scrape_interval:</span>     <span class="string">15s</span> <span class="comment"># By default, scrape targets every 15 seconds.</span></span><br><span class="line"></span><br><span class="line">  <span class="comment"># Attach these labels to any time series or alerts when communicating with</span></span><br><span class="line">  <span class="comment"># external systems (federation, remote storage, Alertmanager).</span></span><br><span class="line">  <span class="attr">external_labels:</span></span><br><span class="line">    <span class="attr">monitor:</span> <span class="string">&#x27;codelab-monitor&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># A scrape configuration containing exactly one endpoint to scrape:</span></span><br><span class="line"><span class="comment"># Here it&#x27;s Prometheus itself.</span></span><br><span class="line"><span class="attr">scrape_configs:</span></span><br><span class="line">  <span class="comment"># The job name is added as a label `job=&lt;job_name&gt;` to any timeseries scraped from this config.</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">job_name:</span> <span class="string">&#x27;prometheus&#x27;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># Override the global default and scrape targets from this job every 5 seconds.</span></span><br><span class="line">    <span class="attr">scrape_interval:</span> <span class="string">5s</span></span><br><span class="line"></span><br><span class="line">    <span class="attr">static_configs:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">targets:</span> [<span class="string">&#x27;localhost:9090&#x27;</span>]</span><br></pre></td></tr></table></figure>
-
-<p>因为路径过长，创建软链目录<code>/data/prometheus</code></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ln -s /Users/weizhao.dong/Documents/soft/prometheus /data/prometheus</span><br></pre></td></tr></table></figure>
-
-<h6 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h6><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run --name prometheus -d -p 9090:9090 -v /data/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml   -v /data/prometheus:/prometheus prom/prometheus:v2.43.0</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://wz-blogimg.oss-cn-beijing.aliyuncs.com/img/image-20230330141947743.png"></p>
-<p><img src="https://wz-blogimg.oss-cn-beijing.aliyuncs.com/img/image-20230330233346072.png"></p>
-<h4 id="Grafana安装"><a href="#Grafana安装" class="headerlink" title="Grafana安装"></a>Grafana安装</h4><h6 id="下载-1"><a href="#下载-1" class="headerlink" title="下载"></a>下载</h6><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull grafana/grafana-enterprise:8.5.22</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://wz-blogimg.oss-cn-beijing.aliyuncs.com/img/image-20230330143946592.png"></p>
-<h6 id="启动-1"><a href="#启动-1" class="headerlink" title="启动"></a>启动</h6><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d --name=grafana -p 3000:3000 grafana/grafana-enterprise:8.5.22</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://wz-blogimg.oss-cn-beijing.aliyuncs.com/img/image-20230330233325310.png"></p>
-<h6 id="配置数据源"><a href="#配置数据源" class="headerlink" title="配置数据源"></a>配置数据源</h6><p>添加prometheus数据源</p>
-<p><img src="https://wz-blogimg.oss-cn-beijing.aliyuncs.com/img/image-20230330233452500.png"></p>
-<p><img src="https://wz-blogimg.oss-cn-beijing.aliyuncs.com/img/image-20230515232307244.png"></p>
-<h4 id="Linux服务器资源监控"><a href="#Linux服务器资源监控" class="headerlink" title="Linux服务器资源监控"></a>Linux服务器资源监控</h4><h6 id="下载node-exporter"><a href="#下载node-exporter" class="headerlink" title="下载node-exporter"></a>下载node-exporter</h6><p>选择指定版本，并下载</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget https://github.com/prometheus/node_exporter/releases/download/v1.5.0/node_exporter-1.5.0.linux-arm64.tar.gz</span><br></pre></td></tr></table></figure>
-
-<p>下载解压执行<code>node_exporter</code>文件暴漏9100端口，即可采集到监控信息</p>
-<p><img src="https://wz-blogimg.oss-cn-beijing.aliyuncs.com/img/image-20230330233733640.png"></p>
-<p><img src="https://wz-blogimg.oss-cn-beijing.aliyuncs.com/img/image-20230330233840865.png"></p>
-<h6 id="安装node-exporter"><a href="#安装node-exporter" class="headerlink" title="安装node-exporter"></a>安装node-exporter</h6><p>由于直接启动<code>node-exporter</code>关闭窗口此进程就会挂掉，不能满足需求，因此可以采用systemctl方式进行配置</p>
-<ol>
-<li><p>在<code>/usr/lib/systemd/system/</code>目录，创建<code>node_exporter.service</code>文件，内容如下，ExecStart指向的就是<code>node_exporter</code>执行文件 </p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[Unit]</span><br><span class="line">Description=Node Exporter</span><br><span class="line"></span><br><span class="line">[Service]</span><br><span class="line">ExecStart=/usr/local/node_exporter</span><br><span class="line">Restart=on-failure</span><br><span class="line">[Install]</span><br><span class="line">WantedBy=multi-user.target</span><br></pre></td></tr></table></figure>
-
-</li>
-<li><p>执行<code>systemctl daemon-reload</code> </p>
-</li>
-<li><p>执行<code>systemctl start node_exporter</code>启动node_exporter </p>
-</li>
-<li><p>执行<code>netstat -aon|grep 9100</code>查看9100是否启动成功<br><img src="https://wz-blogimg.oss-cn-beijing.aliyuncs.com/img/image-20230330234533527.png"></p>
-</li>
-</ol>
-<h6 id="修改prometheus配置文件"><a href="#修改prometheus配置文件" class="headerlink" title="修改prometheus配置文件"></a>修改prometheus配置文件</h6><p>增加以下任务，5s采集一次，这种方式属于Promethues的Pull 模式，即主动发起请求拉取目标数据</p>
-<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">-</span> <span class="string">job_name: &#x27;linux&#x27;</span></span><br><span class="line"><span class="comment">  # Override the global default and scrape targets from this job every 5 seconds.</span></span><br><span class="line">  <span class="attr">scrape_interval</span>: <span class="string">5s</span></span><br><span class="line">  <span class="attr">static_configs</span>:<span class="string"></span></span><br><span class="line">    <span class="attr">-</span> <span class="string">targets: [&#x27;10.211.55.4:9100&#x27;]</span></span><br></pre></td></tr></table></figure>
-
-<p><img src="https://wz-blogimg.oss-cn-beijing.aliyuncs.com/img/image-20230330234805218.png"></p>
-<h6 id="重启prometheus"><a href="#重启prometheus" class="headerlink" title="重启prometheus"></a>重启prometheus</h6><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker restart prometheus</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://gitee.com/weizhao1/images/raw/master/2022/image-20230330234904188.png#id=MKphy&originHeight=140&originWidth=1266&originalType=binary&ratio=1&rotation=0&showTitle=false&status=done&style=none&title="></p>
-<p><img src="https://wz-blogimg.oss-cn-beijing.aliyuncs.com/img/image-20230330234938650.png"></p>
-<h6 id="Grafana文件配置"><a href="#Grafana文件配置" class="headerlink" title="Grafana文件配置"></a>Grafana文件配置</h6><p>访问<a target="_blank" rel="noopener" href="https://grafana.com/grafana/dashboards/">grafana</a>下载node_export配置文件</p>
-<p><img src="https://wz-blogimg.oss-cn-beijing.aliyuncs.com/img/image-20230330235849765.png"></p>
-<p>点击进去，点击右边的DownloadJson文件进行下载</p>
-<p><img src="https://wz-blogimg.oss-cn-beijing.aliyuncs.com/img/image-20230330235927788.png"></p>
-<p>文件下载以后导入到Grafana</p>
-<p><img src="https://wz-blogimg.oss-cn-beijing.aliyuncs.com/img/image-20230331000109536.png"></p>
-<p>导入完成以后，可以看到相关数据已采集。</p>
-<p><img src="https://wz-blogimg.oss-cn-beijing.aliyuncs.com/img/image-20230331000226890.png"></p>
-<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>在本文中，我们介绍了什么是Prometheus，如何安装Prometheus，以及使用Prometheus的Pull(拉取)模式来采集Linux服务器资源，并在Grafana进行展现。</p>
-
-        
-        
-          <blockquote id="copyright">
-              <p>原文链接: <a href="https://dongweizhao.github.io/index.html">https://dongweizhao.github.io/index.html</a></p>
-              <p>版权声明: 转载请注明出处.</p>
-          </blockquote>
-        
       
     </div>
     <footer class="article-footer">
       
-        <div class="article-tag-wrap">
-          
-
-          
+        
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Prometheus/" rel="tag">Prometheus</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E4%BA%91%E5%8E%9F%E7%94%9F/" rel="tag">云原生</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%9E%B6%E6%9E%84%E6%88%90%E9%95%BF%E6%8C%87%E5%8D%97/" rel="tag">架构成长指南</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%B3%BB%E7%BB%9F%E7%9B%91%E6%8E%A7/" rel="tag">系统监控</a></li></ul>
 
-          
-    <div class="social-share">
-      <span>分享到:</span>
-    </div>
-
-
-
-        </div>
+        <p class="article-more-link">
+          <a href="/2023/12/17/2023/%E4%BA%91%E5%8E%9F%E7%94%9F/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%EF%BC%9A%E4%BD%BF%E7%94%A8Prometheus%E4%B8%8EGrafana%E6%90%AD%E5%BB%BA%E7%9B%91%E6%8E%A7%E7%B3%BB%E7%BB%9F/#more">Read More</a>
+        </p>
       
       
       
@@ -552,7 +460,6 @@
 <p>公众号「架构成长指南」，专注于生产实践、云原生、分布式系统、大数据技术分享。</p>
 </blockquote>
 <p>如果有一种技术可以监控和采集任何应用信息，支持任何语言，并且应用完全无感知，零侵入，想想是不是很激动，那么这个技术是什么呢？就是eBPF，它应该是最近一两年非常热门的技术名词，我相信你或多或少都看到过，但可能不知道它能做什么，今天我们来讲讲这个革命性的技术eBPF，以及它在可观测领域的应用eBPF是什么？</p>
-<h4 id="eBPF-是什么？"><a href="#eBPF-是什么？" class="headerlink" title="eBPF 是什么？"></a>eBPF 是什么？</h4><p><img src="https://wz-blogimg.oss-cn-beijing.aliyuncs.com/img/01674334-5464-4f34-bcba-96d8f728d96b.png"></p>
       
     </div>
     <footer class="article-footer">
